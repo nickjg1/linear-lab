@@ -3,9 +3,9 @@ module IVVL exposing (..)
 {--------------------------------------- IMPORTS ---------------------------------------}
 
 import GraphicSVG exposing (..)
-import GraphicSVG.Widget as Widget exposing (..) 
-import GraphicSVG.EllieApp as EllieApp exposing (..)
-import GraphicSVG.App as App exposing (..)
+import GraphicSVG.Widget exposing (..) 
+import GraphicSVG.EllieApp exposing (..)
+import GraphicSVG.App exposing (..)
 
 -- Default library usage
 import GraphicSVG.EllieApp exposing (GetKeyState)
@@ -17,11 +17,32 @@ import Dict exposing (Dict)
 type alias Coordinate2D = (Float, Float)
 type alias Vector2D = Coordinate2D
 
+type alias VisVector2D = 
+  { vector : Vector2D
+  , lineType : LineType
+  }
+
+-- Vector2D convertor
+vectorToVisVector2D : Vector2D -> VisVector2D
+vectorToVisVector2D vector = 
+  { vector = vector 
+  , lineType = defaultLineType
+  }
+
 -- Default Coordinate2D
+defaultCoordinate2D : Coordinate2D
 defaultCoordinate2D = (0, 0)
 
 -- Default Vector2D for Maybe conversion
+defaultVector2D : Vector2D
 defaultVector2D = (0, 0)
+
+-- Default VisVector2D
+defaultVisVector2D : VisVector2D
+defaultVisVector2D = 
+  { vector = defaultVector2D
+  , lineType = defaultLineType
+  }
 
 -- Converts Maybe Vector2D to Vector2D
 justToVector2D : Maybe Vector2D -> Vector2D
@@ -62,9 +83,11 @@ second v = Tuple.second v
 type alias Matrix2D = List Vector2D
 
 -- Default matrix for Maybe conversions.
+defaultMatrix2D : Matrix2D
 defaultMatrix2D = [ (0, 0), (0, 0) ]
 
 -- Identity matrix
+identityMatrix2D : Matrix2D
 identityMatrix2D = [ (1, 0), (0, 1) ]
 
 -- Converts Maybe Matrix2D to Matrix2D
@@ -81,9 +104,9 @@ addMatrix2D m1 m2 =
     length1 = List.length m1
     length2 = List.length m2
   in
-    case (length1==length2) of
-      False -> Nothing
-      True -> Just (List.map2 add m1 m2)
+    if (length1 == length2) 
+      then Just (List.map2 add m1 m2)
+      else Nothing
       
 -- Subtracts all entries of two Matrix2Ds
 subtractMatrix2D : Matrix2D -> Matrix2D -> Maybe Matrix2D
@@ -92,9 +115,9 @@ subtractMatrix2D m1 m2 =
     length1 = List.length m1
     length2 = List.length m2
   in
-    case (length1==length2) of
-      False -> Nothing
-      True -> Just (List.map2 subtract m1 m2)
+    if (length1 == length2)
+      then Just (List.map2 subtract m1 m2)
+      else Nothing
 
 -- Scalar multiplication of a float and a Matrix2D
 scalarMultiplyMatrix2D : Float -> Matrix2D -> Matrix2D
@@ -108,31 +131,31 @@ dotMultiplyMatrix2D m1 m2 =
     length1 = List.length m1
     length2 = List.length m2
   in
-    case (length1==length2 && length1==2) of
-      False -> Nothing
-      True -> let
-                
-                {-
-                [a, b    [w, x
-                 c, d]    y, z]
-                -}
-                
-                a = first (justToVector2D (List.head m1))
-                b = first (justToVector2D (backHead m1))
-                c = second (justToVector2D (List.head m1))
-                d = second (justToVector2D (backHead m1))
-                
-                w = first (justToVector2D (List.head m2))
-                x = first (justToVector2D (backHead m2))
-                y = second (justToVector2D (List.head m2))
-                z = second (justToVector2D (backHead m2))
-                
-                tl = a*w + b*y
-                tr = a*x + b*z
-                bl = c*w + d*y
-                br = c*x + d*z
-              in
-                Just [ (tl, bl) , (tr, br) ]
+    if (length1==length2 && length1==2)
+      then 
+        let
+          {- [a, b    [w, x
+              c, d]    y, z]
+          -}
+          
+          a = first (justToVector2D (List.head m1))
+          b = first (justToVector2D (backHead m1))
+          c = second (justToVector2D (List.head m1))
+          d = second (justToVector2D (backHead m1))
+          
+          w = first (justToVector2D (List.head m2))
+          x = first (justToVector2D (backHead m2))
+          y = second (justToVector2D (List.head m2))
+          z = second (justToVector2D (backHead m2))
+          
+          tl = a*w + b*y
+          tr = a*x + b*z
+          bl = c*w + d*y
+          br = c*x + d*z
+        in
+          Just [ (tl, bl) , (tr, br) ]
+      else
+        Nothing
 
 -- String representation of Vector2Ds
 printMatrix2D : Matrix2D -> String
@@ -147,13 +170,23 @@ type LineType = Solid Float
               | Bidirectional Float
            
 -- Default LineType
+defaultLineType : LineType
 defaultLineType = Solid 1
+
+convertLineType : LineType -> Color -> Stencil -> Shape userMsg
+convertLineType lt clr =
+  case lt of
+    Solid x -> outlined (solid x) clr
+    Dotted x -> outlined (dotted x) clr
+    Dashed x -> outlined (dashed x) clr
+    _ -> outlined (solid 1) clr
+         
 
 {--------------------------------------- GRID ---------------------------------------}
 
 type alias Grid2D = 
   { transformationMatrix : Matrix2D
-  , vectorObjects : Dict Int Vector2D
+  , vectorObjects : Dict Int VisVector2D
   , xColor : Color
   , yColor : Color
   , xLineType : LineType
@@ -163,6 +196,7 @@ type alias Grid2D =
   }
 
 -- Default Grid2D
+defaultGrid2D : Grid2D
 defaultGrid2D =
   { transformationMatrix = defaultMatrix2D
   , vectorObjects = Dict.empty
@@ -170,12 +204,12 @@ defaultGrid2D =
   , yColor = black
   , xLineType = defaultLineType
   , yLineType = defaultLineType
-  , scale = 5
+  , scale = 10
   , offset = (0, 0)
   }
   
 -- Creates a new Grid2D with an added Vector2D
-grid2DAddVector2D : Vector2D -> Grid2D -> Grid2D
+grid2DAddVector2D : VisVector2D -> Grid2D -> Grid2D
 grid2DAddVector2D vector grid = 
   { grid | vectorObjects = Dict.insert (getNextKey grid.vectorObjects) vector grid.vectorObjects }
   
@@ -185,13 +219,13 @@ grid2DRemoveVector2D id grid = --grid
   let
     vectorObject = grid.vectorObjects
     removedGrid = Dict.remove id vectorObject
-    filteredGrid = Dict.filter (\key value -> key > id) removedGrid
-    shiftedGrid = Dict.fromList (List.map (\(key, value) -> (key-1, value)) (Dict.toList filteredGrid) )
+    filteredGrid = Dict.filter (\key _ -> key > id) removedGrid
+    shiftedGrid = Dict.fromList (List.map (\(key, value) -> (key - 1, value)) (Dict.toList filteredGrid) )
     updatedGrid = Dict.union shiftedGrid removedGrid
     finalGrid = 
-      case (Dict.size vectorObject == Dict.size removedGrid) of
-        True -> updatedGrid
-        False -> Dict.remove (Dict.size vectorObject) updatedGrid
+      if (Dict.size vectorObject == Dict.size removedGrid)
+        then updatedGrid
+        else Dict.remove (Dict.size vectorObject) updatedGrid
   in 
      {grid | vectorObjects = finalGrid} 
      
@@ -199,13 +233,11 @@ grid2DScaleVector2D : Float -> Int -> Grid2D -> Grid2D
 grid2DScaleVector2D scalar id grid =
   let
     vectorObjects = grid.vectorObjects
+
+    vectorUpdater record = { record | vector = scalarMultiply scalar record.vector }
+    updater func x = Maybe.map func x
     
-    updater func x = 
-      case x of
-        Nothing -> Nothing
-        Just y -> Just (func y)
-    
-    finalGrid = Dict.update id (updater (scalarMultiply scalar) ) vectorObjects
+    finalGrid = Dict.update id (updater vectorUpdater) vectorObjects
     
   in
     {grid | vectorObjects = finalGrid}
@@ -215,33 +247,40 @@ grid2DScaleVector2D scalar id grid =
 -- Turns a Grid2D to a Shape
 renderGrid2D : Grid2D -> (Shape usermsg)
 renderGrid2D grid =
-  [ line (-1000, 0) (1000, 0)
-      |> (case grid.xLineType of
-            Solid x -> outlined (solid x)
-            Dotted x -> outlined (dotted x)
-            Dashed x -> outlined (dashed x)
-            _ -> outlined (solid 1)
-         ) grid.xColor
-  , line (0, -1000) (0, 1000)
-      |> (case grid.yLineType of
-            Solid x -> outlined (solid x)
-            Dotted x -> outlined (dotted x)
-            Dashed x -> outlined (dashed x)
-            _ -> outlined (solid 1)
-         ) grid.yColor
-  , List.map renderVector2D (List.map (scalarMultiply grid.scale) (Dict.values grid.vectorObjects))
-      |> group
+  [ 
+    List.map (\offset -> line (-1000, grid.scale * toFloat offset) (1000, grid.scale * toFloat offset)         -- horizontal grid lines
+                      |> convertLineType (Solid 0.1) grid.xColor 
+             )
+             (List.range -20 20)
+    |> group
+
+  , List.map (\offset -> line (grid.scale * toFloat offset, -1000) (grid.scale * toFloat offset, 1000)         -- vertical grid lines
+                      |> convertLineType (Solid 0.1) grid.yColor 
+             )
+             (List.range -20 20)
+    |> group
+    
+  , line (-1000, 0) (1000, 0) -- X axis
+      |> convertLineType grid.xLineType grid.xColor
+  , line (0, -1000) (0, 1000) -- Y axis
+      |> convertLineType grid.yLineType grid.yColor
+
+  , let
+      vectorUpdater record scalar = { record | vector = scalarMultiply scalar record.vector }
+    in
+      List.map renderVisVector2D (Dict.values (Dict.map (\_ v -> vectorUpdater v grid.scale ) grid.vectorObjects)) -- Generates all the vectors
+        |> group
   ] |> group
-    |> move grid.offset
+    |> move (scalarMultiply grid.scale grid.offset)
 
 -- Turns a Vector2D to a Shape
-renderVector2D : Vector2D -> (Shape usermsg)
-renderVector2D vector =
-  line (0, 0) vector
-    |> outlined (solid 1) black
- 
+renderVisVector2D : VisVector2D -> (Shape usermsg)
+renderVisVector2D vector =
+  line (0, 0) vector.vector
+    |> convertLineType vector.lineType black
 
 {--------------------------------------- HELPER ---------------------------------------}
+
 -- Returns the last item of a List as a Maybe type
 backHead : List a -> Maybe a
 backHead l = List.head (List.reverse l)
@@ -257,33 +296,35 @@ maybeToInt maybeInt =
 getNextKey : Dict Int a -> Int
 getNextKey dict = getNextKeyHelper dict 1
 
--- @private getNextKey helper
+-- getNextKey helper
 getNextKeyHelper : Dict Int a -> Int -> Int                             
 getNextKeyHelper dict index = 
-  case (index > (Dict.size dict)) of
-    True -> (Dict.size dict) + 1
-    False ->
-      case (Dict.member index dict) of
-        True -> getNextKeyHelper dict (index + 1)
-        False -> index
+  if (index > (Dict.size dict))
+    then (Dict.size dict) + 1
+    else
+      if (Dict.member index dict)
+        then getNextKeyHelper dict (index + 1)
+        else index
     
 
 {--------------------------------------- MESSAGES ---------------------------------------}
 
--- Add messages here
-type Msg = Tick Float GetKeyState
+type Msg = Tick Float GetKeyState -- Unused
+
+         -- All model interactions
          | AddGrid2D Grid2D -- Add (Grid2D).
          | RemoveGrid2D Int -- Remove Grid2D with (ID Int)
          | AddVector2D Vector2D Int -- Add (Vector2D) to (Grid with key Int)
+         | AddVisVector2D VisVector2D Int -- Add (VisVector2D) to (Grid with key Int)
          | RemoveVector2D Int Int -- Remove a vector with (ID Int) from (Grid with key Int)
          | ScaleVector2D Float Int Int -- Scale by (Scalar) a vector with (ID Int) from (Grid with key Int) 
 
 
--- Your update function goes here
+-- Updates the grid.
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model = 
   case msg of
-    Tick t _ -> ( model, Cmd.none )
+    Tick _ _ -> ( model, Cmd.none )
     
     AddGrid2D grid ->
       let
@@ -297,22 +338,36 @@ update msg model =
       let
        currentGrids = model.grids
        removedGrid = Dict.remove gridId currentGrids
-       filteredGrid = Dict.filter (\key value -> key > gridId) removedGrid
-       shiftedGrid = Dict.fromList (List.map (\(key, value) -> (key-1, value)) (Dict.toList filteredGrid) )
+       filteredGrid = Dict.filter (\key _ -> key > gridId) removedGrid
+       shiftedGrid = Dict.fromList (List.map (\(key, value) -> (key - 1, value)) (Dict.toList filteredGrid) )
        updatedGrid = Dict.union shiftedGrid removedGrid
        finalGrid = 
-         case (Dict.size currentGrids == Dict.size removedGrid) of
-           True -> updatedGrid
-           False -> Dict.remove (Dict.size currentGrids) updatedGrid
+         if (Dict.size currentGrids == Dict.size removedGrid)
+           then updatedGrid
+           else Dict.remove (Dict.size currentGrids) updatedGrid
       in
         ( { model | grids = finalGrid }, Cmd.none )
        
    
     AddVector2D vector gridKey -> 
       let
+        visVector = vectorToVisVector2D vector
+
         theGrid = Dict.get gridKey model.grids
         
-        updatedGrid = Maybe.map2 grid2DAddVector2D (Just vector) theGrid
+        updatedGrid = Maybe.map2 grid2DAddVector2D (Just visVector) theGrid
+        
+        updatedGridModel = case updatedGrid of
+                             Nothing -> model.grids
+                             Just newGrid -> Dict.insert gridKey newGrid model.grids
+        
+      in
+        ( { model | grids = updatedGridModel }, Cmd.none )
+    AddVisVector2D visVector gridKey -> 
+      let
+        theGrid = Dict.get gridKey model.grids
+        
+        updatedGrid = Maybe.map2 grid2DAddVector2D (Just visVector) theGrid
         
         updatedGridModel = case updatedGrid of
                              Nothing -> model.grids
@@ -346,7 +401,7 @@ update msg model =
 
 {--------------------------------------- DEBUG ---------------------------------------}
 
--- Model
+-- Visualizer Model
 type alias Model = 
   { time : Float 
   , grids : Dict Int Grid2D
@@ -360,6 +415,7 @@ init =
   }
 
 -- DEBUGGING PURPOSES ONLY
+myShapes : Model -> List (Shape userMsg)
 myShapes model = 
   [ List.map renderGrid2D (Dict.values model.grids)
       |> group
@@ -374,13 +430,13 @@ myShapes model =
 
 -- Your subscriptions go here
 subscriptions : Model -> Sub Msg
-subscriptions model = Sub.none
+subscriptions _ = Sub.none
 
 -- Your main function goes here
 main : EllieAppWithTick () Model Msg
 main = 
   ellieAppWithTick Tick 
-    { init = \flags -> (init, Cmd.none)
+    { init = \_ -> (init, Cmd.none)
     , view = view
     , update = update
     , subscriptions = subscriptions
@@ -389,7 +445,6 @@ main =
 -- You view function goes here
 view : Model -> { title: String, body : Collage Msg }
 view model = 
-  {
-    title = "Vector Visualizer Library"
-  , body = collage (192) (128) (myShapes model)
+  { title = "Vector Visualizer Library"
+  , body = collage (128) (128) (myShapes model)
   }

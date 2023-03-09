@@ -4,30 +4,31 @@ module Main exposing (..)
 
 import IVVL as IVVL exposing (Msg)
 
-import GraphicSVG as G exposing (..)
+import GraphicSVG exposing (..)
 import GraphicSVG.Widget as Widget exposing (..) 
-import GraphicSVG.EllieApp as EllieApp exposing (..)
-import GraphicSVG.App as App exposing (..)
+import GraphicSVG.EllieApp exposing (..)
+import GraphicSVG.App exposing (..)
 
 import Browser exposing (..)
 import Browser.Events as Browser exposing (..)
 import Browser.Dom as Dom exposing (..)
 
 import Element as E exposing (..)
+import Element exposing (Element)
 import Element.Background as Background
-import Element.Border as Border
-import Element.Font as Font
 import Element.Input as Input
 
 import Task
 
--- Default library usage
-import GraphicSVG.EllieApp exposing (GetKeyState)
+import Html exposing (Html)
 
-import Dict exposing (Dict)
+import Dict exposing (..)
+import IVVL exposing (VisVector2D)
+
 
 {--------------------------------------- VISUAL MODEL ---------------------------------------}
 
+htmlBody : Model -> List (Html Msg)
 htmlBody model = [ E.layout 
                     [E.width (E.px model.width) , E.height (E.px model.height)]
                     (
@@ -43,11 +44,14 @@ htmlBody model = [ E.layout
                                , simpleButton "Remove VectorID 1" (IVVL.RemoveVector2D 1 1)
                                , simpleButton "Add Vector (2, 5)" (IVVL.AddVector2D (2, 5) 1)
                                , simpleButton "Scale VectorID 1 by 1.5" (IVVL.ScaleVector2D 1.5 1 1)
+                               , simpleButton "Add Dashed Vector (-2, 5)" (IVVL.AddVisVector2D {vector=(-2, 5), lineType=IVVL.Dashed 1} 1)
+                               , simpleButton "Add Dotted Vector (-2, -5)" (IVVL.AddVisVector2D {vector=(-2, -5), lineType=IVVL.Dotted 1} 1)
                                ]
                             ]
                     )
                  ]
 
+simpleButton : String -> (IVVL.Msg) -> Element Msg
 simpleButton button_txt button_message =
     Input.button
         [ Background.color (E.rgb255 238 238 238)
@@ -94,17 +98,21 @@ update msg model =
     
 {--------------------------------------- EMBEDS AND RENDERS ---------------------------------------}
     
+testing : IVVL.Model -> List (Shape userMsg)
 testing model = 
   [ List.map IVVL.renderGrid2D (Dict.values model.grids)
       |> group
+  --, GraphicSVG.text (Debug.toString (Maybe.withDefault IVVL.defaultGrid2D (Dict.get 1 model.grids)).vectorObjects) |> filled red |> GraphicSVG.scale 0.25 |> move (-50, -40)
   --, [rectangle 30 15 |> filled blue, G.text "add (5,5)" |> filled white |> G.scale 0.2] |> group |> move (-90, 40) |> notifyTap (Other (IVVL.AddVector2D (5, 5) 1))
   ]
   
 -- THIS IS WHERE YOU EDIT ASPECT RATIO
-testingW = Widget.init 300 300 "gsvgTop"
+--testingW : (Model, Cmd Msg)
+testingW = Widget.init 150 150 "gsvgTop"
     
 {--------------------------------------- TOUCH WITH CAUTION ---------------------------------------}  
-  
+
+view : Model -> { title : String, body : List (Html Msg) } 
 view model =
   { title = "My Elm UI + Widget App"
   , body = htmlBody model
@@ -112,15 +120,13 @@ view model =
  
 {--------------------------------------- DO NOT TOUCH ---------------------------------------}
 
-
-       
 main : Program () Model Msg
 main =
   Browser.document
-    { init = \ flags -> (initialModel, Task.perform ( \ vp -> WindowResize (round vp.viewport.width) (round vp.viewport.height)) Dom.getViewport)
+    { init = \ _ -> (initialModel, Task.perform ( \ vp -> WindowResize (round vp.viewport.width) (round vp.viewport.height)) Dom.getViewport)
     , view = view
     , update = update
-    , subscriptions = \ model -> Browser.onResize WindowResize
+    , subscriptions = \ _ -> Browser.onResize WindowResize
     }
 
 
