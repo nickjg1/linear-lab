@@ -20,6 +20,7 @@ type alias Vector2D = Coordinate2D
 type alias VisVector2D = 
   { vector : Vector2D
   , lineType : LineType
+  , endType : EndType
   }
 
 -- Vector2D convertor
@@ -27,6 +28,7 @@ vectorToVisVector2D : Vector2D -> VisVector2D
 vectorToVisVector2D vector = 
   { vector = vector 
   , lineType = defaultLineType
+  , endType = defaultEndType
   }
 
 -- Default Coordinate2D
@@ -42,6 +44,7 @@ defaultVisVector2D : VisVector2D
 defaultVisVector2D = 
   { vector = defaultVector2D
   , lineType = defaultLineType
+  , endType = defaultEndType
   }
 
 -- Converts Maybe Vector2D to Vector2D
@@ -166,12 +169,18 @@ printMatrix2D m = Debug.toString m
 type LineType = Solid Float
               | Dotted Float
               | Dashed Float
-              | Directional Float
-              | Bidirectional Float
+
+type EndType = None
+             | Directional
+             | Bidirectional
            
 -- Default LineType
 defaultLineType : LineType
 defaultLineType = Solid 1
+
+-- Default EndType
+defaultEndType : EndType
+defaultEndType = None
 
 convertLineType : LineType -> Color -> Stencil -> Shape userMsg
 convertLineType lt clr =
@@ -179,7 +188,6 @@ convertLineType lt clr =
     Solid x -> outlined (solid x) clr
     Dotted x -> outlined (dotted x) clr
     Dashed x -> outlined (dashed x) clr
-    _ -> outlined (solid 1) clr
          
 
 {--------------------------------------- GRID ---------------------------------------}
@@ -276,8 +284,26 @@ renderGrid2D grid =
 -- Turns a Vector2D to a Shape
 renderVisVector2D : VisVector2D -> (Shape usermsg)
 renderVisVector2D vector =
-  line (0, 0) vector.vector
-    |> convertLineType vector.lineType black
+  [ line (0, 0) vector.vector
+      |> convertLineType vector.lineType black
+  , case vector.endType of
+      None -> [] |> group
+      Directional -> triangle 2
+                       |> filled black
+                       |> rotate (degrees -30)
+                       |> rotate -(atan2 (first vector.vector) (second vector.vector))
+                       |> move vector.vector
+      Bidirectional -> [ triangle 2
+                           |> filled black
+                           |> rotate (degrees -30)
+                           |> rotate -(atan2 (first vector.vector) (second vector.vector))
+                           |> move vector.vector
+                       , triangle 2
+                           |> filled black
+                           |> rotate (degrees -30)
+                           |> rotate (atan2 (first vector.vector) (second vector.vector))
+                       ] |> group
+  ] |> group
 
 {--------------------------------------- HELPER ---------------------------------------}
 

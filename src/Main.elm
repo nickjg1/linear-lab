@@ -23,7 +23,7 @@ import Task
 import Html exposing (Html)
 
 import Dict exposing (..)
-import IVVL exposing (VisVector2D)
+import IVVL exposing (..)
 
 
 {--------------------------------------- VISUAL MODEL ---------------------------------------}
@@ -40,12 +40,12 @@ htmlBody model = [ E.layout
                             , E.el [ E.width E.fill, E.centerY ]
                               <| column
                                [ E.height E.fill ]
-                               [ simpleButton "Add Vector (1, 1)" (IVVL.AddVector2D (1, 1) 1)
-                               , simpleButton "Remove VectorID 1" (IVVL.RemoveVector2D 1 1)
-                               , simpleButton "Add Vector (2, 5)" (IVVL.AddVector2D (2, 5) 1)
+                               [ simpleButton "Remove VectorID 1" (IVVL.RemoveVector2D 1 1)
                                , simpleButton "Scale VectorID 1 by 1.5" (IVVL.ScaleVector2D 1.5 1 1)
-                               , simpleButton "Add Dashed Vector (-2, 5)" (IVVL.AddVisVector2D {vector=(-2, 5), lineType=IVVL.Dashed 1} 1)
-                               , simpleButton "Add Dotted Vector (-2, -5)" (IVVL.AddVisVector2D {vector=(-2, -5), lineType=IVVL.Dotted 1} 1)
+                               , simpleButton "Add Vector (2, 5)" (IVVL.AddVector2D (2, 5) 1)
+                               , simpleButton "Add Dashed Vector (-2, 5)" (IVVL.AddVisVector2D { defaultVisVector2D | vector=(-2, 5), lineType=IVVL.Dashed 1 } 1)
+                               , simpleButton "Add Dotted Vector (-2, -5)" (IVVL.AddVisVector2D { defaultVisVector2D | vector=(-2, -5), lineType=IVVL.Dotted 1 } 1)
+                               , simpleButton "Add Directional Dashed Vector (2, -5)" (IVVL.AddVisVector2D { defaultVisVector2D | vector=(2, -5), lineType=IVVL.Dotted 1, endType=Directional } 1)
                                ]
                             ]
                     )
