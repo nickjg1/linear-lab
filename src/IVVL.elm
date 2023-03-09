@@ -3,12 +3,8 @@ module IVVL exposing (..)
 {--------------------------------------- IMPORTS ---------------------------------------}
 
 import GraphicSVG exposing (..)
-import GraphicSVG.Widget exposing (..) 
-import GraphicSVG.EllieApp exposing (..)
+import GraphicSVG.Widget exposing (..)
 import GraphicSVG.App exposing (..)
-
--- Default library usage
-import GraphicSVG.EllieApp exposing (GetKeyState)
 
 import Dict exposing (Dict)
 
@@ -336,6 +332,7 @@ getNextKeyHelper dict index =
 {--------------------------------------- MESSAGES ---------------------------------------}
 
 type Msg = Tick Float GetKeyState -- Unused
+         | Blank -- Unused
 
          -- All model interactions
          | AddGrid2D Grid2D -- Add (Grid2D).
@@ -347,10 +344,11 @@ type Msg = Tick Float GetKeyState -- Unused
 
 
 -- Updates the grid.
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> LibModel -> ( LibModel, Cmd Msg )
 update msg model = 
   case msg of
     Tick _ _ -> ( model, Cmd.none )
+    Blank -> ( model, Cmd.none )
     
     AddGrid2D grid ->
       let
@@ -428,20 +426,20 @@ update msg model =
 {--------------------------------------- DEBUG ---------------------------------------}
 
 -- Visualizer Model
-type alias Model = 
+type alias LibModel = 
   { time : Float 
   , grids : Dict Int Grid2D
   }
 
 -- Initial model
-init : Model
+init : LibModel
 init = 
   { time = 0,
     grids = Dict.fromList [(1, defaultGrid2D)]
   }
 
 -- DEBUGGING PURPOSES ONLY
-myShapes : Model -> List (Shape userMsg)
+myShapes : LibModel -> List (Shape userMsg)
 myShapes model = 
   [ List.map renderGrid2D (Dict.values model.grids)
       |> group
@@ -455,21 +453,23 @@ myShapes model =
 {--------------------------------------- DO NOT TOUCH ---------------------------------------}
 
 -- Your subscriptions go here
-subscriptions : Model -> Sub Msg
+subscriptions : LibModel -> Sub Msg
 subscriptions _ = Sub.none
 
 -- Your main function goes here
-main : EllieAppWithTick () Model Msg
+main : AppWithTick () LibModel Msg
 main = 
-  ellieAppWithTick Tick 
-    { init = \_ -> (init, Cmd.none)
+  appWithTick Tick 
+    { init = \_ _ _ -> (init, Cmd.none)
     , view = view
     , update = update
     , subscriptions = subscriptions
+    , onUrlRequest = \_ -> Blank
+    , onUrlChange = \_ -> Blank
     }
 
 -- You view function goes here
-view : Model -> { title: String, body : Collage Msg }
+view : LibModel -> { title: String, body : Collage Msg }
 view model = 
   { title = "Vector Visualizer Library"
   , body = collage (128) (128) (myShapes model)

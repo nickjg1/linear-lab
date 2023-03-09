@@ -5,8 +5,7 @@ module Main exposing (..)
 import IVVL as IVVL exposing (Msg)
 
 import GraphicSVG exposing (..)
-import GraphicSVG.Widget as Widget exposing (..) 
-import GraphicSVG.EllieApp exposing (..)
+import GraphicSVG.Widget as Widget exposing (..)
 import GraphicSVG.App exposing (..)
 
 import Browser exposing (..)
@@ -74,7 +73,7 @@ type alias Model =
     , width : Int
     , height : Int 
     , widgetModel : Widget.Model 
-    , vModel : IVVL.Model
+    , vModel : IVVL.LibModel
     }
     
 initialModel : Model
@@ -98,7 +97,7 @@ update msg model =
     
 {--------------------------------------- EMBEDS AND RENDERS ---------------------------------------}
     
-testing : IVVL.Model -> List (Shape userMsg)
+testing : IVVL.LibModel -> List (Shape userMsg)
 testing model = 
   [ List.map IVVL.renderGrid2D (Dict.values model.grids)
       |> group
@@ -107,8 +106,8 @@ testing model =
   ]
   
 -- THIS IS WHERE YOU EDIT ASPECT RATIO
---testingW : (Model, Cmd Msg)
-testingW = Widget.init 150 150 "gsvgTop"
+testingW : (Widget.Model, Cmd Widget.Msg)
+testingW = Widget.init 150 150 "embed1"
     
 {--------------------------------------- TOUCH WITH CAUTION ---------------------------------------}  
 
