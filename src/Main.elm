@@ -23,6 +23,34 @@ import Html exposing (Html)
 
 import Dict exposing (..)
 import IVVL exposing (..)
+import Html exposing (..)
+
+{--------------------------------------- HELPER ---------------------------------------}
+
+failureWidget : (Widget.Model, Cmd Widget.Msg)
+failureWidget = Widget.init 150 150 "failure"
+
+getWidgetModel : comparable -> Dict comparable (Widget.Model, Cmd Widget.Msg) -> Widget.Model
+getWidgetModel index dict =
+  let
+    maybe = Dict.get index dict
+    final = 
+      case maybe of
+          Just m -> m
+          Nothing -> failureWidget
+  in
+    Tuple.first final
+
+getVisualModel : comparable -> Dict comparable (IVVL.LibModel) -> IVVL.LibModel
+getVisualModel index dict =
+  let
+    maybe = Dict.get index dict
+    final =
+      case maybe of
+        Just m -> m
+        Nothing -> IVVL.init
+  in
+    final
 
 
 {--------------------------------------- VISUAL MODEL ---------------------------------------}
@@ -35,7 +63,9 @@ htmlBody model = [ E.layout
                            <| E.row 
                             []
                             [ E.el [E.width (E.px 500)]
-                              <| E.html (Widget.view model.widgetModel (testing model.vModel) )
+                              <| E.html (Widget.view (getWidgetModel "embed1" model.widgetModel) (testing (getVisualModel "embed1" model.vModel) "embed1") )
+                            , E.el [E.width (E.px 500)]
+                              <| E.html (Widget.view (getWidgetModel "embed2" model.widgetModel) (testing (getVisualModel "embed2" model.vModel) "embed2") )
                             , E.el [ E.width E.fill, E.centerY ]
                               <| column
                                [ E.height E.fill ]
@@ -57,7 +87,7 @@ simpleButton button_txt button_message =
         , E.focused
             [ Background.color (E.rgb255 238 23 238) ]
         ]
-        { onPress = Just (Other button_message)
+        { onPress = Just (Other "embed1" button_message)
         , label = E.text button_txt
         }
 
@@ -65,33 +95,41 @@ simpleButton button_txt button_message =
 
 type Msg = Tick Float
          | WindowResize Int Int
-         | Other IVVL.Msg
+         | Other String IVVL.Msg
 
-         | OtherMove (Float, Float)
+         | OtherMove String (Float, Float)
 
-         | WidgetMsg (Widget.Msg)
+         | WidgetMsg String (Widget.Msg)
 
 
 type alias Model =
     { time : Float
     , width : Int
     , height : Int 
-    , widgetModel : Widget.Model 
-    , vModel : IVVL.LibModel
+    , widgetModel : Dict String (Widget.Model, Cmd Widget.Msg) 
+    , vModel : Dict String (IVVL.LibModel)
     }
     
 initialModel : (Model, Cmd Msg)
 initialModel =
-  ( { time = 0
-    , width = 600
-    , height = 1024 
-    , widgetModel = Tuple.first testingW
-    , vModel = IVVL.init
-    }
-  , Cmd.batch [ Cmd.map WidgetMsg (Tuple.second testingW)
-              , Task.perform ( \ vp -> WindowResize (round vp.viewport.width) (round vp.viewport.height)) Dom.getViewport
-              ]
-  )
+  let
+
+    preVModel = Dict.fromList [ ("embed1", IVVL.init)
+                              , ("embed2", IVVL.init)
+                              ]
+
+    model =  { time = 0
+             , width = 600
+             , height = 1024 
+             , widgetModel = visualWidgets
+             , vModel = preVModel
+             }
+
+    widgetCommands = (List.map (\(k,v) -> Cmd.map (WidgetMsg k) (Tuple.second v)) (Dict.toList visualWidgets))
+    viewPortCommand = Task.perform ( \ vp -> WindowResize (round vp.viewport.width) (round vp.viewport.height)) Dom.getViewport
+    finalCmd = Cmd.batch (widgetCommands ++ [viewPortCommand])
+  in
+  ( model, finalCmd )
     
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -101,34 +139,43 @@ update msg model =
             , Cmd.none)
         Tick t ->
             ({ model | time = t }, Cmd.none)
-        Other messageForParent -> ( { model | vModel = Tuple.first (IVVL.update messageForParent model.vModel) }, Cmd.none )
-        OtherMove (x, y) -> ( {model | vModel = Tuple.first (IVVL.update (IVVL.HoldMove (x, y)) model.vModel) }, Cmd.none )
 
-        WidgetMsg wMsg -> 
+
+        Other k messageForParent -> (
           let
-            (newWState, wCmd) = Widget.update wMsg model.widgetModel
+            originalDict = model.vModel
+            updatedDict = Dict.update k ( Maybe.map (\value -> Tuple.first (IVVL.update messageForParent value)) ) originalDict 
           in
-            ( { model | widgetModel = newWState}, Cmd.map WidgetMsg wCmd)
+            { model | vModel = updatedDict}, Cmd.none )
+        
+        OtherMove k (x, y) -> 
+          let
+            originalDict = model.vModel
+            updatedDict = Dict.update k (Maybe.map (\value -> Tuple.first (IVVL.update (IVVL.HoldMove (x, y)) value))) originalDict
+          in
+            ( {model | vModel = updatedDict}, Cmd.none)
+
+        WidgetMsg k wMsg -> 
+          let
+            (newWState, wCmd) = Widget.update wMsg (getWidgetModel k model.widgetModel)
+
+            newWidgetModel = Dict.update k (Maybe.map (\_ -> (newWState, wCmd))) model.widgetModel
+          in
+            ( { model | widgetModel = newWidgetModel}, Cmd.map (WidgetMsg k) wCmd)
     
 {--------------------------------------- EMBEDS AND RENDERS ---------------------------------------}
     
-testing : IVVL.LibModel -> List (Shape Msg)
-testing model = 
-  [ List.map IVVL.renderGrid2D (Dict.values model.grids)
-      |> group
-      |> ( case model.motionState of
-             IVVL.NotMoving -> notifyMouseDownAt OtherMove
-             IVVL.Moving -> notifyMouseMoveAt OtherMove 
-         )
-      |> notifyLeave (Other (ReleaseMove))
-      |> notifyMouseUp (Other (ReleaseMove))
+testing : IVVL.LibModel -> String -> List (Shape Msg)
+testing model k = 
+  [ finalRender model (OtherMove k) (Other k (ReleaseMove))
   --, GraphicSVG.text (Debug.toString (Maybe.withDefault IVVL.defaultGrid2D (Dict.get 1 model.grids)).vectorObjects) |> filled red |> GraphicSVG.scale 0.25 |> move (-50, -40)
   --, [rectangle 30 15 |> filled blue, G.text "add (5,5)" |> filled white |> G.scale 0.2] |> group |> move (-90, 40) |> notifyTap (Other (IVVL.AddVector2D (5, 5) 1))
   ]
   
 -- THIS IS WHERE YOU EDIT ASPECT RATIO
-testingW : (Widget.Model, Cmd Widget.Msg)
-testingW = Widget.init 150 150 "embed1"
+visualWidgets : Dict String (Widget.Model, Cmd Widget.Msg)
+visualWidgets = Dict.fromList [ ("embed1", Widget.init 100 100 "embed1")
+                              , ("embed2", Widget.init 100 100 "embed2")]
     
 {--------------------------------------- TOUCH WITH CAUTION ---------------------------------------}  
 

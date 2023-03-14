@@ -195,6 +195,7 @@ type alias Grid2D =
   , yColor : Color
   , xLineType : LineType
   , yLineType : LineType
+
   , scale : Float
 
   , startingOffset : Coordinate2D
@@ -210,6 +211,7 @@ defaultGrid2D =
   , yColor = black
   , xLineType = defaultLineType
   , yLineType = defaultLineType
+
   , scale = 10
 
   , startingOffset = (0, 0)
@@ -252,11 +254,24 @@ grid2DScaleVector2D scalar id grid =
 
 {--------------------------------------- RENDER ---------------------------------------}
 
+--finalRender : LibModel -> (Shape usermsg)
+finalRender : LibModel-> ((Float, Float) -> userMsg) -> userMsg -> Shape userMsg
+finalRender model holdMsg releaseMsg =
+  [ square 1000 |> filled white
+  , List.map renderGrid2D (Dict.values model.grids)
+      |> group
+  ] |> group
+    |> ( case model.motionState of
+             NotMoving -> notifyMouseDownAt holdMsg
+             Moving -> notifyMouseMoveAt holdMsg 
+         )
+      |> notifyLeave releaseMsg
+      |> notifyMouseUp releaseMsg
+
 -- Turns a Grid2D to a Shape
 renderGrid2D : Grid2D -> (Shape usermsg)
 renderGrid2D grid =
-  [ square 1000 |> filled white
-  , List.map (\offset -> line (-1000, grid.scale * toFloat offset) (1000, grid.scale * toFloat offset)         -- horizontal grid lines
+  [ List.map (\offset -> line (-1000, grid.scale * toFloat offset ) (1000, grid.scale * toFloat offset)         -- horizontal grid lines
                       |> convertLineType (Solid 0.1) grid.xColor 
              )
              (List.range -20 20)
@@ -279,7 +294,7 @@ renderGrid2D grid =
       List.map renderVisVector2D (Dict.values (Dict.map (\_ v -> vectorUpdater v grid.scale ) grid.vectorObjects)) -- Generates all the vectors
         |> group
   ] |> group
-    |> move (scalarMultiply grid.scale grid.offset)
+    |> move (grid.offset)
 
 -- Turns a Vector2D to a Shape
 renderVisVector2D : VisVector2D -> (Shape usermsg)
@@ -430,7 +445,7 @@ update msg model =
         ( { model | grids = updatedGridModel }, Cmd.none )
 
     HoldMove (x, y) ->
-      let
+      let 
         updatedModel = 
           case model.motionState of
             NotMoving -> 
@@ -442,7 +457,8 @@ update msg model =
             Moving ->
               let
                 allGrids = model.grids
-                difference = scalarMultiply 0.03 (subtract (x, y) model.startingMousePos)
+                difference = scalarMultiply 1 (subtract (x, y) model.startingMousePos)
+               -- dummy = add v.startingOffset difference
                 offsetGrids = Dict.map (\_ v -> { v | offset = add v.startingOffset difference} ) allGrids
               in
                  { model | grids = offsetGrids }
