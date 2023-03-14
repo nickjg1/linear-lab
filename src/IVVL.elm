@@ -196,6 +196,8 @@ type alias Grid2D =
   , xLineType : LineType
   , yLineType : LineType
   , scale : Float
+
+  , startingOffset : Coordinate2D
   , offset : Coordinate2D
   }
 
@@ -209,6 +211,8 @@ defaultGrid2D =
   , xLineType = defaultLineType
   , yLineType = defaultLineType
   , scale = 10
+
+  , startingOffset = (0, 0)
   , offset = (0, 0)
   }
   
@@ -342,7 +346,8 @@ type Msg = Tick Float GetKeyState -- Unused
          | RemoveVector2D Int Int -- Remove a vector with (ID Int) from (Grid with key Int)
          | ScaleVector2D Float Int Int -- Scale by (Scalar) a vector with (ID Int) from (Grid with key Int) 
 
-         | Move (Float, Float)
+         | HoldMove (Float, Float)
+         | ReleaseMove
 
 
 -- Updates the grid.
@@ -424,26 +429,53 @@ update msg model =
       in
         ( { model | grids = updatedGridModel }, Cmd.none )
 
-    Move (x, y) ->
+    HoldMove (x, y) ->
       let
-        dummy = Debug.log "clickingValue" (x, y)
+        updatedModel = 
+          case model.motionState of
+            NotMoving -> 
+              let
+                allGrids = model.grids
+                offsetGrids = Dict.map (\_ v -> { v | startingOffset = v.offset} ) allGrids
+              in
+                { model | startingMousePos = (x, y), motionState = Moving, grids = offsetGrids }
+            Moving ->
+              let
+                allGrids = model.grids
+                difference = scalarMultiply 0.03 (subtract (x, y) model.startingMousePos)
+                offsetGrids = Dict.map (\_ v -> { v | offset = add v.startingOffset difference} ) allGrids
+              in
+                 { model | grids = offsetGrids }
       in
-        ( model, Cmd.none )
+        ( updatedModel, Cmd.none )
+    
+    ReleaseMove ->
+      let
+        updatedModel = { model | motionState = NotMoving }
+      in
+        ( updatedModel, Cmd.none )
       
 
 {--------------------------------------- DEBUG ---------------------------------------}
+
+type MotionState = NotMoving
+                 | Moving
 
 -- Visualizer Model
 type alias LibModel = 
   { time : Float 
   , grids : Dict Int Grid2D
+  , motionState : MotionState
+  , startingMousePos : (Float, Float)
   }
 
 -- Initial model
 init : LibModel
 init = 
-  { time = 0,
-    grids = Dict.fromList [(1, defaultGrid2D)]
+  { time = 0
+  , grids = Dict.fromList [(1, defaultGrid2D)]
+  , motionState = NotMoving
+  , startingMousePos = (0, 0)
   }
 
 -- DEBUGGING PURPOSES ONLY

@@ -102,7 +102,7 @@ update msg model =
         Tick t ->
             ({ model | time = t }, Cmd.none)
         Other messageForParent -> ( { model | vModel = Tuple.first (IVVL.update messageForParent model.vModel) }, Cmd.none )
-        OtherMove (x, y) -> ( {model | vModel = Tuple.first (IVVL.update (IVVL.Move (x, y)) model.vModel) }, Cmd.none )
+        OtherMove (x, y) -> ( {model | vModel = Tuple.first (IVVL.update (IVVL.HoldMove (x, y)) model.vModel) }, Cmd.none )
 
         WidgetMsg wMsg -> 
           let
@@ -116,7 +116,12 @@ testing : IVVL.LibModel -> List (Shape Msg)
 testing model = 
   [ List.map IVVL.renderGrid2D (Dict.values model.grids)
       |> group
-      |> notifyMouseDownAt OtherMove
+      |> ( case model.motionState of
+             IVVL.NotMoving -> notifyMouseDownAt OtherMove
+             IVVL.Moving -> notifyMouseMoveAt OtherMove 
+         )
+      |> notifyLeave (Other (ReleaseMove))
+      |> notifyMouseUp (Other (ReleaseMove))
   --, GraphicSVG.text (Debug.toString (Maybe.withDefault IVVL.defaultGrid2D (Dict.get 1 model.grids)).vectorObjects) |> filled red |> GraphicSVG.scale 0.25 |> move (-50, -40)
   --, [rectangle 30 15 |> filled blue, G.text "add (5,5)" |> filled white |> G.scale 0.2] |> group |> move (-90, 40) |> notifyTap (Other (IVVL.AddVector2D (5, 5) 1))
   ]
