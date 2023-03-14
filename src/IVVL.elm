@@ -212,7 +212,7 @@ defaultGrid2D =
   , xLineType = defaultLineType
   , yLineType = defaultLineType
 
-  , scale = 10
+  , scale = 50
 
   , startingOffset = (0, 0)
   , offset = (0, 0)
@@ -356,10 +356,21 @@ type Msg = Tick Float GetKeyState -- Unused
          -- All model interactions
          | AddGrid2D Grid2D -- Add (Grid2D).
          | RemoveGrid2D Int -- Remove Grid2D with (ID Int)
+
+         | ScaleGrid2D Float Int -- Scale by (Scalar) a Grid with (ID Int).
+         | ScaleGrid2DAll Float -- Scale by (Scalar) ALL grids.
+
          | AddVector2D Vector2D Int -- Add (Vector2D) to (Grid with key Int)
+         | AddVector2DAll Vector2D -- Add (Vector2D) to ALL grids.
+
          | AddVisVector2D VisVector2D Int -- Add (VisVector2D) to (Grid with key Int)
+         | AddVisVector2DAll VisVector2D -- Add (VisVector2D) to ALL grids.
+
          | RemoveVector2D Int Int -- Remove a vector with (ID Int) from (Grid with key Int)
+         | RemoveVector2DAll Int -- Remove a vector with (ID Int) from ALL grids.
+
          | ScaleVector2D Float Int Int -- Scale by (Scalar) a vector with (ID Int) from (Grid with key Int) 
+         | ScaleVector2DAll Float Int -- Scale by (Scalar) a vector with (ID Int) from ALL grids.
 
          | HoldMove (Float, Float)
          | ReleaseMove
@@ -394,7 +405,30 @@ update msg model =
       in
         ( { model | grids = finalGrid }, Cmd.none )
        
-   
+    ScaleGrid2D scalar gridId ->
+      let
+        gridDict = model.grids
+        theGrid = Dict.get gridId gridDict
+
+        updatedGrid = Maybe.map (\x -> { x | scale = x.scale * scalar }) theGrid
+
+        updatedGridDict = 
+          case updatedGrid of
+            Nothing -> model.grids
+            Just workingGrid -> Dict.insert gridId workingGrid model.grids
+
+      in
+        ( { model | grids = updatedGridDict }, Cmd.none )
+      
+    ScaleGrid2DAll scalar ->
+      let
+        gridDict = model.grids
+
+        newGrids = Dict.map (\_ v -> { v | scale = v.scale * scalar}) gridDict
+      in
+        ( { model | grids = newGrids }, Cmd.none )
+
+
     AddVector2D vector gridKey -> 
       let
         visVector = vectorToVisVector2D vector
@@ -409,6 +443,18 @@ update msg model =
         
       in
         ( { model | grids = updatedGridModel }, Cmd.none )
+
+    AddVector2DAll vector -> 
+      let
+        visVector = vectorToVisVector2D vector
+        gridDict = model.grids
+        
+        newGrids = Dict.map (\_ v -> grid2DAddVector2D visVector v) gridDict 
+        
+      in
+        ( { model | grids = newGrids }, Cmd.none )
+    
+
     AddVisVector2D visVector gridKey -> 
       let
         theGrid = Dict.get gridKey model.grids
@@ -421,6 +467,17 @@ update msg model =
         
       in
         ( { model | grids = updatedGridModel }, Cmd.none )
+    
+    AddVisVector2DAll visVector ->
+      let
+          gridDict = model.grids
+          
+          newGrids = Dict.map (\_ v -> grid2DAddVector2D visVector v) gridDict 
+          
+        in
+          ( { model | grids = newGrids }, Cmd.none )
+
+
     RemoveVector2D vId gridKey -> 
       let
         theGrid = Dict.get gridKey model.grids
@@ -432,6 +489,16 @@ update msg model =
                              Just newGrid -> Dict.insert gridKey newGrid model.grids
       in
         ( { model | grids = updatedGridModel }, Cmd.none )
+    
+    RemoveVector2DAll vId ->
+      let
+        gridDict = model.grids
+
+        newGrids = Dict.map (\_ v -> grid2DRemoveVector2D vId v) gridDict
+      in
+        ( { model | grids = newGrids }, Cmd.none )
+
+
     ScaleVector2D scalar vId gridKey ->
       let
         theGrid = Dict.get gridKey model.grids
@@ -443,6 +510,15 @@ update msg model =
                              Just newGrid -> Dict.insert gridKey newGrid model.grids
       in
         ( { model | grids = updatedGridModel }, Cmd.none )
+
+    ScaleVector2DAll scalar vId ->
+      let
+        gridDict = model.grids
+
+        newGrids = Dict.map (\_ v -> grid2DScaleVector2D scalar vId v) gridDict
+      in
+        ( { model | grids = newGrids }, Cmd.none )
+
 
     HoldMove (x, y) ->
       let 
