@@ -67,6 +67,10 @@ type Msg = Tick Float
          | WindowResize Int Int
          | Other IVVL.Msg
 
+         | OtherMove (Float, Float)
+
+         | WidgetMsg (Widget.Msg)
+
 
 type alias Model =
     { time : Float
@@ -76,14 +80,18 @@ type alias Model =
     , vModel : IVVL.LibModel
     }
     
-initialModel : Model
+initialModel : (Model, Cmd Msg)
 initialModel =
-    { time = 0
+  ( { time = 0
     , width = 600
     , height = 1024 
     , widgetModel = Tuple.first testingW
     , vModel = IVVL.init
     }
+  , Cmd.batch [ Cmd.map WidgetMsg (Tuple.second testingW)
+              , Task.perform ( \ vp -> WindowResize (round vp.viewport.width) (round vp.viewport.height)) Dom.getViewport
+              ]
+  )
     
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -93,14 +101,22 @@ update msg model =
             , Cmd.none)
         Tick t ->
             ({ model | time = t }, Cmd.none)
-        Other messageForParent -> ( { model | vModel = Tuple.first (IVVL.update messageForParent model.vModel) }, Cmd.none)
+        Other messageForParent -> ( { model | vModel = Tuple.first (IVVL.update messageForParent model.vModel) }, Cmd.none )
+        OtherMove (x, y) -> ( {model | vModel = Tuple.first (IVVL.update (IVVL.Move (x, y)) model.vModel) }, Cmd.none )
+
+        WidgetMsg wMsg -> 
+          let
+            (newWState, wCmd) = Widget.update wMsg model.widgetModel
+          in
+            ( { model | widgetModel = newWState}, Cmd.map WidgetMsg wCmd)
     
 {--------------------------------------- EMBEDS AND RENDERS ---------------------------------------}
     
-testing : IVVL.LibModel -> List (Shape userMsg)
+testing : IVVL.LibModel -> List (Shape Msg)
 testing model = 
   [ List.map IVVL.renderGrid2D (Dict.values model.grids)
       |> group
+      |> notifyMouseDownAt OtherMove
   --, GraphicSVG.text (Debug.toString (Maybe.withDefault IVVL.defaultGrid2D (Dict.get 1 model.grids)).vectorObjects) |> filled red |> GraphicSVG.scale 0.25 |> move (-50, -40)
   --, [rectangle 30 15 |> filled blue, G.text "add (5,5)" |> filled white |> G.scale 0.2] |> group |> move (-90, 40) |> notifyTap (Other (IVVL.AddVector2D (5, 5) 1))
   ]
@@ -122,7 +138,7 @@ view model =
 main : Program () Model Msg
 main =
   Browser.document
-    { init = \ _ -> (initialModel, Task.perform ( \ vp -> WindowResize (round vp.viewport.width) (round vp.viewport.height)) Dom.getViewport)
+    { init = \ _ -> initialModel
     , view = view
     , update = update
     , subscriptions = \ _ -> Browser.onResize WindowResize

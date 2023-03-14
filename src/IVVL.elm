@@ -251,8 +251,8 @@ grid2DScaleVector2D scalar id grid =
 -- Turns a Grid2D to a Shape
 renderGrid2D : Grid2D -> (Shape usermsg)
 renderGrid2D grid =
-  [ 
-    List.map (\offset -> line (-1000, grid.scale * toFloat offset) (1000, grid.scale * toFloat offset)         -- horizontal grid lines
+  [ square 1000 |> filled white
+  , List.map (\offset -> line (-1000, grid.scale * toFloat offset) (1000, grid.scale * toFloat offset)         -- horizontal grid lines
                       |> convertLineType (Solid 0.1) grid.xColor 
              )
              (List.range -20 20)
@@ -342,6 +342,8 @@ type Msg = Tick Float GetKeyState -- Unused
          | RemoveVector2D Int Int -- Remove a vector with (ID Int) from (Grid with key Int)
          | ScaleVector2D Float Int Int -- Scale by (Scalar) a vector with (ID Int) from (Grid with key Int) 
 
+         | Move (Float, Float)
+
 
 -- Updates the grid.
 update : Msg -> LibModel -> ( LibModel, Cmd Msg )
@@ -421,6 +423,12 @@ update msg model =
                              Just newGrid -> Dict.insert gridKey newGrid model.grids
       in
         ( { model | grids = updatedGridModel }, Cmd.none )
+
+    Move (x, y) ->
+      let
+        dummy = Debug.log "clickingValue" (x, y)
+      in
+        ( model, Cmd.none )
       
 
 {--------------------------------------- DEBUG ---------------------------------------}
