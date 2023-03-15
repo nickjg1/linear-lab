@@ -271,18 +271,36 @@ finalRender model holdMsg releaseMsg =
 -- Turns a Grid2D to a Shape
 renderGrid2D : Grid2D -> (Shape usermsg)
 renderGrid2D grid =
-  [ List.map (\offset -> line (-1000, grid.scale * toFloat offset ) (1000, grid.scale * toFloat offset)         -- horizontal grid lines
-                      |> convertLineType (Solid 0.1) grid.xColor 
+  [ List.map (\offset -> if (offset /= 0) then
+                           [ line (-1000, grid.scale * toFloat offset ) (1000, grid.scale * toFloat offset)         -- horizontal grid lines
+                               |> convertLineType (Solid 0.1) grid.xColor 
+                           , text (Debug.toString offset)
+                               |> filled black
+                               |> scale (grid.scale * 0.02)
+                               |> move (0, grid.scale * toFloat offset + 1)
+                           ] |> group
+                         else [] |> group
              )
              (List.range -20 20)
     |> group
 
-  , List.map (\offset -> line (grid.scale * toFloat offset, -1000) (grid.scale * toFloat offset, 1000)         -- vertical grid lines
-                      |> convertLineType (Solid 0.1) grid.yColor 
+  , List.map (\offset -> if (offset /= 0) then
+                           [ line (grid.scale * toFloat offset, -1000) (grid.scale * toFloat offset, 1000)         -- vertical grid lines
+                               |> convertLineType (Solid 0.1) grid.yColor 
+                           , text (Debug.toString offset)
+                               |> filled black
+                               |> scale (grid.scale * 0.02)
+                               |> move (grid.scale * toFloat offset, 1)
+                           ] |> group
+                         else [] |> group
              )
              (List.range -20 20)
     |> group
-    
+  
+  , text "0"
+      |> filled black
+      |> scale (grid.scale * 0.02)
+      |> move (1, 1)
   , line (-1000, 0) (1000, 0) -- X axis
       |> convertLineType grid.xLineType grid.xColor
   , line (0, -1000) (0, 1000) -- Y axis
