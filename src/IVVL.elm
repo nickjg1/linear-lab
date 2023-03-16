@@ -317,7 +317,7 @@ renderGrid2D grid =
 -- Turns a Vector2D to a Shape
 renderVisVector2D : VisVector2D -> (Shape usermsg)
 renderVisVector2D vector =
-  [ line (0, 0) vector.vectorgit 
+  [ line (0, 0) vector.vector
       |> convertLineType vector.lineType black
   , case vector.endType of
       None -> [] |> group
