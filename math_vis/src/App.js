@@ -8,7 +8,7 @@ function App() {
   return (
     <div className="App">
       <h3>Iframes in React</h3>
-      <iframe src="elm/index.html"></iframe>
+      <embed src="elm/index.html"></embed>
     </div>
   );
 }
