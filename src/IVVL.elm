@@ -43,6 +43,44 @@ defaultVisVector2D =
   , endType = defaultEndType
   }
 
+-- Base Vector type for applications, alongside transformations
+newVV2 : VisVector2D
+newVV2 = defaultVisVector2D
+
+addVV2 : Vector2D -> VisVector2D -> VisVector2D
+addVV2 vec visVec = { visVec | vector = add vec visVec.vector}
+
+subtractVV2 : Vector2D -> VisVector2D -> VisVector2D
+subtractVV2 vec visVec = { visVec | vector = subtract vec visVec.vector}
+
+scaleVV2 : Float -> VisVector2D -> VisVector2D
+scaleVV2 scalar visVec = { visVec | vector = scalarMultiply scalar visVec.vector}
+
+dotVV2 : Matrix2D -> VisVector2D -> VisVector2D
+dotVV2 matrix visVec = { visVec | vector = justToVector2D (dotMultiply matrix visVec.vector)}
+
+lineTypeVV2 : LineType -> VisVector2D -> VisVector2D
+lineTypeVV2 lt visVec = { visVec | lineType = lt}
+
+endTypeVV2 : EndType -> VisVector2D -> VisVector2D
+endTypeVV2 et visVec = { visVec | endType = et }
+
+--Example Usage
+{-  myVec : VisVector2D
+    myVec = let
+              v = 
+                newVV2
+                |> addVV2 (20,-10)
+                |> scaleVV2 (1/5)
+                |> dotVV2 [(1,0), (0,2)]
+                |> endTypeVV2 Bidirectional
+
+              dummy = Debug.log "myVector" v
+            in
+              v
+-}
+
+
 -- Converts Maybe Vector2D to Vector2D
 justToVector2D : Maybe Vector2D -> Vector2D
 justToVector2D f =
@@ -64,6 +102,33 @@ subtract v1 v2 =
 scalarMultiply : Float -> Vector2D -> Vector2D
 scalarMultiply f v =
   (f * Tuple.first v, f * Tuple.second v)
+
+dotMultiply : Matrix2D -> Vector2D -> Maybe Vector2D
+dotMultiply matrix v =
+  let
+    {- [a, b    [x
+        c, d]    y]
+    -}
+    
+    a = first (justToVector2D (List.head matrix))
+    b = first (justToVector2D (backHead matrix))
+    c = second (justToVector2D (List.head matrix))
+    d = second (justToVector2D (backHead matrix))
+
+    x = first v
+    y = second v
+
+    x2 = (a*x) + (b*x)
+    y2 = (c*y) + (d*y)
+
+    finalV = 
+      if (List.length matrix == 2)
+        then Just (x2,y2)
+        else Nothing
+
+  in
+    finalV
+
   
 -- String representation of Vector2Ds
 print : Vector2D -> String
@@ -310,7 +375,7 @@ renderGrid2D grid =
       vectorUpdater record scalar = { record | vector = scalarMultiply scalar record.vector }
       listOfVectors = Dict.values (Dict.map (\_ v -> vectorUpdater v grid.scale) grid.vectorObjects)
     in
-      List.map2 renderVisVector2D (listOfVectors) (List.repeat (List.length listOfVectors) grid.scale) 
+      List.map renderVisVector2D (listOfVectors)
         |> group
   ] |> group
     |> move (grid.offset)
@@ -322,21 +387,21 @@ renderVisVector2D vector =
       |> convertLineType vector.lineType black
   , case vector.endType of
       None -> [] |> group
-      Directional -> triangle 2
+      Directional -> triangle 5
                        |> filled black
-                       |> scale 2
                        |> rotate (degrees -30)
                        |> rotate -(atan2 (first vector.vector) (second vector.vector))
                        |> move vector.vector
-      Bidirectional -> [ triangle 2
+      Bidirectional -> [ triangle 5
                            |> filled black
                            |> rotate (degrees -30)
                            |> rotate -(atan2 (first vector.vector) (second vector.vector))
                            |> move vector.vector
-                       , triangle 2
+                       , triangle 5
                            |> filled black
                            |> rotate (degrees -30)
-                           |> rotate (atan2 (first vector.vector) (second vector.vector))
+                           |> rotate -(atan2 (first vector.vector) (second vector.vector))
+                           |> rotate (degrees 180)
                        ] |> group
   ] |> group
 

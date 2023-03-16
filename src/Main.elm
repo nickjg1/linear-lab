@@ -90,7 +90,7 @@ htmlBody model = [ E.layout [E.height (E.px 0)]
                                 [ simpleButton "Remove VectorID 1" (IVVL.RemoveVector2D 1 1) "embed2"
                                 , simpleButton "Scale VectorID 1 by 1.5" (IVVL.ScaleVector2D 1.5 1 1) "embed2"
                                 , simpleButton "Add Vector (2, 5)" (IVVL.AddVector2D (2, 5) 1) "embed2"
-                                , simpleButton "Add Dashed Vector (-2, 5)" (IVVL.AddVisVector2D { defaultVisVector2D | vector=(-2, 5), lineType=IVVL.Dashed 1 } 1) "embed2"
+                                , simpleButton "Add Dashed Vector (-2, 5)" (IVVL.AddVisVector2D IVVL.myVec 1) "embed2"
                                 , simpleButton "Add Dotted Vector (-2, -5)" (IVVL.AddVisVector2D { defaultVisVector2D | vector=(-2, -5), lineType=IVVL.Dotted 1 } 1) "embed2"
                                 , simpleButton "Add Directional Dashed Vector (2, -5)" (IVVL.AddVisVector2D { defaultVisVector2D | vector=(2, -5), lineType=IVVL.Dotted 1, endType=Directional } 1) "embed2"
                                 , simpleButton "Add Grid" (IVVL.AddGrid2D defaultGrid2D) "embed2"
@@ -138,7 +138,6 @@ type alias Model =
 initialModel : (Model, Cmd Msg)
 initialModel =
   let
-    defaultModel = IVVL.init
     preVModel = Dict.fromList [ ("embed1", IVVL.init)
                               , ("embed2", IVVL.init)
                               ]
