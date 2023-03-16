@@ -308,8 +308,9 @@ renderGrid2D grid =
 
   , let
       vectorUpdater record scalar = { record | vector = scalarMultiply scalar record.vector }
+      listOfVectors = Dict.values (Dict.map (\_ v -> vectorUpdater v grid.scale) grid.vectorObjects)
     in
-      List.map renderVisVector2D (Dict.values (Dict.map (\_ v -> vectorUpdater v grid.scale ) grid.vectorObjects)) -- Generates all the vectors
+      List.map2 renderVisVector2D (listOfVectors) (List.repeat (List.length listOfVectors) grid.scale) 
         |> group
   ] |> group
     |> move (grid.offset)
@@ -323,6 +324,7 @@ renderVisVector2D vector =
       None -> [] |> group
       Directional -> triangle 2
                        |> filled black
+                       |> scale 2
                        |> rotate (degrees -30)
                        |> rotate -(atan2 (first vector.vector) (second vector.vector))
                        |> move vector.vector
