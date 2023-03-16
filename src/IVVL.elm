@@ -315,7 +315,7 @@ renderGrid2D grid =
     |> move (grid.offset)
 
 -- Turns a Vector2D to a Shape
-renderVisVector2D : VisVector2D -> (Shape usermsg)
+
 renderVisVector2D vector =
   [ line (0, 0) vector.vector
       |> convertLineType vector.lineType black
