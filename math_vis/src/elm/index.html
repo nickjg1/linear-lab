@@ -5506,7 +5506,6 @@ var $author$project$Main$initialModel = function () {
 			widgetCommands,
 			_List_fromArray(
 				[viewPortCommand])));
-	var defaultModel = $author$project$IVVL$init;
 	return _Utils_Tuple2(model, finalCmd);
 }();
 var $elm$browser$Browser$Events$Window = {$: 'Window'};
@@ -13241,7 +13240,7 @@ var $author$project$IVVL$renderVisVector2D = function (vector) {
 									A2(
 										$MacCASOutreach$graphicsvg$GraphicSVG$filled,
 										$MacCASOutreach$graphicsvg$GraphicSVG$black,
-										$MacCASOutreach$graphicsvg$GraphicSVG$triangle(2)))));
+										$MacCASOutreach$graphicsvg$GraphicSVG$triangle(5)))));
 					default:
 						return $MacCASOutreach$graphicsvg$GraphicSVG$group(
 							_List_fromArray(
@@ -13261,20 +13260,23 @@ var $author$project$IVVL$renderVisVector2D = function (vector) {
 											A2(
 												$MacCASOutreach$graphicsvg$GraphicSVG$filled,
 												$MacCASOutreach$graphicsvg$GraphicSVG$black,
-												$MacCASOutreach$graphicsvg$GraphicSVG$triangle(2))))),
+												$MacCASOutreach$graphicsvg$GraphicSVG$triangle(5))))),
 									A2(
 									$MacCASOutreach$graphicsvg$GraphicSVG$rotate,
-									A2(
-										$elm$core$Basics$atan2,
-										$author$project$IVVL$first(vector.vector),
-										$author$project$IVVL$second(vector.vector)),
+									$elm$core$Basics$degrees(180),
 									A2(
 										$MacCASOutreach$graphicsvg$GraphicSVG$rotate,
-										$elm$core$Basics$degrees(-30),
+										-A2(
+											$elm$core$Basics$atan2,
+											$author$project$IVVL$first(vector.vector),
+											$author$project$IVVL$second(vector.vector)),
 										A2(
-											$MacCASOutreach$graphicsvg$GraphicSVG$filled,
-											$MacCASOutreach$graphicsvg$GraphicSVG$black,
-											$MacCASOutreach$graphicsvg$GraphicSVG$triangle(2))))
+											$MacCASOutreach$graphicsvg$GraphicSVG$rotate,
+											$elm$core$Basics$degrees(-30),
+											A2(
+												$MacCASOutreach$graphicsvg$GraphicSVG$filled,
+												$MacCASOutreach$graphicsvg$GraphicSVG$black,
+												$MacCASOutreach$graphicsvg$GraphicSVG$triangle(5)))))
 								]));
 				}
 			}()
@@ -13415,18 +13417,16 @@ var $author$project$IVVL$renderGrid2D = function (grid) {
 									vector: A2($author$project$IVVL$scalarMultiply, scalar, record.vector)
 								});
 						});
-					return $MacCASOutreach$graphicsvg$GraphicSVG$group(
+					var listOfVectors = $elm$core$Dict$values(
 						A2(
-							$elm$core$List$map,
-							$author$project$IVVL$renderVisVector2D,
-							$elm$core$Dict$values(
-								A2(
-									$elm$core$Dict$map,
-									F2(
-										function (_v0, v) {
-											return A2(vectorUpdater, v, grid.scale);
-										}),
-									grid.vectorObjects))));
+							$elm$core$Dict$map,
+							F2(
+								function (_v0, v) {
+									return A2(vectorUpdater, v, grid.scale);
+								}),
+							grid.vectorObjects));
+					return $MacCASOutreach$graphicsvg$GraphicSVG$group(
+						A2($elm$core$List$map, $author$project$IVVL$renderVisVector2D, listOfVectors));
 				}()
 				])));
 };
