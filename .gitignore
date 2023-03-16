@@ -104,4 +104,4 @@ dist
 .tern-port
 
 # Elm-Package Generated Files
-elm-stuff
+*elm-stuff/*
