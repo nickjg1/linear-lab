@@ -86,15 +86,35 @@ document model = [ E.layout []
         <| E.column [] [
             E.textColumn [] [
                 paragraph [] [ h1 <| E.text "Words" ]
-              , paragraph [] [ p  <| E.text "more words? Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test " ]
+                , paragraph [] [ h2 <| E.text "Words" ]
+                , paragraph [Font.alignRight] [ h3 <| E.text "Words" ]
+                , paragraph [] [ p <| E.el [Font.size 36] <| E.text "Words" ]
             ]
         ]
     ]
 
-
-
 h1 = E.el [ Font.color (Element.rgb 0.2 0.2 0.4)
           , Font.size 36
+          , Font.family
+              [ Font.typeface "Open Sans"
+              , Font.sansSerif
+              ]
+          , Font.center
+          , Font.heavy
+          ]
+
+h2 = E.el [ Font.color (Element.rgb 0.2 0.2 0.4)
+          , Font.size 24
+          , Font.family
+              [ Font.typeface "Open Sans"
+              , Font.sansSerif
+              ]
+          , Font.center
+          , Font.heavy
+          ]
+
+h3 = E.el [ Font.color (Element.rgb 0.2 0.2 0.4)
+          , Font.size 18
           , Font.family
               [ Font.typeface "Open Sans"
               , Font.sansSerif
@@ -110,3 +130,6 @@ p = E.el [ Font.color (Element.rgb 0.4 0.4 0.6)
               , Font.sansSerif
               ]
           ]
+
+
+

@@ -480,8 +480,8 @@ update msg model =
         updatedGrid = Maybe.map2 grid2DAddVector2D (Just visVector) theGrid
         
         updatedGridModel = case updatedGrid of
-                             Nothing -> model.grids
-                             Just newGrid -> Dict.insert gridKey newGrid model.grids
+                            Nothing -> model.grids
+                            Just newGrid -> Dict.insert gridKey newGrid model.grids
         
       in
         ( { model | grids = updatedGridModel }, Cmd.none )
