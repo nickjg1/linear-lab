@@ -47,6 +47,9 @@ defaultVisVector2D =
 newVV2 : VisVector2D
 newVV2 = defaultVisVector2D
 
+setVV2 : Vector2D -> VisVector2D -> VisVector2D
+setVV2 vec visVec = { visVec | vector = vec }
+
 addVV2 : Vector2D -> VisVector2D -> VisVector2D
 addVV2 vec visVec = { visVec | vector = add vec visVec.vector}
 
@@ -282,6 +285,28 @@ defaultGrid2D =
   , startingOffset = (0, 0)
   , offset = (0, 0)
   }
+
+-- Base Vector type for applications, alongside transformations
+newG2 : Grid2D
+newG2 = defaultGrid2D
+
+addVectorG2 : VisVector2D -> Grid2D -> Grid2D
+addVectorG2 visVec grid = grid2DAddVector2D visVec grid
+
+{-subtractG2 : Vector2D -> VisVector2D -> Grid2D
+subtractG2 vec visVec = { visVec | vector = subtract vec visVec.vector}
+
+scaleG2 : Float -> VisVector2D -> Grid2D
+scaleG2 scalar visVec = { visVec | vector = scalarMultiply scalar visVec.vector}
+
+dotG2 : Matrix2D -> VisVector2D -> Grid2D
+dotG2 matrix visVec = { visVec | vector = justToVector2D (dotMultiply matrix visVec.vector)}
+
+lineTypeG2 : LineType -> VisVector2D -> Grid2D
+lineTypeG2 lt visVec = { visVec | lineType = lt}
+
+endTypeG2 : EndType -> VisVector2D -> Grid2D
+endTypeG2 et visVec = { visVec | endType = et }-}
   
 -- Creates a new Grid2D with an added Vector2D
 grid2DAddVector2D : VisVector2D -> Grid2D -> Grid2D
