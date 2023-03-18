@@ -1,0 +1,6 @@
+/* Main CSS (Not compiled from SCSS) 
+   Affects whole app */
+
+.overflow-hidden {
+    overflow: hidden;
+  }
