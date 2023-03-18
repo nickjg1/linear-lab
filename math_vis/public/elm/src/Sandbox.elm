@@ -80,8 +80,16 @@ htmlBody model =
 
                   --numberOfVectors = Dict.size theGrid.vectorObjects
 
+                  myVector = 
+                    newVV2
+                      |> endTypeVV2 Directional         
+
                   theVectors = Dict.toList theGrid.vectorObjects
-                  final = List.map (vectorXYInput "embed1" 1) theVectors
+                  allInputs = List.map (vectorXYInput model.vectorInputs "embed1" 1) (List.map (Tuple.first) theVectors)
+                  final =
+                    allInputs
+                    ++
+                    [simpleButton "+" (IVVL.AddVisVector2D myVector 1) "embed1"]
                 in
                   final
               ) 
@@ -92,25 +100,41 @@ htmlBody model =
     )
   ]
 
-vectorXYInput : String -> Int -> (Int, IVVL.VisVector2D) -> Element Msg
-vectorXYInput embedID gridKey (key, visVec) =
+vectorXYInput : VectorInputs -> String -> Int -> Int -> Element Msg
+vectorXYInput vi embedID gridKey key =
   E.column
   []
-  [ Input.text
-    [ E.height (E.px 45), E.width (E.px 45), Font.center, Font.size 16 ] 
-    { onChange = ParseVectorInput embedID gridKey key X
-    , text = String.fromFloat (IVVL.first visVec.vector)
-    , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 14 ] ( E.text "X" ) ) )
-    , label = Input.labelHidden "An X input"
-    }
-  , Input.text
-    [ E.height (E.px 45), E.width (E.px 45), Font.center, Font.size 16 ] 
-    { onChange = ParseVectorInput embedID gridKey key Y
-    , text = String.fromFloat (IVVL.second visVec.vector)
-    , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 14 ] ( E.text "Y" ) ) )
-    , label = Input.labelHidden "A Y input"
-    }
-  ]
+  ( let
+      thisInput =
+        case (Dict.get (embedID, gridKey, key) vi) of
+          Nothing -> ("0", "0", True)
+          Just val -> val
+
+      xInput = (\(x, _, _) -> x) thisInput
+      yInput = (\(_, y, _) -> y) thisInput
+      feedback = (\(_, _, z) -> z) thisInput
+
+      color =
+        if (feedback == True)
+          then Font.color (E.rgb 0 0 0)
+          else Font.color (E.rgb 255 0 0)
+    in
+      [ Input.text
+        [ E.height (E.px 45), E.width (E.px 45), Font.center, Font.size 16, color ] 
+        { onChange = ParseVectorInput embedID gridKey key X
+        , text = xInput
+        , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 14 ] ( E.text "X" ) ) )
+        , label = Input.labelHidden "An X input"
+        }
+      , Input.text
+        [ E.height (E.px 45), E.width (E.px 45), Font.center, Font.size 16, color ] 
+        { onChange = ParseVectorInput embedID gridKey key Y
+        , text = yInput
+        , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 14 ] ( E.text "Y" ) ) )
+        , label = Input.labelHidden "A Y input"
+        }
+      ]
+  )
 
 simpleButton : String -> (IVVL.Msg) -> String -> Element Msg
 simpleButton button_txt button_message id =
@@ -118,9 +142,10 @@ simpleButton button_txt button_message id =
         [ Background.color (E.rgb255 238 238 238)
         , E.focused
             [ Background.color (E.rgb255 238 23 238) ]
+        , E.width (px 20), E.height (px 20)
         ]
         { onPress = Just (IVVLMsg id button_message)
-        , label = E.text button_txt
+        , label = E.el [E.centerX, E.centerY] (E.text button_txt)
         }
 
 widgetDisplay : Model -> String -> Int -> Element Msg
@@ -132,6 +157,7 @@ widgetDisplay model widgetId size =
 {--------------------------------------- SETTINGS ---------------------------------------}
 
 type XY = X | Y
+type alias VectorInputs = Dict (String, Int, Int) (String, String, Bool)
 
 type Msg = Tick Float
          | WindowResize Int Int
@@ -150,6 +176,8 @@ type alias Model =
   , height : Int 
   , widgetDict : Dict String (Widget.Model, Cmd Widget.Msg) 
   , ivvlDict : Dict String (IVVL.LibModel)
+
+  , vectorInputs : VectorInputs
   }
     
 initialModel : (Model, Cmd Msg)
@@ -179,6 +207,7 @@ initialModel =
       , height = 1024 
       , widgetDict = visualWidgets
       , ivvlDict = preVModel
+      , vectorInputs = Dict.fromList [(("embed1", 1, 1), ("1", "1", True))]
       }
 
     widgetCommands = (List.map (\(k,v) -> Cmd.map (WidgetMsg k) (Tuple.second v)) (Dict.toList visualWidgets))
@@ -198,11 +227,30 @@ update msg model =
 
     ParseVectorInput embedKey gKey vKey xy input ->
       let
-        parseInput = 
-          case input of
-            "" -> Just 0
-            "-" -> Just -1
-            _ -> String.toFloat input
+        parseInput = String.toFloat input
+
+        invisibilityCheck =
+          case (Dict.get (embedKey, gKey, vKey) model.vectorInputs) of
+            Nothing -> Dict.insert (embedKey, gKey, vKey) ("0", "0", True) model.vectorInputs
+            Just _ -> model.vectorInputs
+
+        updatedVectorInputs = 
+          Dict.update 
+          (embedKey, gKey, vKey)
+          ( case xy of
+              X -> Maybe.map (\(_, y, p) -> (input, y, p))
+              Y -> Maybe.map (\(x, _, p) -> (x, input, p))
+          )
+          invisibilityCheck
+
+        finalVectorInputs = 
+          Dict.update 
+          (embedKey, gKey, vKey)
+          ( case parseInput of
+              Nothing -> Maybe.map (\(x, y, _) -> (x, y, False))
+              Just _ -> Maybe.map (\(x, y, _) -> (x, y, True))
+          )
+          updatedVectorInputs
 
         theModel = getVisualModel embedKey model.ivvlDict
         theGrid = 
@@ -217,19 +265,11 @@ update msg model =
 
         newVectorValue =
           case parseInput of
-              Nothing -> currentVisVectorValue.vector
-              Just val ->
-                let
-                  newVal =
-                    if (val > 99)
-                      then 99
-                      else if (val < -99)
-                      then -99
-                      else val
-                in
-                  case xy of
-                    X -> (newVal, second currentVisVectorValue.vector)
-                    Y -> (first currentVisVectorValue.vector, newVal)
+            Nothing -> currentVisVectorValue.vector
+            Just val ->
+              case xy of
+                X -> (val, second currentVisVectorValue.vector)
+                Y -> (first currentVisVectorValue.vector, val)        
 
         newVisVectorValue = { currentVisVectorValue | vector = newVectorValue }
         
@@ -243,7 +283,7 @@ update msg model =
 
         newIVVLModelDict = Dict.insert embedKey newIVVLModel model.ivvlDict
       in
-        ( { model | ivvlDict = newIVVLModelDict }, Cmd.none )
+        ( { model | ivvlDict = newIVVLModelDict, vectorInputs = finalVectorInputs }, Cmd.none )
 
     IVVLMsg k messageForParent ->
       let
