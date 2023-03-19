@@ -17,6 +17,7 @@ import Element exposing (Element)
 import Element.Background as Background
 import Element.Input as Input exposing (..)
 import Element.Font as Font exposing (..)
+import Element.Border as Border exposing (..)
 
 import Task
 
@@ -59,51 +60,90 @@ getVisualModel index dict =
 htmlBody : Model -> List (Html Msg)
 htmlBody model = 
   [ E.layout 
-    [ E.height (E.px 0) ]
+    [ E.height (E.px 0), Background.color (E.rgb 0.7 0.5 1) ]
     ( E.column
       [ E.width (E.px model.width) ]
-      [ ( E.row 
-          [ E.height (E.px 550), E.centerX, E.centerY ]
-          [ widgetDisplay model "embed1" 500
+      [ E.el
+        [ E.centerX, E.centerY, E.padding 25, Font.size 26]
+        ( E.text "Interactive Vector Visualizer" )
+      , ( E.row 
+          [ E.height (E.px 800), E.centerX, E.centerY ]
+          [ E.el
+            [ E.width (E.px 850) ]
+            ( widgetDisplay model [ Border.width 1 ] "embed1" 800 )
           , E.column 
-            [ E.padding 75 ]--E.width (E.px 200) ]
-            [ E.el 
-              [ E.centerX, padding 10 ] 
-              ( E.text "Vectors" )
-            , E.row
-              [ E.centerX ]
-              ( let
-                  theVisualModel = getVisualModel "embed1" model.ivvlDict
-                  theGrid = case Dict.get 1 theVisualModel.grids of
-                              Nothing -> defaultGrid2D
-                              Just x -> x
-
-                  --numberOfVectors = Dict.size theGrid.vectorObjects
-
-                  myVector = 
-                    newVV2
-                      |> endTypeVV2 Directional         
-
-                  theVectors = Dict.toList theGrid.vectorObjects
-                  allInputs = List.map (vectorXYInput model.vectorInputs "embed1" 1) (List.map (Tuple.first) theVectors)
-                  final =
-                    allInputs
-                    ++
-                    [simpleButton "+" (IVVL.AddVisVector2D myVector 1) "embed1"]
-                in
-                  final
-              ) 
-            ]
+            [ E.padding 75, E.width (E.px 400), Border.color (E.rgb 0 0 0), Border.width 1  ]
+            ( E.el 
+                [ E.centerX, padding 10 ] 
+                ( E.text "Vectors" )
+              :: 
+              rowOfVectors model
+            )
           ]
         )
       ]
     )
   ]
 
+rowOfVectors : Model -> List (Element Msg)
+rowOfVectors model =
+  let
+    theVisualModel = getVisualModel "embed1" model.ivvlDict
+    theGrid = 
+      case Dict.get 1 (theVisualModel.grids) of
+        Nothing -> defaultGrid2D
+        Just x -> x
+
+    numberOfVectors = Dict.size theGrid.vectorObjects
+
+    repeats = floor ((toFloat numberOfVectors) / 7)
+
+    myVector = 
+      newVV2
+        |> endTypeVV2 Directional
+
+    finalButton = 
+      [ E.el 
+        [ E.width (px 20) ] 
+        ( simpleButton "+" [E.centerX] (IVVL.AddVisVector2D myVector 1) "embed1" )
+      ]
+
+    theVectors = Dict.toList theGrid.vectorObjects
+    indexedInputs = List.indexedMap Tuple.pair theVectors
+
+    rowCreator = 
+      (\i -> 
+        E.row
+          [ E.centerX ]
+          ( let
+              subset = 
+                List.filter
+                (\(index, _) -> 
+                  if (index >= i*7 && index < (i+1)*7)
+                    then True
+                    else False
+                )
+                indexedInputs
+
+              subsetValues = List.map (vectorXYInput model.vectorInputs "embed1" 1) (List.map (Tuple.first) (List.map (Tuple.second) subset))
+
+            in
+              if ( i == (repeats) )
+                then subsetValues ++ finalButton
+                else subsetValues
+          )
+      ) 
+
+    allRows = List.map rowCreator (List.range 0 repeats)
+        
+  in
+    allRows 
+            
+
 vectorXYInput : VectorInputs -> String -> Int -> Int -> Element Msg
 vectorXYInput vi embedID gridKey key =
   E.column
-  []
+  [ E.width (px 50), E.paddingXY 0 10 ]
   ( let
       thisInput =
         case (Dict.get (embedID, gridKey, key) vi) of
@@ -136,22 +176,23 @@ vectorXYInput vi embedID gridKey key =
       ]
   )
 
-simpleButton : String -> (IVVL.Msg) -> String -> Element Msg
-simpleButton button_txt button_message id =
+simpleButton : String -> List (E.Attribute Msg) -> (IVVL.Msg) -> String -> Element Msg
+simpleButton button_txt style button_message id =
     Input.button
-        [ Background.color (E.rgb255 238 238 238)
-        , E.focused
-            [ Background.color (E.rgb255 238 23 238) ]
-        , E.width (px 20), E.height (px 20)
-        ]
+        ( [ Background.color (E.rgb255 238 238 238)
+          , E.focused
+              [ Background.color (E.rgb255 238 23 238) ]
+          , E.width (px 20), E.height (px 20)
+          ] ++ style
+        ) 
         { onPress = Just (IVVLMsg id button_message)
         , label = E.el [E.centerX, E.centerY] (E.text button_txt)
         }
 
-widgetDisplay : Model -> String -> Int -> Element Msg
-widgetDisplay model widgetId size = 
+widgetDisplay : Model -> List (E.Attribute Msg) -> String -> Int -> Element Msg
+widgetDisplay model style widgetId size = 
   E.el 
-    [E.height (E.px size), E.width (E.px size)]
+    ( [ E.height (E.px size), E.width (E.px size) ] ++ style )
     <| E.html (Widget.view (getWidgetModel widgetId model.widgetDict) (testing (getVisualModel widgetId model.ivvlDict) widgetId) )
 
 {--------------------------------------- SETTINGS ---------------------------------------}
@@ -192,6 +233,7 @@ initialModel =
                                        |> setVV2 (1, 1)
                                        |> endTypeVV2 Directional
                                      ) 
+                                    
                                  )
                                  preset.grids
               }

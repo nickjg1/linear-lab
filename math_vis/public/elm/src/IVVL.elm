@@ -293,6 +293,8 @@ newG2 = defaultGrid2D
 addVectorG2 : VisVector2D -> Grid2D -> Grid2D
 addVectorG2 visVec grid = grid2DAddVector2D visVec grid
 
+--scaleG2 scalar grid
+
 {-subtractG2 : Vector2D -> VisVector2D -> Grid2D
 subtractG2 vec visVec = { visVec | vector = subtract vec visVec.vector}
 
