@@ -40,8 +40,8 @@
       "last 1 safari version"
     ]
   },
-
-  
-  "homepage": "."
-
+  "homepage": ".",
+  "devDependencies": {
+    "gh-pages": "^5.0.0"
+  }
 }
