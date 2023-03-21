@@ -1,15 +1,7 @@
-import "./styles/main.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import NavbarComp from "./components/NavbarComp";
-import Lesson1 from "./components/pages/Lesson1";
+import React from "react";
 
-function App() {
-	return (
-		<div className="App">
-			<NavbarComp />
-			<Lesson1 />
-		</div>
-	);
-}
+const App = () => {
+	return <div>App</div>;
+};
 
 export default App;
