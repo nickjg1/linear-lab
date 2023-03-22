@@ -8,6 +8,8 @@ import GraphicSVG.App exposing (..)
 
 import Dict exposing (Dict)
 
+import Browser.Events as Browser exposing (..)
+
 {--------------------------------------- COORDINATES AND VECTORS ---------------------------------------}
 
 type alias Coordinate2D = (Float, Float)
@@ -280,7 +282,7 @@ defaultGrid2D =
   , xLineType = defaultLineType
   , yLineType = defaultLineType
 
-  , scale = 50
+  , scale = 100
 
   , startingOffset = (0, 0)
   , offset = (0, 0)
@@ -346,10 +348,9 @@ grid2DScaleVector2D scalar id grid =
 
 {--------------------------------------- RENDER ---------------------------------------}
 
---finalRender : LibModel -> (Shape usermsg)
-finalRender : LibModel-> ((Float, Float) -> userMsg) -> userMsg -> Shape userMsg
+finalRender : LibModel -> ((Float, Float) -> userMsg) -> userMsg -> Shape userMsg
 finalRender model holdMsg releaseMsg =
-  [ square 1000 |> filled white
+  [ square 10000 |> filled white
   , List.map renderGrid2D (Dict.values model.grids)
       |> group
   ] |> group
@@ -364,7 +365,7 @@ finalRender model holdMsg releaseMsg =
 renderGrid2D : Grid2D -> (Shape usermsg)
 renderGrid2D grid =
   [ List.map (\offset -> if (offset /= 0) then
-                           [ line (-1000, grid.scale * toFloat offset ) (1000, grid.scale * toFloat offset)         -- horizontal grid lines
+                           [ line (-10000, grid.scale * toFloat offset ) (10000, grid.scale * toFloat offset)         -- horizontal grid lines
                                |> convertLineType (Solid 0.1) grid.xColor 
                            , text (Debug.toString offset)
                                |> filled black
@@ -377,7 +378,7 @@ renderGrid2D grid =
     |> group
 
   , List.map (\offset -> if (offset /= 0) then
-                           [ line (grid.scale * toFloat offset, -1000) (grid.scale * toFloat offset, 1000)         -- vertical grid lines
+                           [ line (grid.scale * toFloat offset, -10000) (grid.scale * toFloat offset, 10000)         -- vertical grid lines
                                |> convertLineType (Solid 0.1) grid.yColor 
                            , text (Debug.toString offset)
                                |> filled black
@@ -393,9 +394,9 @@ renderGrid2D grid =
       |> filled black
       |> scale (grid.scale * 0.02)
       |> move (1, 1)
-  , line (-1000, 0) (1000, 0) -- X axis
+  , line (-10000, 0) (10000, 0) -- X axis
       |> convertLineType grid.xLineType grid.xColor
-  , line (0, -1000) (0, 1000) -- Y axis
+  , line (0, -10000) (0, 10000) -- Y axis
       |> convertLineType grid.yLineType grid.yColor
 
   , let
@@ -464,6 +465,7 @@ getNextKeyHelper dict index =
 
 type Msg = Tick Float GetKeyState -- Unused
          | Blank -- Unused
+         | WindowResize Int Int
 
          -- All model interactions
          | AddGrid2D Grid2D -- Add (Grid2D).
@@ -494,7 +496,12 @@ update msg model =
   case msg of
     Tick _ _ -> ( model, Cmd.none )
     Blank -> ( model, Cmd.none )
-    
+    WindowResize width height ->
+      let
+        dummy = Debug.log "4" (width, height)
+      in
+        ( { model | windowWidth = width, windowHeight = height }, Cmd.none )
+
     AddGrid2D grid ->
       let
         nextAvailableKey = getNextKey model.grids
@@ -668,6 +675,10 @@ type MotionState = NotMoving
 -- Visualizer Model
 type alias LibModel = 
   { time : Float 
+
+  , windowWidth : Int
+  , windowHeight : Int
+
   , grids : Dict Int Grid2D
   , motionState : MotionState
   , startingMousePos : (Float, Float)
@@ -677,6 +688,8 @@ type alias LibModel =
 init : LibModel
 init = 
   { time = 0
+  , windowWidth = 600
+  , windowHeight = 1024
   , grids = Dict.fromList [(1, defaultGrid2D)]
   , motionState = NotMoving
   , startingMousePos = (0, 0)
@@ -687,18 +700,13 @@ myShapes : LibModel -> List (Shape userMsg)
 myShapes model = 
   [ List.map renderGrid2D (Dict.values model.grids)
       |> group
-  --, [rectangle 30 15 |> filled blue, text "add (5,5)" |> filled white |> scale 0.2] |> group |> move (-90, 40) |> notifyTap (AddVector2D (5, 5) 1)
-  --, [rectangle 30 15 |> filled blue, text "add (1,0.5)" |> filled white |> scale 0.2] |> group  |> move (-90, 0) |> notifyTap (AddVector2D (1, 0.5) 1)
-  --, [rectangle 30 15 |> filled blue, text "remove id 2" |> filled white |> scale 0.2] |> group  |> move (-90, -40) |> notifyTap (RemoveVector2D 2 1)
-  --, [rectangle 30 15 |> filled blue, text "scalar id 2 by 3" |> filled white |> scale 0.2 |> move (-10, 0)] |> group  |> move (90, -40) |> notifyTap (ScaleVector2D 3 2 1)
-  --, text (Debug.toString (Maybe.withDefault defaultGrid2D (Dict.get 1 model.grids)).vectorObjects) |> filled red |> scale 0.25 |> move (-50, -40)
   ]
 
 {--------------------------------------- DO NOT TOUCH ---------------------------------------}
 
 -- Your subscriptions go here
 subscriptions : LibModel -> Sub Msg
-subscriptions _ = Sub.none
+subscriptions _ = Browser.onResize WindowResize
 
 -- Your main function goes here
 main : AppWithTick () LibModel Msg
