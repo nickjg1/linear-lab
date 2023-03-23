@@ -8,8 +8,6 @@ import GraphicSVG.App exposing (..)
 
 import Dict exposing (Dict)
 
-import Browser.Events as Browser exposing (..)
-
 {--------------------------------------- COORDINATES AND VECTORS ---------------------------------------}
 
 type alias Coordinate2D = (Float, Float)
@@ -84,7 +82,6 @@ endTypeVV2 et visVec = { visVec | endType = et }
             in
               v
 -}
-
 
 -- Converts Maybe Vector2D to Vector2D
 justToVector2D : Maybe Vector2D -> Vector2D
@@ -355,8 +352,8 @@ finalRender model holdMsg releaseMsg =
       |> group
   ] |> group
     |> ( case model.motionState of
-             NotMoving -> notifyMouseDownAt holdMsg
-             Moving -> notifyMouseMoveAt holdMsg 
+             NotDragging -> notifyMouseDownAt holdMsg
+             Dragging -> notifyMouseMoveAt holdMsg 
          )
       |> notifyLeave releaseMsg
       |> notifyMouseUp releaseMsg
@@ -374,7 +371,7 @@ renderGrid2D grid =
                            ] |> group
                          else [] |> group
              )
-             (List.range -20 20)
+             (List.range -50 50)
     |> group
 
   , List.map (\offset -> if (offset /= 0) then
@@ -387,7 +384,7 @@ renderGrid2D grid =
                            ] |> group
                          else [] |> group
              )
-             (List.range -20 20)
+             (List.range -50 50)
     |> group
   
   , text "0"
@@ -465,7 +462,6 @@ getNextKeyHelper dict index =
 
 type Msg = Tick Float GetKeyState -- Unused
          | Blank -- Unused
-         | WindowResize Int Int
 
          -- All model interactions
          | AddGrid2D Grid2D -- Add (Grid2D).
@@ -496,11 +492,6 @@ update msg model =
   case msg of
     Tick _ _ -> ( model, Cmd.none )
     Blank -> ( model, Cmd.none )
-    WindowResize width height ->
-      let
-        dummy = Debug.log "4" (width, height)
-      in
-        ( { model | windowWidth = width, windowHeight = height }, Cmd.none )
 
     AddGrid2D grid ->
       let
@@ -643,17 +634,16 @@ update msg model =
       let 
         updatedModel = 
           case model.motionState of
-            NotMoving -> 
+            NotDragging -> 
               let
                 allGrids = model.grids
                 offsetGrids = Dict.map (\_ v -> { v | startingOffset = v.offset} ) allGrids
               in
-                { model | startingMousePos = (x, y), motionState = Moving, grids = offsetGrids }
-            Moving ->
+                { model | startingMousePos = (x, y), motionState = Dragging, grids = offsetGrids }
+            Dragging ->
               let
                 allGrids = model.grids
                 difference = scalarMultiply 1 (subtract (x, y) model.startingMousePos)
-               -- dummy = add v.startingOffset difference
                 offsetGrids = Dict.map (\_ v -> { v | offset = add v.startingOffset difference} ) allGrids
               in
                  { model | grids = offsetGrids }
@@ -662,36 +652,28 @@ update msg model =
     
     ReleaseMove ->
       let
-        updatedModel = { model | motionState = NotMoving }
+        updatedModel = { model | motionState = NotDragging }
       in
         ( updatedModel, Cmd.none )
       
 
 {--------------------------------------- DEBUG ---------------------------------------}
 
-type MotionState = NotMoving
-                 | Moving
+type DraggingState = NotDragging
+                   | Dragging
 
 -- Visualizer Model
 type alias LibModel = 
-  { time : Float 
-
-  , windowWidth : Int
-  , windowHeight : Int
-
-  , grids : Dict Int Grid2D
-  , motionState : MotionState
+  { grids : Dict Int Grid2D
+  , motionState : DraggingState
   , startingMousePos : (Float, Float)
   }
 
 -- Initial model
 init : LibModel
 init = 
-  { time = 0
-  , windowWidth = 600
-  , windowHeight = 1024
-  , grids = Dict.fromList [(1, defaultGrid2D)]
-  , motionState = NotMoving
+  { grids = Dict.fromList [(1, defaultGrid2D)]
+  , motionState = NotDragging
   , startingMousePos = (0, 0)
   }
 
@@ -704,23 +686,17 @@ myShapes model =
 
 {--------------------------------------- DO NOT TOUCH ---------------------------------------}
 
--- Your subscriptions go here
-subscriptions : LibModel -> Sub Msg
-subscriptions _ = Browser.onResize WindowResize
-
--- Your main function goes here
 main : AppWithTick () LibModel Msg
 main = 
   appWithTick Tick 
     { init = \_ _ _ -> (init, Cmd.none)
     , view = view
     , update = update
-    , subscriptions = subscriptions
+    , subscriptions = \_ -> Sub.none
     , onUrlRequest = \_ -> Blank
     , onUrlChange = \_ -> Blank
     }
 
--- You view function goes here
 view : LibModel -> { title: String, body : Collage Msg }
 view model = 
   { title = "Vector Visualizer Library"

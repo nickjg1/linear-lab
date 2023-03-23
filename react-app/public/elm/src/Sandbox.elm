@@ -62,12 +62,40 @@ getVisualModel index dict =
 htmlBody : Model -> List (Html Msg)
 htmlBody model = 
   [ E.layout 
-    [ E.width (E.px model.width), E.height (E.px model.height)
+    [ E.width E.fill, E.height E.fill
     , E.inFront (elementsMenu model)
+    , E.inFront (zoomMenu model)
     ]
-    ( widgetDisplay model [ E.height (E.px model.height) ] model.focusedEmbed
+    ( widgetDisplay model [ E.width E.fill, E.height E.fill, E.pointer ] model.focusedEmbed
     )
   ]
+
+zoomMenu : Model -> Element Msg
+zoomMenu model =
+  let
+    dum = 5
+  in
+    E.column
+      [ E.alignRight, E.alignBottom, E.moveUp 20, E.moveLeft 20]
+      [ Input.button
+          [ Border.width 1, E.width (E.px 30), E.height (E.px 30)
+          ]
+          { onPress = Just (IVVLMsg model.focusedEmbed (IVVL.ScaleGrid2D 1.5 1))
+          , label = 
+              E.el
+                [ E.centerX ]
+                ( E.text "+" )
+          } 
+      , Input.button
+          [ Border.width 1, E.width (E.px 30), E.height (E.px 30)
+          ]
+          { onPress = Just (IVVLMsg model.focusedEmbed (IVVL.ScaleGrid2D 0.666 1))
+          , label = 
+              E.el
+                [ E.centerX]
+                ( E.text "-" )
+          } 
+      ]
 
 elementsMenu : Model -> Element Msg
 elementsMenu model =
@@ -289,8 +317,8 @@ initialModel =
 
     model =  
       { time = 0
-      , width = 600
-      , height = 1024 
+      , width = 1920
+      , height =  1080
       , widgetDict = visualWidgets
       , ivvlDict = preVModel
       , visualElements = Dict.fromList [(("embed1", 1, 1), Vector 1 ("1", "1") True)]
