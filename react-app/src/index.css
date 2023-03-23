@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.custom-h1 {
+    @apply text-white text-5xl md:text-6xl xl:text-7xl font-bold tracking-tight mb-8
+}
+
+.fade-in {
+    @apply transition-opacity duration-500 ease-in opacity-100
+}
+
+.text-hover{
+    @apply hover:text-gray-300 hover:shadow-lg focus:bg-gray-300 focus:shadow-lg focus:outline-none focus:ring-0 active:text-gray-400 active:shadow-lg transition duration-150 ease-in-out
+}
+
+.button-hover {
+    @apply hover:bg-gray-300 hover:shadow-lg focus:bg-gray-300 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-400 active:shadow-lg transition duration-150 ease-in-out
+}
