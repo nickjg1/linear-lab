@@ -2,6 +2,8 @@ module Sandbox exposing (..)
 
 {--------------------------------------- IMPORTS ---------------------------------------}
 
+import Time as Time
+
 import IVVL as IVVL exposing (Msg)
 
 import GraphicSVG exposing (..)
@@ -72,8 +74,7 @@ elementsMenu model =
   let
     visuals = Dict.toList model.visualElements
     targetedVisuals = 
-      List.filter (\((e, _), _) -> (e == model.focusedEmbed)) visuals
-
+      List.filter (\((e, _, _), _) -> (e == model.focusedEmbed)) visuals
 
     currentLibModel = getVisualModel model.focusedEmbed model.ivvlDict
     currentGrid = 
@@ -81,8 +82,27 @@ elementsMenu model =
         Nothing -> defaultGrid2D
         Just g -> g
 
-    convertToElement ( ( _, eKey ), visE ) =
-      case visE of
+    vecObjects = currentGrid.vectorObjects
+    
+    newTargetVisuals = 
+      if (Dict.size vecObjects == List.length targetedVisuals)
+        then targetedVisuals
+        else 
+          let
+            vecObjectsList = Dict.toList vecObjects
+
+            {-vecObjToVis = 
+              (\(k, v) ->
+                if Dict.get (k, _, _) vecObjectsList == Nothing  
+                  then 5
+                  else 5
+              )-}
+
+          in
+            targetedVisuals
+
+    convertToElement ( veIndex, ve ) =
+      case ve of
         Vector vId _ _ -> 
           let
             vector = 
@@ -90,7 +110,7 @@ elementsMenu model =
                 Nothing -> defaultVisVector2D
                 Just vv -> vv
           in
-            vectorElement model eKey vector visE
+            vectorElement model veIndex vector ve
 
     listOfElements = List.map convertToElement targetedVisuals
     
@@ -133,12 +153,19 @@ creationMenu model =
           newVV2
               |> endTypeVV2 Directional
       in
-        List.map2 optionButton ["Add Vector", "Kill Vector", "Hire Vector", "Fire Vector"] [ Just (IVVLMsg model.focusedEmbed (IVVL.AddVisVector2D myVector 1)), Just Blank, Just Blank, Just Blank ]
+        List.map2 
+          optionButton 
+          ["Add Vector", "Kill Vector", "Hire Vector", "Fire Vector"] 
+          [ Just (AddElement (model.focusedEmbed, 1, 1) (IVVLMsg model.focusedEmbed (IVVL.AddVisVector2D myVector 1)))
+          , Just Blank, Just Blank, Just Blank ]
     )
 
-vectorElement : Model -> Int -> VisVector2D -> VisualElement -> Element Msg
-vectorElement model eId vv (Vector vId (vX, vY) pass) = 
+vectorElement : Model -> VisualElementIndex -> VisVector2D -> VisualElement -> Element Msg
+vectorElement model (eKey, gKey, veKey) vv (Vector vId (vX, vY) pass) = 
   let
+    veIndex = (eKey, gKey, veKey)
+    visualElement = (Vector vId (vX, vY) pass)
+
     passClr =
       if pass
         then rgb255 0 0 0
@@ -148,10 +175,20 @@ vectorElement model eId vv (Vector vId (vX, vY) pass) =
       [ E.centerX, Background.color (E.rgb 1 0.5 1) ]
       [ E.el
         [ E.paddingXY 10 0 ]
-        (simpleButton "x" [E.width (E.px 20), E.height (E.px 20), Font.size 12] IVVL.Blank model.focusedEmbed)
+        ( Input.button
+            ( [ Background.color (E.rgb255 238 238 238)
+              , E.focused
+                  [ Background.color (E.rgb255 238 23 238) ]
+              , E.width (px 20), E.height (px 20)
+              ]
+            ) 
+            { onPress = Just Blank
+            , label = E.el [E.centerX, E.centerY] (E.text "X")
+            } 
+        )
       , E.el
-        [ Font.size 24, E.paddingXY 8 0 ]
-        ( E.text "vector")
+          [ Font.size 24, E.paddingXY 8 0 ]
+          ( E.text "vector")
       , E.el
           [ Font.size 32, E.paddingXY 8 0 ]
           ( E.text (String.fromInt vId))
@@ -167,7 +204,7 @@ vectorElement model eId vv (Vector vId (vX, vY) pass) =
             [ E.paddingXY 0 2 ]
             ( Input.text
               [ E.width (E.px 45), E.height (E.px 45), Font.center, Font.size 13, Font.center, Font.color passClr ] 
-              { onChange = \value -> ParseVectorInput eId vId X value
+              { onChange = \value -> ParseVectorInput veIndex vId X value
               , text = vX
               , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 16 ] ( E.text "X" ) ) )
               , label = Input.labelHidden "An X vector input"
@@ -177,7 +214,7 @@ vectorElement model eId vv (Vector vId (vX, vY) pass) =
             [ E.paddingXY 0 2 ]
             ( Input.text
               [ E.width (E.px 45), E.height (E.px 45), Font.center, Font.size 13, Font.center, Font.color passClr ]
-              { onChange = \value -> ParseVectorInput eId vId Y value
+              { onChange = \value -> ParseVectorInput veIndex vId Y value
               , text = vY
               , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 16 ] ( E.text "X" ) ) )
               , label = Input.labelHidden "A Y vector input"
@@ -189,19 +226,6 @@ vectorElement model eId vv (Vector vId (vX, vY) pass) =
           ( E.text "]")
       ]
 
-simpleButton : String -> List (E.Attribute Msg) -> (IVVL.Msg) -> String -> Element Msg
-simpleButton button_txt style button_message id =
-    Input.button
-        ( [ Background.color (E.rgb255 238 238 238)
-          , E.focused
-              [ Background.color (E.rgb255 238 23 238) ]
-          , E.width (px 20), E.height (px 20)
-          ] ++ style
-        ) 
-        { onPress = Just (IVVLMsg id button_message)
-        , label = E.el [E.centerX, E.centerY] (E.text button_txt)
-        }
-
 widgetDisplay : Model -> List (E.Attribute Msg) -> String -> Element Msg
 widgetDisplay model style widgetId = 
   E.el 
@@ -212,14 +236,15 @@ widgetDisplay model style widgetId =
 
 type XY = X | Y
 
-type VisualElement = Vector Int (String, String) Bool -- VectorId, VectorValues, PassesTest
+type alias VisualElementIndex = (String, Int, Int) -- EmbedId, GridId, VisualElementId
+type VisualElement = Vector Int (String, String) Bool -- VectorId, VectorInputString, Pass
 
 type Msg = Tick Float
          | WindowResize Int Int
          | Blank
 
-         | ParseVectorInput Int Int XY String
-
+         | AddElement VisualElementIndex Msg
+         | ParseVectorInput VisualElementIndex Int XY String
 
          | IVVLMsg String IVVL.Msg
          | IVVLMoveMsg String (Float, Float)
@@ -233,7 +258,7 @@ type alias Model =
   , widgetDict : Dict String (Widget.Model, Cmd Widget.Msg) 
   , ivvlDict : Dict String (IVVL.LibModel)
 
-  , visualElements : Dict (String, Int) VisualElement -- EmbedId, ElementId
+  , visualElements : Dict VisualElementIndex VisualElement
 
   , focusedEmbed : String
   }
@@ -268,7 +293,7 @@ initialModel =
       , height = 1024 
       , widgetDict = visualWidgets
       , ivvlDict = preVModel
-      , visualElements = Dict.fromList [(("embed1", 1), Vector 1 ("1", "1") True)]
+      , visualElements = Dict.fromList [(("embed1", 1, 1), Vector 1 ("1", "1") True)]
       , focusedEmbed = "embed1"
       }
 
@@ -283,30 +308,51 @@ update msg model =
   case msg of
     WindowResize width height ->
         let
-            newWidgetDict = Dict.map (\k _ -> Widget.init (toFloat width) (toFloat height) k) model.ivvlDict--(toFloat width / 2.4) (toFloat width / 2.4) k) model.ivvlDict
-            newWidgetCommands = (List.map (\(k,v) -> Cmd.map (WidgetMsg k) (Tuple.second v)) (Dict.toList newWidgetDict))
+          newWidgetDict = Dict.map (\k _ -> Widget.init (toFloat width) (toFloat height) k) model.ivvlDict
+          newWidgetCommands = (List.map (\(k,v) -> Cmd.map (WidgetMsg k) (Tuple.second v)) (Dict.toList newWidgetDict))
         in
-            ( { model | width = width, height = height, widgetDict = newWidgetDict }, Cmd.batch newWidgetCommands)
+          ( { model | width = width, height = height, widgetDict = newWidgetDict }, Cmd.batch newWidgetCommands)
     Tick t ->
         ( { model | time = t }, Cmd.none )
 
-
-
-
-    ParseVectorInput eId vKey xy input ->
+    AddElement (eIndex, gIndex, veIndex) message ->
       let
-        gKey = 1
-        embedKey = model.focusedEmbed
+        currentVisual = getVisualModel eIndex model.ivvlDict
+        currentGrid = 
+          case Dict.get gIndex currentVisual.grids of
+            Nothing -> defaultGrid2D
+            Just a -> a
+
+        newModel = 
+          case message of
+            IVVLMsg _ (IVVL.AddVisVector2D _ _) -> 
+              let
+                nextVID = IVVL.getNextKey currentGrid.vectorObjects
+                newEKey = getNextVisualElementIndex model.visualElements model.focusedEmbed gIndex
+
+                newVisualElements = Dict.insert newEKey (Vector nextVID ("0", "0") True) model.visualElements
+              in
+                { model | visualElements = newVisualElements }
+            _ -> model
+
+        
+      in
+        ( newModel, Task.perform (\_-> message) Time.now)
+
+    ParseVectorInput (eKey, gKey, veKey) vKey xy input ->
+      let
+        veIndex = (eKey, gKey, veKey)
+
         parseInput = String.toFloat input
 
         invisibilityCheck =
-          case ( Dict.get (embedKey, eId) model.visualElements ) of
-            Nothing -> Dict.insert (embedKey, eId) (Vector vKey ("0","0") True) model.visualElements
+          case ( Dict.get veIndex model.visualElements ) of
+            Nothing -> Dict.insert veIndex (Vector vKey ("0","0") True) model.visualElements
             Just _ -> model.visualElements
 
         updatedVectorInputs = 
           Dict.update 
-          (embedKey, eId)
+          veIndex
           ( case xy of
               X -> Maybe.map (\(Vector v (x,y) p) -> Vector v (input,y) p)
               Y -> Maybe.map (\(Vector v (x,y) p) -> Vector v (x,input) p)
@@ -315,14 +361,14 @@ update msg model =
 
         finalVectorInputs = 
           Dict.update 
-          (embedKey, eId)
+          veIndex
           ( case parseInput of
               Nothing -> Maybe.map (\(Vector v (x,y) _) -> Vector v (x,y) False)
               Just _ -> Maybe.map (\(Vector v (x,y) _) -> Vector v (x,y) True)
           )
           updatedVectorInputs
 
-        theModel = getVisualModel embedKey model.ivvlDict
+        theModel = getVisualModel eKey model.ivvlDict
         theGrid = 
           case (Dict.get gKey (theModel.grids) ) of
             Nothing -> defaultGrid2D
@@ -351,7 +397,7 @@ update msg model =
 
         newIVVLModel = { theModel | grids = newGridDict }
 
-        newIVVLModelDict = Dict.insert embedKey newIVVLModel model.ivvlDict
+        newIVVLModelDict = Dict.insert eKey newIVVLModel model.ivvlDict
       in
         ( { model | ivvlDict = newIVVLModelDict, visualElements = finalVectorInputs }, Cmd.none )
 
@@ -379,6 +425,28 @@ update msg model =
 
     Blank -> ( model, Cmd.none )
     
+{--------------------------------------- HELPERS ---------------------------------------}
+
+getNextVisualElementIndex : Dict VisualElementIndex a -> String -> Int -> VisualElementIndex --Create next visual element index given the embedId and gridId
+getNextVisualElementIndex theDict embedId gridId =
+  let
+    filteredDict = 
+      Dict.filter 
+        (\(eId, gId, _) _ -> eId == embedId && gId == gridId)
+        theDict
+
+    maxKeys =
+      case (List.maximum (List.map third (Dict.keys filteredDict))) of
+        Nothing -> 0
+        Just x -> x
+
+  in
+    (embedId, gridId, maxKeys+1)
+
+third : (a, b, c) -> c
+third (a, b, c) = c
+
+
 {--------------------------------------- EMBEDS AND RENDERS ---------------------------------------}
     
 renderIVVL : IVVL.LibModel -> String -> List (Shape Msg)
