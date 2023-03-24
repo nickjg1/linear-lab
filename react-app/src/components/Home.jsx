@@ -2,11 +2,11 @@ const Home = () => {
 	return (
 		<div className="bg-black min-h-screen py-32">
 			<a href="/lessons">
-				<h1 className="text-6xl text-center font-bold tracking-tight mb-8 bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:bg-gradient-to-l  hover:from-blue-600 hover:via-green-500 hover:to-indigo-400 transition ease-in-out duration-1000 text-transparent bg-clip-text">
+				<h1 className="text-6xl py-1 mb-6 text-center font-bold tracking-tight bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:bg-gradient-to-l  hover:from-blue-600 hover:via-green-500 hover:to-indigo-400 text-transparent bg-clip-text">
 					Learn Linear Algebra
 				</h1>
 			</a>
-			<div className="grid gap-8 items-start justify-center">
+			<div className="grid items-start justify-center">
 				<div className="relative group">
 					<div className="absolute -inset-0.5 opacity-75 bg-gradient-to-r from-cyan-400 to-teal-600 rounded-lg blur-lg group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
 					<a
@@ -36,9 +36,11 @@ const Home = () => {
 					</a>
 				</div>
 			</div>
+
 			<img
 				src="https://imgs.search.brave.com/FDVZez-eVaaToLgfDUsPLfDZj8AsstmtCrwAjlQoRZY/rs:fit:474:344:1/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlh/Lm9yZy93aWtpcGVk/aWEvY29tbW9ucy90/aHVtYi8yLzJmL0xp/bmVhcl9zdWJzcGFj/ZXNfd2l0aF9zaGFk/aW5nLnN2Zy81MDBw/eC1MaW5lYXJfc3Vi/c3BhY2VzX3dpdGhf/c2hhZGluZy5zdmcu/cG5n"
 				className="mx-auto mt-10"
+				alt="linear algebra"
 			></img>
 		</div>
 	);
