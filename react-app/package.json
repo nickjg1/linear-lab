@@ -43,7 +43,7 @@
       "last 1 safari version"
     ]
   },
-  "homepage": ".",
+  "homepage": "https://nickjg1.github.io/MathVisualizer/",
   "devDependencies": {
     "gh-pages": "^5.0.0",
     "tailwindcss": "^3.2.7"
