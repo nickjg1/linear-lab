@@ -275,6 +275,9 @@ vectorSumElement model (eID, gID, veID) vv2 ve =
               [ Font.size 18 ]
               ( E.text "vectorSum" )
           , E.el
+              [ Font.size 24 ]
+              ( E.text (String.fromInt veID) )
+          , E.el
                   [ ]
                   ( Input.text
                       [ E.width (E.px 35), E.height (E.px 35), Font.center, Font.size 13, Font.center, Font.color passClr ] 
@@ -418,24 +421,35 @@ update msg model =
                           if (vevID > vID)
                             then True
                             else False
-                        _ -> False
+                        VectorSum vevID _ _ ->
+                          if (vevID > vID)
+                            then True
+                            else False
+                        --_ -> False
                     ) removedVisualElements
 
                 shiftedVisualElements =
                   Dict.fromList
                     ( List.map 
-                        (\(key, ve) ->
+                        (\((a,b,c), ve) ->
                           case ve of
-                            Vector vevID a b ->
-                              (key, (Vector (vevID - 1) a b))
-                            _ -> (key, ve)
+                            Vector vevID d e ->
+                              ((a,b,(c - 1)), (Vector (vevID - 1) d e))
+                            VectorSum vevID d e -> ((a,b, (c - 1)), (VectorSum (vevID - 1) d e) )
                         )
                         (Dict.toList filteredVisualElements)
                     )
 
                 updatedVisualElements = Dict.union shiftedVisualElements removedVisualElements
+
+                finalVisualElements = 
+                  if (Dict.size model.visualElements == Dict.size removedVisualElements)
+                    then model.visualElements
+                    else Dict.remove (eID, gID, (Dict.size model.visualElements)) updatedVisualElements
+
+                x = Debug.log "5" finalVisualElements
               in
-                { model | visualElements = updatedVisualElements }
+                { model | visualElements = finalVisualElements }
             _ -> model
       in
         ( newModel, Task.perform (\_-> message) Time.now )
@@ -570,13 +584,20 @@ update msg model =
             Just value -> 
               case (Dict.get (eID, gID, value) model.visualElements) of
                 Just (Vector vID2 _ _) -> Just vID2
+                Just (VectorSum vID2 _ _) ->
+                  if (vID2 == veID)
+                    then Nothing
+                    else Just vID2
                 _ -> Nothing
         testInputOther =
           case parseInputOther of
             Nothing -> Nothing
             Just value ->
               case (Dict.get (eID, gID, value) model.visualElements) of
-                Just (Vector vID2 _ _) -> Just vID2
+                Just (Vector vID2 _ _) -> 
+                  if (vID2 == veID)
+                    then Nothing
+                    else Just vID2
                 _ -> Nothing
 
         invisibilityCheck =
