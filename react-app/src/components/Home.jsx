@@ -3,21 +3,24 @@ const Home = () => {
 	const navigate = useNavigate();
 	return (
 		<div className="bg-black min-h-screen py-32">
-			<h1
-				onClick={() => {
-					navigate('/lessons');
-				}}
-				className="cursor-pointer text-6xl py-1 mb-6 text-center font-bold tracking-tight bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:bg-gradient-to-l  hover:from-blue-600 hover:via-green-500 hover:to-indigo-400 text-transparent bg-clip-text"
-			>
-				Learn Linear Algebra
-			</h1>
+			<div className="flex  justify-center">
+				<button
+					onClick={() => {
+						navigate('/sandbox');
+					}}
+				>
+					<h1 className="cursor-pointer text-7xl xl:text-8xl py-1 mb-6 text-center font-bold tracking-tight bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:bg-gradient-to-l  hover:from-blue-600 hover:via-green-500 hover:to-indigo-400 text-transparent bg-clip-text">
+						The Linear Lab
+					</h1>
+				</button>
+			</div>
 
 			<div className="grid items-start justify-center">
 				<div className="relative group">
 					<div className="absolute -inset-0.5 opacity-75 bg-gradient-to-r from-cyan-400 to-teal-600 rounded-lg blur-lg group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
 					<button
 						onClick={() => {
-							navigate('/lessons');
+							navigate('/sandbox');
 						}}
 						className=" relative px-7 py-4 bg-black rounded-lg leading-none divide-x divide-gray-600 flex items-center space-x-5 "
 					>
