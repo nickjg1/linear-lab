@@ -2,7 +2,7 @@ import { HashRouter, Route, Routes } from 'react-router-dom';
 import { Home, LessonPage, Lessons } from './components';
 
 const App = () => (
-	<HashRouter basename={process.env.PUBLIC_URL}>
+	<HashRouter basename="https://nickjg1.github.io/MathVisualizer/">
 		<Routes>
 			<Route path="/" element={<Home />} />
 			<Route path="/home" element={<Home />} />
