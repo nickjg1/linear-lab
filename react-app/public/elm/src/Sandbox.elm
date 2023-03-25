@@ -11,7 +11,7 @@ import GraphicSVG.Widget as Widget exposing (..)
 import GraphicSVG.App exposing (..)
 
 import Browser exposing (..)
-import Browser.Events as Browser exposing (..)
+import Browser.Events as Events exposing (..)
 import Browser.Dom as Dom exposing (..)
 
 import Element as E exposing (..)
@@ -94,15 +94,22 @@ elementsMenu model =
 
     convertToElement ( veIndex, ve ) =
       case ve of
-        Vector vId _ _ -> 
+        Vector vID _ _ -> 
           let
             vector = 
-              case Dict.get vId currentGrid.vectorObjects of
+              case Dict.get vID currentGrid.vectorObjects of
                 Nothing -> defaultVisVector2D
                 Just vv -> vv
           in
             vectorElement model veIndex vector ve
-        _ -> Debug.todo "a"
+        VectorSum vID _ _ -> 
+          let
+            vector =
+              case Dict.get vID currentGrid.vectorObjects of
+                Nothing -> defaultVisVector2D
+                Just vv -> vv
+          in
+            vectorSumElement model veIndex vector ve
 
     listOfElements = List.map convertToElement targetedVisuals
     
@@ -151,8 +158,9 @@ creationMenu model =
         List.map2 
           optionButton 
           ["Add Vector Element", "Add VectorSum Element"] 
-          [ Just (AddElement (model.focusedEmbed, 1, 1) (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1)))
-          , Just Blank ]
+          [ Just (AddElement VectorType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1)))
+          , Just (AddElement VectorSumType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1))) 
+          ]
     )
 
 {--------------------------------------- ELEMENTS ---------------------------------------}
@@ -171,9 +179,9 @@ vectorElement model (eID, gID, veID) vv2 ve =
         visualElement = (Vector vID (iX, iY) pass)
       in
         ( E.row
-          [ E.centerX, Background.color (E.rgb 1 0.5 1) ]
+          [ E.centerX, Background.color (E.rgb 1 0.5 1), E.spacingXY 10 0, E.paddingXY 5 0 ]
           [ E.el
-              [ E.paddingXY 10 0 ]
+              []
               ( Input.button
                   ( [ E.width (px 20), E.height (px 20)
                     , Background.color (E.rgb255 238 238 238)
@@ -185,16 +193,16 @@ vectorElement model (eID, gID, veID) vv2 ve =
                   } 
               )
           , E.el
-              [ Font.size 24, E.paddingXY 8 0 ]
+              [ Font.size 24 ]
               ( E.text "vector" )
           , E.el
-              [ Font.size 32, E.paddingXY 8 0 ]
-              ( E.text (String.fromInt vID) )
+              [ Font.size 32 ]
+              ( E.text (String.fromInt veID) )
           , E.el
-              [ E.paddingXY 8 0 ]
+              [ ]
               ( E.text "=" )
           , E.el
-              [ E.height E.fill, E.centerY, E.paddingXY 8 0, Font.size 70, Font.hairline ]
+              [ E.height E.fill, E.centerY, Font.size 70, Font.hairline ]
               ( E.text "[" )
           , E.column
               [ ]
@@ -220,7 +228,92 @@ vectorElement model (eID, gID, veID) vv2 ve =
                   )
               ]
           , E.el
-              [ E.height E.fill, E.centerY, E.paddingXY 8 0, Font.size 70, Font.hairline ]
+              [ E.height E.fill, E.centerY, Font.size 70, Font.hairline ]
+              ( E.text "]")
+          ]
+        )
+    _ -> ( E.text "broken" )
+
+vectorSumElement : Model -> VisualElementIndex -> VisVector2D -> VisualElement -> Element Msg
+vectorSumElement model (eID, gID, veID) vv2 ve = 
+  case ve of
+    VectorSum vID (iV1, iV2) pass ->
+      let
+        veIndex = (eID, gID, veID)
+        passClr =
+          if pass
+            then rgb255 0 0 0
+            else rgb255 255 0 0
+
+        visualElement = (Vector vID (iV1, iV2) pass)
+        theModel = getVisualModel model.focusedEmbed model.ivvlDict
+        theGrid = 
+          case (Dict.get 1 theModel.grids) of
+            Just x -> x
+            _ -> defaultGrid2D
+
+        theVector =
+          case (Dict.get vID theGrid.vectorObjects) of
+            Just x -> x
+            _ -> defaultVisVector2D
+      in
+        ( E.row
+          [ E.centerX, Background.color (E.rgb 1 0.5 1), E.spacingXY 10 0, E.paddingXY 5 0 ]
+          [ E.el
+              [ ]
+              ( Input.button
+                  ( [ E.width (px 20), E.height (px 20)
+                    , Background.color (E.rgb255 238 238 238)
+                    , E.focused [ Background.color (E.rgb255 238 23 238) ]
+                    ]
+                  ) 
+                  { onPress = Just (RemoveElement veIndex (IVVLMsg model.focusedEmbed (IVVL.RemoveVVectorG2 vID 1)))
+                  , label = E.el [ E.centerX, E.centerY ] (E.text "X")
+                  } 
+              )
+          , E.el
+              [ Font.size 18 ]
+              ( E.text "vectorSum" )
+          , E.el
+                  [ ]
+                  ( Input.text
+                      [ E.width (E.px 35), E.height (E.px 35), Font.center, Font.size 13, Font.center, Font.color passClr ] 
+                      { onChange = \value -> ParseVectorSumInput veIndex vID X value
+                      , text = iV1
+                      , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 16 ] ( E.text "V#" ) ) )
+                      , label = Input.labelHidden "A vectorID input"
+                      }
+                  )
+          , E.el
+              [ ]
+              ( E.text "+" )
+          , E.el
+                  [ E.paddingXY 0 2 ]
+                  ( Input.text
+                      [ E.width (E.px 35), E.height (E.px 35), Font.center, Font.size 13, Font.center, Font.color passClr ] 
+                      { onChange = \value -> ParseVectorSumInput veIndex vID Y value
+                      , text = iV2
+                      , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 16 ] ( E.text "V#" ) ) )
+                      , label = Input.labelHidden "A vectorID input"
+                      }
+                  )
+          , E.el
+              [ ]
+              ( E.text "=" )
+          , E.el
+              [ E.height E.fill, E.centerY, Font.size 70, Font.hairline, E.moveUp 8 ]
+              ( E.text "[" )
+          , E.column
+              [ E.spacingXY 0 10 ]
+              [ E.el
+                  [ Font.size 18, E.moveUp 4 ]
+                  ( E.text (String.fromFloat (firstV2 theVector.vector)) )
+              , E.el
+                  [ Font.size 18 ]
+                  ( E.text (String.fromFloat (secondV2 theVector.vector)) )
+              ]
+          , E.el
+              [ E.height E.fill, E.centerY, Font.size 70, Font.hairline, E.moveUp 8 ]
               ( E.text "]")
           ]
         )
@@ -242,16 +335,22 @@ type alias VisualElementIndex = (String, Int, Int) -- EmbedId, GridId, VisualEle
 type VisualElement = Vector Int (String, String) Bool -- VectorId, VectorInputString, Pass
                    | VectorSum Int (String, String) Bool -- VectorId, VectorInputString, Pass
 
+type ElementType = VectorType
+                 | VectorSumType
+
 --type VectorElements = Vector
 --                    | VectorSum
 
-type Msg = Tick Float
+type Msg = Tick Time.Posix
          | WindowResize Int Int
          | Blank
 
-         | AddElement VisualElementIndex Msg
+         | AddElement ElementType Msg
          | RemoveElement VisualElementIndex Msg
          | ParseVectorInput VisualElementIndex Int XY String
+         | ParseVectorSumInput VisualElementIndex Int XY String
+
+         | UpdateContinuous
 
          | IVVLMsg String IVVL.Msg
          | IVVLMoveMsg String (Float, Float)
@@ -262,16 +361,17 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
     WindowResize width height ->
-        let
-          newWidgetDict = Dict.map (\k _ -> Widget.init (toFloat width) (toFloat height) k) model.ivvlDict
-          newWidgetCommands = (List.map (\(k,v) -> Cmd.map (WidgetMsg k) (Tuple.second v)) (Dict.toList newWidgetDict))
-        in
-          ( { model | width = width, height = height, widgetDict = newWidgetDict }, Cmd.batch newWidgetCommands)
-    Tick t ->
-        ( { model | time = t }, Cmd.none )
-
-    AddElement (eID, gID, veID) message ->
       let
+        newWidgetDict = Dict.map (\k _ -> Widget.init (toFloat width) (toFloat height) k) model.ivvlDict
+        newWidgetCommands = (List.map (\(k,v) -> Cmd.map (WidgetMsg k) (Tuple.second v)) (Dict.toList newWidgetDict))
+      in
+        ( { model | width = width, height = height, widgetDict = newWidgetDict }, Cmd.batch newWidgetCommands)
+    Tick _ -> ( model, Task.perform (\_-> UpdateContinuous) Time.now )
+
+    AddElement elementType message ->
+      let
+        gID = 1
+        eID = model.focusedEmbed
         currentVisual = getVisualModel eID model.ivvlDict
         currentGrid = 
           case Dict.get gID currentVisual.grids of
@@ -285,7 +385,12 @@ update msg model =
                 nextVID = IVVL.getNextVectorObjectKey currentGrid.vectorObjects
                 newEKey = getNextVisualElementIndex model.visualElements model.focusedEmbed gID
 
-                newVisualElements = Dict.insert newEKey (Vector nextVID ("0", "0") True) model.visualElements
+                ve = 
+                  case elementType of
+                    VectorType -> Vector nextVID ("0", "0") True
+                    VectorSumType -> VectorSum nextVID (Debug.toString nextVID, "") False
+
+                newVisualElements = Dict.insert newEKey ve model.visualElements
               in
                 { model | visualElements = newVisualElements }
             _ -> model
@@ -301,7 +406,7 @@ update msg model =
                 vID = 
                   case (Dict.get (eID, gID, veID) model.visualElements) of
                     Just (Vector vID2 _ _) -> vID2
-                    Just _ -> 0
+                    Just (VectorSum vID2 _ _) -> vID2
                     Nothing -> 0
                 removedVisualElements = Dict.remove (eID, gID, veID) model.visualElements
 
@@ -435,12 +540,179 @@ update msg model =
       in
         ( { model | ivvlDict = newIVVLModelDict, visualElements = finalVectorInputs }, Cmd.none )
 
+    ParseVectorSumInput (eID, gID, veID) vID xy input ->
+      let
+        veIndex = (eID, gID, veID)
+        vElement = 
+          case (Dict.get veIndex model.visualElements) of
+            Nothing -> VectorSum vID ("", "") False
+            Just a -> a
+
+        parseInputXY = String.toInt input
+        parseInputOther = 
+          case xy of
+            X -> 
+              (\ve ->
+                case ve of 
+                  VectorSum _ (_, input2) _ -> (String.toInt input2) 
+                  _ -> Nothing
+              ) vElement
+            Y -> 
+              (\ve ->
+                case ve of
+                  VectorSum _ (input1, _) _ -> (String.toInt input1)
+                  _ -> Nothing
+              ) vElement
+
+        testInputXY = 
+          case parseInputXY of
+            Nothing -> Nothing
+            Just value -> 
+              case (Dict.get (eID, gID, value) model.visualElements) of
+                Just (Vector vID2 _ _) -> Just vID2
+                _ -> Nothing
+        testInputOther =
+          case parseInputOther of
+            Nothing -> Nothing
+            Just value ->
+              case (Dict.get (eID, gID, value) model.visualElements) of
+                Just (Vector vID2 _ _) -> Just vID2
+                _ -> Nothing
+
+        invisibilityCheck =
+          case ( Dict.get veIndex model.visualElements ) of
+            Nothing -> Dict.insert veIndex (VectorSum vID ("", "") False) model.visualElements
+            Just _ -> model.visualElements
+
+        updatedVectorInputs = 
+          Dict.update 
+          veIndex
+          ( case xy of
+              X -> 
+                Maybe.map
+                  (\ve ->
+                    case ve of 
+                      VectorSum v (_, y) p -> VectorSum v (input,y) p
+                      _ -> VectorSum -1 ("err", "err") False
+                  ) 
+              
+              Y -> 
+                Maybe.map 
+                  (\ve ->
+                    case ve of 
+                      VectorSum v (x, _) p -> VectorSum v (x,input) p
+                      _ -> VectorSum -1 ("err", "err") False
+                  ) 
+          )
+          invisibilityCheck
+
+        finalVectorInputs = 
+          Dict.update 
+          veIndex
+          ( if ( testInputXY == Nothing || testInputOther == Nothing )
+              then 
+                Maybe.map 
+                  (\ve ->
+                    case ve of
+                      VectorSum v (x,y) _ -> VectorSum v (x,y) False
+                      _ -> VectorSum -1 ("err", "err") False
+                  )
+              else 
+                Maybe.map
+                (\ve ->
+                  case ve of
+                    VectorSum v (x,y) _ -> VectorSum v (x,y) True
+                    _ -> VectorSum -1 ("err", "err") False
+                )
+          )
+          updatedVectorInputs
+
+        theModel = getVisualModel eID model.ivvlDict
+        theGrid = 
+          case (Dict.get gID (theModel.grids) ) of
+            Nothing -> defaultGrid2D
+            Just x -> x
+
+        currentVisVectorValue =
+          case (Dict.get vID (theGrid.vectorObjects) ) of
+            Nothing -> defaultVisVector2D
+            Just x -> x
+
+
+        accessVector =
+          (\vID2 ->
+            case (Dict.get vID2 theGrid.vectorObjects) of
+              Just v -> v
+              Nothing -> defaultVisVector2D
+          )
+
+        vectorXY = 
+          case (Maybe.map accessVector testInputXY) of
+            Nothing -> defaultVisVector2D
+            Just y -> y
+        vectorOther = 
+          case (Maybe.map accessVector testInputOther) of
+            Nothing -> defaultVisVector2D
+            Just y -> y
+
+
+        newVectorValue =
+          if ( parseInputXY == Nothing || parseInputOther == Nothing )
+            then currentVisVectorValue.vector
+            else addV2 vectorOther.vector vectorXY.vector
+
+        newVisVectorValue = { currentVisVectorValue | vector = newVectorValue }
+        newVectorObjects = Dict.insert vID newVisVectorValue theGrid.vectorObjects
+        newGrid = { theGrid | vectorObjects = newVectorObjects }
+        newGridDict = Dict.insert gID newGrid theModel.grids
+        newIVVLModel = { theModel | grids = newGridDict }
+        newIVVLModelDict = Dict.insert eID newIVVLModel model.ivvlDict
+      in
+        ( { model | ivvlDict = newIVVLModelDict, visualElements = finalVectorInputs }, Cmd.none )
+
+    UpdateContinuous ->
+      let
+        vectorSumsToTest = 
+          Dict.filter 
+            (\(eID, gID, _) value ->
+              if (eID == model.focusedEmbed && gID == 1)
+                then
+                  case value of
+                    VectorSum _ _ _ -> True
+                    _ -> False
+                else False
+            )
+            model.visualElements
+
+        --ParseVectorSumInput (eID, gID, veID) vID xy input
+        vectorSumsList = Dict.toList vectorSumsToTest
+        firstParam = List.map Tuple.first vectorSumsList
+        secondParam = 
+          List.map (\(_,_,z) -> z) firstParam
+        
+        thirdParam = List.repeat (List.length firstParam) X
+
+        fourthParam = 
+          List.map 
+            (\key -> 
+              case (Dict.get key model.visualElements) of
+                Just (VectorSum _ (a, b) _) -> a
+                _ -> "err"
+            )
+            firstParam
+
+        listOfMessages = List.map4 (ParseVectorSumInput) firstParam secondParam thirdParam fourthParam
+        finalBatch = List.map ( \message -> Task.perform (\_-> message) Time.now ) listOfMessages
+
+      in 
+        ( model, Cmd.batch finalBatch )
+
     IVVLMsg k messageForParent ->
       let
         originalDict = model.ivvlDict
         updatedDict = Dict.update k ( Maybe.map (\value -> Tuple.first (IVVL.updateLibModel messageForParent value)) ) originalDict 
       in
-        ( { model | ivvlDict = updatedDict }, Cmd.none )
+        ( { model | ivvlDict = updatedDict }, Cmd.none)
     
     IVVLMoveMsg k (x, y) -> 
       let
@@ -512,8 +784,7 @@ getVisualModel index dict =
 {--------------------------------------- MODEL ---------------------------------------}
 
 type alias Model =
-  { time : Float
-  , width : Int
+  { width : Int
   , height : Int 
   , widgetDict : Dict String (Widget.Model, Cmd Widget.Msg) 
   , ivvlDict : Dict String (IVVL.LibModel)
@@ -534,7 +805,6 @@ initialModel =
                                        |> setVV2 (1, 1)
                                        |> endTypeVV2 Directional
                                       ) 
-                                    --|> scaleG2
                                     
                                  )
                                  preset.grids
@@ -547,8 +817,7 @@ initialModel =
     visualWidgets = Dict.fromList [ ("embed1", Widget.init 1920 1080 "embed1") ]
 
     model =  
-      { time = 0
-      , width = 1920
+      { width = 1920
       , height =  1080
       , widgetDict = visualWidgets
       , ivvlDict = preVModel
@@ -576,5 +845,10 @@ main =
     { init = \ _ -> initialModel
     , view = view
     , update = update
-    , subscriptions = \ _ -> Browser.onResize WindowResize
+    , subscriptions = 
+        \ _ -> 
+          Sub.batch 
+            [ Events.onResize WindowResize
+            , Events.onAnimationFrame Tick
+            ]
     }
