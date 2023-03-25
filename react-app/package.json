@@ -2,7 +2,7 @@
   "name": "react-app",
   "homepage": "https://nickjg1.github.io/MathVisualizer/",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "dependencies": {
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
