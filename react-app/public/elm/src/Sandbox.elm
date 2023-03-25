@@ -102,6 +102,7 @@ elementsMenu model =
                 Just vv -> vv
           in
             vectorElement model veIndex vector ve
+        _ -> Debug.todo "a"
 
     listOfElements = List.map convertToElement targetedVisuals
     
@@ -149,7 +150,7 @@ creationMenu model =
       in
         List.map2 
           optionButton 
-          ["Add Vector", "Kill Vector"] 
+          ["Add Vector Element", "Add VectorSum Element"] 
           [ Just (AddElement (model.focusedEmbed, 1, 1) (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1)))
           , Just Blank ]
     )
@@ -157,69 +158,73 @@ creationMenu model =
 {--------------------------------------- ELEMENTS ---------------------------------------}
 
 vectorElement : Model -> VisualElementIndex -> VisVector2D -> VisualElement -> Element Msg
-vectorElement model (eID, gID, veID) vv2 (Vector vId (iX, iY) pass) = 
-  let
-    veIndex = (eID, gID, veID)
-    visualElement = (Vector vId (iX, iY) pass)
+vectorElement model (eID, gID, veID) vv2 ve = 
+  case ve of
+    Vector vID (iX, iY) pass ->
+      let
+        veIndex = (eID, gID, veID)
+        passClr =
+          if pass
+            then rgb255 0 0 0
+            else rgb255 255 0 0
 
-    passClr =
-      if pass
-        then rgb255 0 0 0
-        else rgb255 255 0 0
-  in
-    E.row
-      [ E.centerX, Background.color (E.rgb 1 0.5 1) ]
-      [ E.el
-          [ E.paddingXY 10 0 ]
-          ( Input.button
-              ( [ E.width (px 20), E.height (px 20)
-                , Background.color (E.rgb255 238 238 238)
-                , E.focused [ Background.color (E.rgb255 238 23 238) ]
-                ]
-              ) 
-              { onPress = Just (RemoveElement veIndex (IVVLMsg model.focusedEmbed (IVVL.RemoveVVectorG2 vId 1)))
-              , label = E.el [ E.centerX, E.centerY ] (E.text "X")
-              } 
-          )
-      , E.el
-          [ Font.size 24, E.paddingXY 8 0 ]
-          ( E.text "vector" )
-      , E.el
-          [ Font.size 32, E.paddingXY 8 0 ]
-          ( E.text (String.fromInt vId) )
-      , E.el
-          [ E.paddingXY 8 0 ]
-          ( E.text "=" )
-      , E.el
-          [ E.height E.fill, E.centerY, E.paddingXY 8 0, Font.size 70, Font.hairline ]
-          ( E.text "[" )
-      , E.column
-          [ ]
+        visualElement = (Vector vID (iX, iY) pass)
+      in
+        ( E.row
+          [ E.centerX, Background.color (E.rgb 1 0.5 1) ]
           [ E.el
-              [ E.paddingXY 0 2 ]
-              ( Input.text
-                  [ E.width (E.px 45), E.height (E.px 45), Font.center, Font.size 13, Font.center, Font.color passClr ] 
-                  { onChange = \value -> ParseVectorInput veIndex vId X value
-                  , text = iX
-                  , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 16 ] ( E.text "X" ) ) )
-                  , label = Input.labelHidden "An X vector input"
-                  }
+              [ E.paddingXY 10 0 ]
+              ( Input.button
+                  ( [ E.width (px 20), E.height (px 20)
+                    , Background.color (E.rgb255 238 238 238)
+                    , E.focused [ Background.color (E.rgb255 238 23 238) ]
+                    ]
+                  ) 
+                  { onPress = Just (RemoveElement veIndex (IVVLMsg model.focusedEmbed (IVVL.RemoveVVectorG2 vID 1)))
+                  , label = E.el [ E.centerX, E.centerY ] (E.text "X")
+                  } 
               )
           , E.el
-              [ E.paddingXY 0 2 ]
-              ( Input.text
-                  [ E.width (E.px 45), E.height (E.px 45), Font.center, Font.size 13, Font.center, Font.color passClr ]
-                  { onChange = \value -> ParseVectorInput veIndex vId Y value
-                  , text = iY
-                  , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 16 ] ( E.text "X" ) ) )
-                  , label = Input.labelHidden "A Y vector input"
-                  }
-              )
+              [ Font.size 24, E.paddingXY 8 0 ]
+              ( E.text "vector" )
+          , E.el
+              [ Font.size 32, E.paddingXY 8 0 ]
+              ( E.text (String.fromInt vID) )
+          , E.el
+              [ E.paddingXY 8 0 ]
+              ( E.text "=" )
+          , E.el
+              [ E.height E.fill, E.centerY, E.paddingXY 8 0, Font.size 70, Font.hairline ]
+              ( E.text "[" )
+          , E.column
+              [ ]
+              [ E.el
+                  [ E.paddingXY 0 2 ]
+                  ( Input.text
+                      [ E.width (E.px 45), E.height (E.px 45), Font.center, Font.size 13, Font.center, Font.color passClr ] 
+                      { onChange = \value -> ParseVectorInput veIndex vID X value
+                      , text = iX
+                      , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 16 ] ( E.text "X" ) ) )
+                      , label = Input.labelHidden "An X vector input"
+                      }
+                  )
+              , E.el
+                  [ E.paddingXY 0 2 ]
+                  ( Input.text
+                      [ E.width (E.px 45), E.height (E.px 45), Font.center, Font.size 13, Font.center, Font.color passClr ]
+                      { onChange = \value -> ParseVectorInput veIndex vID Y value
+                      , text = iY
+                      , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 16 ] ( E.text "X" ) ) )
+                      , label = Input.labelHidden "A Y vector input"
+                      }
+                  )
+              ]
+          , E.el
+              [ E.height E.fill, E.centerY, E.paddingXY 8 0, Font.size 70, Font.hairline ]
+              ( E.text "]")
           ]
-      , E.el
-          [ E.height E.fill, E.centerY, E.paddingXY 8 0, Font.size 70, Font.hairline ]
-          ( E.text "]")
-      ]
+        )
+    _ -> ( E.text "broken" )
 
 {--------------------------------------- WIDGET DISPLAY ---------------------------------------}
 
@@ -235,6 +240,10 @@ type XY = X | Y
 
 type alias VisualElementIndex = (String, Int, Int) -- EmbedId, GridId, VisualElementId
 type VisualElement = Vector Int (String, String) Bool -- VectorId, VectorInputString, Pass
+                   | VectorSum Int (String, String) Bool -- VectorId, VectorInputString, Pass
+
+--type VectorElements = Vector
+--                    | VectorSum
 
 type Msg = Tick Float
          | WindowResize Int Int
@@ -292,29 +301,33 @@ update msg model =
                 vID = 
                   case (Dict.get (eID, gID, veID) model.visualElements) of
                     Just (Vector vID2 _ _) -> vID2
-                    --Just _ -> 0
+                    Just _ -> 0
                     Nothing -> 0
                 removedVisualElements = Dict.remove (eID, gID, veID) model.visualElements
-                filteredVisualElements = 
-                  Dict.filter 
-                    (\_ value ->
-                      case value of
-                        Vector _ _ _ -> True
-                        --_ -> False
-                    ) removedVisualElements
-                doubleFilteredVisualElements =
+
+                filteredVisualElements =
                   Dict.filter
-                    (\_ (Vector vevID _ _) ->
-                      if (vevID > vID)
-                        then True
-                        else False
-                    ) filteredVisualElements
+                    (\_ ve ->
+                      case ve of
+                        Vector vevID _ _ ->
+                          if (vevID > vID)
+                            then True
+                            else False
+                        _ -> False
+                    ) removedVisualElements
+
                 shiftedVisualElements =
                   Dict.fromList
                     ( List.map 
-                        (\(key, (Vector vevID a b)) -> (key, (Vector (vevID - 1) a b))) 
-                        (Dict.toList doubleFilteredVisualElements)
+                        (\(key, ve) ->
+                          case ve of
+                            Vector vevID a b ->
+                              (key, (Vector (vevID - 1) a b))
+                            _ -> (key, ve)
+                        )
+                        (Dict.toList filteredVisualElements)
                     )
+
                 updatedVisualElements = Dict.union shiftedVisualElements removedVisualElements
               in
                 { model | visualElements = updatedVisualElements }
@@ -333,8 +346,18 @@ update msg model =
         parseInputXY = String.toFloat input
         parseInputOther = 
           case xy of
-            X -> (\(Vector _ (_, input2) _) -> String.toFloat input2) vElement
-            Y -> (\(Vector _ (input1, _) _) -> String.toFloat input1) vElement
+            X -> 
+              (\ve ->
+                case ve of 
+                  Vector _ (_, input2) _ -> (String.toFloat input2) 
+                  _ -> Nothing
+              ) vElement
+            Y -> 
+              (\ve ->
+                case ve of
+                  Vector _ (input1, _) _ -> (String.toFloat input1)
+                  _ -> Nothing
+              ) vElement
 
         invisibilityCheck =
           case ( Dict.get veIndex model.visualElements ) of
@@ -345,8 +368,21 @@ update msg model =
           Dict.update 
           veIndex
           ( case xy of
-              X -> Maybe.map (\(Vector v (_,y) p) -> Vector v (input,y) p)
-              Y -> Maybe.map (\(Vector v (x,_) p) -> Vector v (x,input) p)
+              X -> 
+                Maybe.map
+                  (\ve ->
+                    case ve of 
+                      Vector v (_, y) p -> Vector v (input,y) p
+                      _ -> Vector -1 ("err", "err") False
+                  ) 
+              
+              Y -> 
+                Maybe.map 
+                  (\ve ->
+                    case ve of 
+                      Vector v (x, _) p -> Vector v (x,input) p
+                      _ -> Vector -1 ("err", "err") False
+                  ) 
           )
           invisibilityCheck
 
@@ -354,8 +390,20 @@ update msg model =
           Dict.update 
           veIndex
           ( if ( parseInputXY == Nothing || parseInputOther == Nothing )
-              then Maybe.map (\(Vector v (x,y) _) -> Vector v (x,y) False)
-              else Maybe.map (\(Vector v (x,y) _) -> Vector v (x,y) True)
+              then 
+                Maybe.map 
+                  (\ve ->
+                    case ve of
+                      Vector v (x,y) _ -> Vector v (x,y) False
+                      _ -> Vector -1 ("err", "err") False
+                  )
+              else 
+                Maybe.map
+                (\ve ->
+                  case ve of
+                    Vector v (x,y) _ -> Vector v (x,y) True
+                    _ -> Vector -1 ("err", "err") False
+                )
           )
           updatedVectorInputs
 
