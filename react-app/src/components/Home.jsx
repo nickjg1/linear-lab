@@ -1,16 +1,24 @@
+import { useNavigate } from 'react-router-dom';
 const Home = () => {
+	const navigate = useNavigate();
 	return (
 		<div className="bg-black min-h-screen py-32">
-			<a href="/lessons">
-				<h1 className="text-6xl py-1 mb-6 text-center font-bold tracking-tight bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:bg-gradient-to-l  hover:from-blue-600 hover:via-green-500 hover:to-indigo-400 text-transparent bg-clip-text">
-					Learn Linear Algebra
-				</h1>
-			</a>
+			<h1
+				onClick={() => {
+					navigate('/lessons');
+				}}
+				className="cursor-pointer text-6xl py-1 mb-6 text-center font-bold tracking-tight bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:bg-gradient-to-l  hover:from-blue-600 hover:via-green-500 hover:to-indigo-400 text-transparent bg-clip-text"
+			>
+				Learn Linear Algebra
+			</h1>
+
 			<div className="grid items-start justify-center">
 				<div className="relative group">
 					<div className="absolute -inset-0.5 opacity-75 bg-gradient-to-r from-cyan-400 to-teal-600 rounded-lg blur-lg group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-					<a
-						href="/lessons"
+					<button
+						onClick={() => {
+							navigate('/lessons');
+						}}
 						className=" relative px-7 py-4 bg-black rounded-lg leading-none divide-x divide-gray-600 flex items-center space-x-5 "
 					>
 						<span className="flex items-center space-x-5">
@@ -33,7 +41,7 @@ const Home = () => {
 						<span className="pl-6 text-cyan-400 group-hover:text-gray-100 transition duration-1000 group-hover:duration-200">
 							Explore Now &rarr;
 						</span>
-					</a>
+					</button>
 				</div>
 			</div>
 
