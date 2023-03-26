@@ -11,7 +11,7 @@ import GraphicSVG.Widget as Widget exposing (..)
 import GraphicSVG.App exposing (..)
 
 import Browser exposing (..)
-import Browser.Events as Events exposing (..)
+import Browser.Events as BEvents exposing (..)
 import Browser.Dom as Dom exposing (..)
 
 import Element as E exposing (..)
@@ -20,6 +20,10 @@ import Element.Background as Background
 import Element.Input as Input exposing (..)
 import Element.Font as Font exposing (..)
 import Element.Border as Border exposing (..)
+import Element.Cursor as Cursor exposing (..)
+import Element.Events as EEvents exposing (..)
+
+import Json.Decode as Decode exposing (..)
 
 import Task
 
@@ -27,7 +31,7 @@ import Html exposing (Html)
 
 import Dict exposing (..)
 import IVVL exposing (..)
-import Html exposing (..) 
+import Html exposing (..)
 
 {------------------------------------------------------------------------------
                              _    _ _______ __  __ _      
@@ -46,8 +50,9 @@ htmlOutput model =
       [ E.width E.fill, E.height E.fill
       , E.inFront (elementsMenu model)
       , E.inFront (zoomMenu model)
+      , EEvents.onMouseUp ResizeElementMenuUp
       ]
-      ( widgetDisplay model [ E.width E.fill, E.height E.fill ] model.focusedEmbed
+      ( widgetDisplay model [ E.width E.fill, E.height E.fill, Cursor.move ] model.focusedEmbed
       )
   ]
 
@@ -114,18 +119,23 @@ elementsMenu model =
     listOfElements = List.map convertToElement targetedVisuals
     
   in
-    E.column
-      [ E.width (E.fill |> maximum (round (toFloat model.width / 5))), E.height (E.fill)
-      , E.alignLeft, E.scrollbars, Background.color (E.rgb 0.7 0.5 1) 
+    E.row
+      [ E.width ((E.px model.elementMenuWidth) |> maximum model.elementMenuWidthMax), E.height (E.fill)
+      , E.alignLeft, Background.color (E.rgb 0.7 0.5 1)  ]
+      [ E.column
+          [ E.centerX, E.width E.fill, E.height E.fill, E.spacingXY 0 10, E.scrollbars ]
+          ( E.el 
+              [ E.centerX, Font.size 48, E.paddingXY 0 20 ]
+              (E.text "Elements")
+            :: 
+            listOfElements
+            ++ 
+            [creationMenu model]
+          ) 
+      , E.el
+          [ E.height E.fill, E.width (E.px 5), Cursor.ewResize, EEvents.onMouseDown ResizeElementMenuDown ]
+          ( E.none )
       ]
-      ( E.el
-          [ Font.size 40, E.centerX, paddingXY 0 20 ]
-          ( E.text "Elements" )
-        :: 
-        listOfElements
-        ++ 
-        [creationMenu model]
-      ) 
 
 {--------------------------------------- SUB-MENUS ---------------------------------------}
 
@@ -179,58 +189,58 @@ vectorElement model (eID, gID, veID) vv2 ve =
         visualElement = (Vector vID (iX, iY) pass)
       in
         ( E.row
-          [ E.centerX, Background.color (E.rgb 1 0.5 1), E.spacingXY 10 0, E.paddingXY 5 0 ]
-          [ E.el
-              []
-              ( Input.button
-                  ( [ E.width (px 20), E.height (px 20)
-                    , Background.color (E.rgb255 238 238 238)
-                    , E.focused [ Background.color (E.rgb255 238 23 238) ]
-                    ]
-                  ) 
-                  { onPress = Just (RemoveElement veIndex (IVVLMsg model.focusedEmbed (IVVL.RemoveVVectorG2 vID 1)))
-                  , label = E.el [ E.centerX, E.centerY ] (E.text "X")
-                  } 
-              )
-          , E.el
-              [ Font.size 24 ]
-              ( E.text "vector" )
-          , E.el
-              [ Font.size 32 ]
-              ( E.text (String.fromInt veID) )
-          , E.el
-              [ ]
-              ( E.text "=" )
-          , E.el
-              [ E.height E.fill, E.centerY, Font.size 70, Font.hairline ]
-              ( E.text "[" )
-          , E.column
-              [ ]
-              [ E.el
-                  [ E.paddingXY 0 2 ]
-                  ( Input.text
-                      [ E.width (E.px 45), E.height (E.px 45), Font.center, Font.size 13, Font.center, Font.color passClr ] 
-                      { onChange = \value -> ParseVectorInput veIndex vID X value
-                      , text = iX
-                      , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 16 ] ( E.text "X" ) ) )
-                      , label = Input.labelHidden "An X vector input"
-                      }
-                  )
-              , E.el
-                  [ E.paddingXY 0 2 ]
-                  ( Input.text
-                      [ E.width (E.px 45), E.height (E.px 45), Font.center, Font.size 13, Font.center, Font.color passClr ]
-                      { onChange = \value -> ParseVectorInput veIndex vID Y value
-                      , text = iY
-                      , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 16 ] ( E.text "X" ) ) )
-                      , label = Input.labelHidden "A Y vector input"
-                      }
-                  )
-              ]
-          , E.el
-              [ E.height E.fill, E.centerY, Font.size 70, Font.hairline ]
-              ( E.text "]")
-          ]
+            [ E.centerX, Background.color (E.rgb 1 0.5 1), E.spacingXY 10 0, E.paddingXY 5 0, rounded 10 ]
+            [ E.el
+                []
+                ( Input.button
+                    ( [ E.width (px 20), E.height (px 20)
+                      , Background.color (E.rgb255 238 238 238)
+                      , E.focused [ Background.color (E.rgb255 238 23 238) ]
+                      ]
+                    ) 
+                    { onPress = Just (RemoveElement veIndex (IVVLMsg model.focusedEmbed (IVVL.RemoveVVectorG2 vID 1)))
+                    , label = E.el [ E.centerX, E.centerY ] (E.text "X")
+                    } 
+                )
+            , E.el
+                [ Font.size 24 ]
+                ( E.text "vector" )
+            , E.el
+                [ Font.size 32 ]
+                ( E.text (String.fromInt veID) )
+            , E.el
+                [ ]
+                ( E.text "=" )
+            , E.el
+                [ E.height E.fill, E.centerY, Font.size 70, Font.hairline ]
+                ( E.text "[" )
+            , E.column
+                [ ]
+                [ E.el
+                    [ E.paddingXY 0 2 ]
+                    ( Input.text
+                        [ E.width (E.px 45), E.height (E.px 45), Font.center, Font.size 13, Font.center, Font.color passClr ] 
+                        { onChange = \value -> ParseVectorInput veIndex vID X value
+                        , text = iX
+                        , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 16 ] ( E.text "X" ) ) )
+                        , label = Input.labelHidden "An X vector input"
+                        }
+                    )
+                , E.el
+                    [ E.paddingXY 0 2 ]
+                    ( Input.text
+                        [ E.width (E.px 45), E.height (E.px 45), Font.center, Font.size 13, Font.center, Font.color passClr ]
+                        { onChange = \value -> ParseVectorInput veIndex vID Y value
+                        , text = iY
+                        , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 16 ] ( E.text "X" ) ) )
+                        , label = Input.labelHidden "A Y vector input"
+                        }
+                    )
+                ]
+            , E.el
+                [ E.height E.fill, E.centerY, Font.size 70, Font.hairline ]
+                ( E.text "]")
+            ]
         )
     _ -> ( E.text "broken" )
 
@@ -258,7 +268,7 @@ vectorSumElement model (eID, gID, veID) vv2 ve =
             _ -> defaultVisVector2D
       in
         ( E.row
-          [ E.centerX, Background.color (E.rgb 1 0.5 1), E.spacingXY 10 0, E.paddingXY 5 0 ]
+          [ E.centerX, Background.color (E.rgb 1 0.5 1), E.spacingXY 10 0, E.paddingXY 5 0, rounded 10 ]
           [ E.el
               [ ]
               ( Input.button
@@ -346,7 +356,11 @@ type ElementType = VectorType
 
 type Msg = Tick Time.Posix
          | WindowResize Int Int
+         | MouseMove Int Int
          | Blank
+
+         | ResizeElementMenuDown
+         | ResizeElementMenuUp
 
          | AddElement ElementType Msg
          | RemoveElement VisualElementIndex Msg
@@ -367,9 +381,53 @@ update msg model =
       let
         newWidgetDict = Dict.map (\k _ -> Widget.init (toFloat width) (toFloat height) k) model.ivvlDict
         newWidgetCommands = (List.map (\(k,v) -> Cmd.map (WidgetMsg k) (Tuple.second v)) (Dict.toList newWidgetDict))
+        newElementWindowMax = round (toFloat width / 4)
+        newElementWindowWidth = round ((toFloat model.width / toFloat width) * toFloat model.elementMenuWidth)
       in
-        ( { model | width = width, height = height, widgetDict = newWidgetDict }, Cmd.batch newWidgetCommands)
+        ( { model | width = width, height = height, widgetDict = newWidgetDict, elementMenuWidthMax = newElementWindowMax, elementMenuWidth = newElementWindowWidth }, Cmd.batch newWidgetCommands)
     Tick _ -> ( model, Task.perform (\_-> UpdateContinuous) Time.now )
+    MouseMove x y -> ( { model | mouseX = x, mouseY = y }, Cmd.none )
+
+    ResizeElementMenuDown -> 
+      let
+        
+        cursorPosition = (model.mouseX, model.mouseY)
+
+        isStart = 
+          case model.elementMenuState of
+            (_, _, a) -> a
+
+        newState = 
+          case model.elementMenuState of
+            (a, _, False) -> (a, cursorPosition, True)
+            _ -> model.elementMenuState
+
+        initialWidth =
+          case model.elementMenuState of
+            (a, _, _) -> a
+
+        offset =
+          case model.elementMenuState of
+            (_, (x, _), _) -> x - Tuple.first cursorPosition
+
+        newWidth =
+          case List.minimum [initialWidth - offset, model.elementMenuWidthMax ] of
+            Nothing -> model.elementMenuWidthMax
+            Just val -> val
+      in
+        if isStart
+          then ( { model | elementMenuWidth = newWidth, elementMenuState = newState }, Cmd.none)
+          else ( { model | elementMenuState = newState }, Cmd.none)
+    
+    ResizeElementMenuUp -> 
+      let
+        newElementMenuState = 
+          case model.elementMenuState of
+            (_, b, _) -> (model.elementMenuWidth, b, False)
+      in
+        case model.elementMenuState of
+          (_, _, False) -> (model, Cmd.none)
+          _ -> ( { model | elementMenuState = newElementMenuState}, Cmd.none)
 
     AddElement elementType message ->
       let
@@ -391,7 +449,7 @@ update msg model =
                 ve = 
                   case elementType of
                     VectorType -> Vector nextVID ("0", "0") True
-                    VectorSumType -> VectorSum nextVID (Debug.toString nextVID, "") False
+                    VectorSumType -> VectorSum nextVID ("", "") False
 
                 newVisualElements = Dict.insert newEKey ve model.visualElements
               in
@@ -446,8 +504,6 @@ update msg model =
                   if (Dict.size model.visualElements == Dict.size removedVisualElements)
                     then model.visualElements
                     else Dict.remove (eID, gID, (Dict.size model.visualElements)) updatedVisualElements
-
-                x = Debug.log "5" finalVisualElements
               in
                 { model | visualElements = finalVisualElements }
             _ -> model
@@ -722,7 +778,14 @@ update msg model =
             )
             firstParam
 
-        listOfMessages = List.map4 (ParseVectorSumInput) firstParam secondParam thirdParam fourthParam
+        resizeMessage =
+          case model.elementMenuState of
+            (_, _, True) -> ResizeElementMenuDown
+            _ -> Blank
+
+        listOfMessages = 
+          List.map4 (ParseVectorSumInput) firstParam secondParam thirdParam fourthParam
+          ++ [resizeMessage]
         finalBatch = List.map ( \message -> Task.perform (\_-> message) Time.now ) listOfMessages
 
       in 
@@ -809,10 +872,15 @@ type alias Model =
   , height : Int 
   , widgetDict : Dict String (Widget.Model, Cmd Widget.Msg) 
   , ivvlDict : Dict String (IVVL.LibModel)
-
   , visualElements : Dict VisualElementIndex VisualElement
-
   , focusedEmbed : String
+
+  , elementMenuWidth : Int
+  , elementMenuWidthMax : Int
+  , elementMenuState : (Int, (Int, Int), Bool) -- SizeBefore, CursorPosStart, isDragging
+  
+  , mouseX : Int
+  , mouseY : Int
   }
     
 initialModel : (Model, Cmd Msg)
@@ -844,6 +912,13 @@ initialModel =
       , ivvlDict = preVModel
       , visualElements = Dict.fromList [(("embed1", 1, 1), Vector 1 ("1", "1") True)]
       , focusedEmbed = "embed1"
+
+      , elementMenuWidth = 500
+      , elementMenuWidthMax = 500
+      , elementMenuState = (500, (0,0), False)
+
+      , mouseX = 0
+      , mouseY = 0
       }
 
     widgetCommands = (List.map (\(k,v) -> Cmd.map (WidgetMsg k) (Tuple.second v)) (Dict.toList visualWidgets))
@@ -869,7 +944,11 @@ main =
     , subscriptions = 
         \ _ -> 
           Sub.batch 
-            [ Events.onResize WindowResize
-            , Events.onAnimationFrame Tick
+            [ BEvents.onResize WindowResize
+            , BEvents.onAnimationFrame Tick
+            , BEvents.onMouseMove <| 
+                Decode.map2 MouseMove 
+                  (Decode.field "pageX" Decode.int)
+                  (Decode.field "pageY" Decode.int)
             ]
     }
