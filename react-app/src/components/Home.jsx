@@ -3,7 +3,7 @@ const Home = () => {
 	const navigate = useNavigate();
 	return (
 		<div className="bg-black min-h-screen py-32">
-			<div className="flex  justify-center">
+			<div className="flex justify-center">
 				<button
 					onClick={() => {
 						navigate('/sandbox');
