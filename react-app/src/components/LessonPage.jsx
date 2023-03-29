@@ -3,11 +3,16 @@ import DefinitionBox from './DefinitionBox';
 
 const LessonPage = () => {
 	return (
-		<div className="mx-[4rem]">
-			<div className="">
-				<h1>Vectors</h1>
-			</div>
-			<DefinitionBox />
+		<div className="w-[90%] lg:w-2/3 mx-auto">
+			<h1>Vectors</h1>
+			<DefinitionBox
+				title="Definition"
+				content="Don't forget that our calculus test is today!"
+			/>
+			<DefinitionBox
+				title="Example"
+				content="Don't forget that our calculus test is today!"
+			/>
 		</div>
 	);
 };

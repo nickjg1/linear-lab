@@ -10,18 +10,17 @@ const Navbar = () => {
 	};
 
 	return (
-		<header className="lg:px-16 px-4 bg-offBlack flex flex-wrap lg:justify-start items-center lg:py-2 py-4">
-			<div className="flex-1 lg:flex-none">
-				<img
-					onClick={() => {
-						navigate('/');
-						menuToggle(false);
-					}}
-					className="h-[2rem] pr-[2rem] cursor-pointer"
-					src={process.env.PUBLIC_URL + '/flogo.png'}
-					alt="logo"
-				/>
-			</div>
+		<header className="lg:px-16 px-4 bg-offBlack flex flex-wrap justify-between lg:justify-start items-center lg:py-2 py-4 border-b-2 ">
+			<img
+				onClick={() => {
+					navigate('/');
+					menuToggle(false);
+				}}
+				className="h-[2rem] pr-[2rem] cursor-pointer"
+				src={process.env.PUBLIC_URL + '/flogo.png'}
+				alt="logo"
+			/>
+
 			<label for="menu-toggle" className="cursor-pointer lg:hidden block">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -68,9 +67,42 @@ const Navbar = () => {
 						>
 							Lessons
 						</li>
-						<li className="navLi">Dark Mode</li>
 					</ul>
 				</nav>
+			</div>
+			<div className="hidden lg:flex lg:ml-auto">
+				<ul>
+					<li className="hidden  lg:flex lg:items-center lg:">
+						<div className="  mt-1 ">
+							<div className="cursor-pointer  rounded-full bg-indigo-700 relative shadow-sm">
+								<input
+									defaultChecked
+									type="checkbox"
+									name="toggle"
+									id="toggle2"
+									className="focus:outline-none checkbox w-6 h-6 rounded-full bg-white absolute shadow-sm appearance-none cursor-pointer border border-transparent top-0 bottom-0 m-auto"
+								/>
+								<label
+									htmlFor="toggle2"
+									className="toggle-label dark:bg-gray-700 block w-12 h-4 overflow-hidden rounded-full bg-gray-300 cursor-pointer"
+								/>
+							</div>
+
+							<style>
+								{`.checkbox:checked {
+								/* Apply class right-0*/
+								right: 0;
+								}
+								.checkbox:checked + .toggle-label {
+
+
+								background-color: #4c51bf;
+								}`}
+							</style>
+						</div>
+						<li className="ml-[1rem]">Dark Mode</li>
+					</li>
+				</ul>
 			</div>
 		</header>
 	);
