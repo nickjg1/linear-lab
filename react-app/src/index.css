@@ -1,3 +1,60 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@layer base{
+    h1,h2,h3{
+        font-family: 'Inconsolata', sans-serif;
+    }
+    h4,h5,h6{
+        font-family: 'Assistant', sans-serif;
+    }
+    p{
+        font-family: 'Assistant', sans-serif;
+    }
+}
+
+@layer components{
+    body{
+        @apply text-offWhite
+    }
+    h1{
+        font-size: 54pt;
+        font-weight: 800;
+        @apply text-center my-[24pt]
+    }
+    h2{
+        font-size: 32pt;
+        font-weight: 900;
+        @apply my-[18pt]
+    }
+    h3{
+        font-size: 24pt;
+        font-weight: 800;
+        @apply my-[12pt] uppercase
+    }
+    
+    h4 {
+        font-size: 18pt;
+        font-weight: 700;
+        @apply my-[12pt]
+    }
+
+    p {
+        font-size: 14pt;
+        font-weight: 400;
+        @apply my-[12pt]
+    }
+
+#menu-toggle:checked + #menu{
+        display: block;
+    }
+
+.navLi {
+    @apply lg:p-4 py-3 px-0 block hover:text-gray-400 transition duration-200 cursor-pointer
+}
+
+
+
+}

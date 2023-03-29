@@ -1,8 +1,9 @@
 import { HashRouter, Route, Routes } from 'react-router-dom';
-import { Home, LessonPage, Lessons, Sandbox } from './components';
+import { Home, LessonPage, Lessons, Navbar, Sandbox } from './components';
 
 const App = () => (
 	<HashRouter>
+		<Navbar />
 		<Routes>
 			<Route path="/" exact element={<Home />} />
 			<Route path="/home" element={<Home />} />

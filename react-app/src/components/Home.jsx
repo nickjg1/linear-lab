@@ -1,17 +1,34 @@
 import { useNavigate } from 'react-router-dom';
+
 const Home = () => {
 	const navigate = useNavigate();
 	return (
 		<div className="bg-black min-h-screen py-32">
+			<div>
+				<h1>heading1</h1>
+				<h2>heading2</h2>
+				<h3>heading3</h3>
+				<h4>heading4</h4>
+				<p>
+					Lorem ipsum dolor sit amet consectetur adipisicing elit. Porro atque
+					in dolorem iste, molestiae blanditiis quam similique ab ducimus
+					mollitia officiis voluptates perferendis consectetur veritatis fugiat
+					id ipsa! Vitae, quaerat?
+				</p>
+				<p>
+					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nesciunt
+					quisquam aspernatur eveniet quae ratione ducimus eum. Soluta corporis
+					nam ducimus, illum recusandae necessitatibus ipsa optio magnam quas,
+					rerum porro nisi.
+				</p>
+			</div>
 			<div className="flex justify-center">
 				<button
 					onClick={() => {
 						navigate('/sandbox');
 					}}
 				>
-					<h1 className="cursor-pointer text-7xl xl:text-8xl py-1 mb-6 text-center font-bold tracking-tight bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 hover:bg-gradient-to-l  hover:from-blue-600 hover:via-green-500 hover:to-indigo-400 text-transparent bg-clip-text">
-						The Linear Lab
-					</h1>
+					<h1 className="">Linear Lab</h1>
 				</button>
 			</div>
 
@@ -22,7 +39,7 @@ const Home = () => {
 						onClick={() => {
 							navigate('/sandbox');
 						}}
-						className=" relative px-7 py-4 bg-black rounded-lg leading-none divide-x divide-gray-600 flex items-center space-x-5 "
+						className="relative px-7 py-4 bg-black rounded-lg leading-none divide-x divide-gray-600 flex items-center space-x-5 "
 					>
 						<span className="flex items-center space-x-5">
 							<svg
