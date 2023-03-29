@@ -4,34 +4,6 @@ const Home = () => {
 	const navigate = useNavigate();
 	return (
 		<div className="bg-black min-h-screen py-32">
-			<div>
-				<h1>heading1</h1>
-				<h2>heading2</h2>
-				<h3>heading3</h3>
-				<h4>heading4</h4>
-				<p>
-					Lorem ipsum dolor sit amet consectetur adipisicing elit. Porro atque
-					in dolorem iste, molestiae blanditiis quam similique ab ducimus
-					mollitia officiis voluptates perferendis consectetur veritatis fugiat
-					id ipsa! Vitae, quaerat?
-				</p>
-				<p>
-					Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nesciunt
-					quisquam aspernatur eveniet quae ratione ducimus eum. Soluta corporis
-					nam ducimus, illum recusandae necessitatibus ipsa optio magnam quas,
-					rerum porro nisi.
-				</p>
-			</div>
-			<div className="flex justify-center">
-				<button
-					onClick={() => {
-						navigate('/sandbox');
-					}}
-				>
-					<h1 className="">Linear Lab</h1>
-				</button>
-			</div>
-
 			<div className="grid items-start justify-center">
 				<div className="relative group">
 					<div className="absolute -inset-0.5 opacity-75 bg-gradient-to-r from-cyan-400 to-teal-600 rounded-lg blur-lg group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
@@ -64,12 +36,6 @@ const Home = () => {
 					</button>
 				</div>
 			</div>
-
-			<img
-				src="https://imgs.search.brave.com/FDVZez-eVaaToLgfDUsPLfDZj8AsstmtCrwAjlQoRZY/rs:fit:474:344:1/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlh/Lm9yZy93aWtpcGVk/aWEvY29tbW9ucy90/aHVtYi8yLzJmL0xp/bmVhcl9zdWJzcGFj/ZXNfd2l0aF9zaGFk/aW5nLnN2Zy81MDBw/eC1MaW5lYXJfc3Vi/c3BhY2VzX3dpdGhf/c2hhZGluZy5zdmcu/cG5n"
-				className="mx-auto mt-10"
-				alt="linear algebra"
-			></img>
 		</div>
 	);
 };

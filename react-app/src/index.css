@@ -58,3 +58,7 @@
 
 
 }
+
+body {
+    @apply bg-offBlack text-offWhite;
+}
