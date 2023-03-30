@@ -124,7 +124,24 @@ elementsMenu model =
   in
     E.row
       [ E.width ((E.px model.elementMenuWidth) |> E.maximum model.elementMenuWidthMax), E.height (E.fill)
-      , E.alignLeft, Background.color (getColor "background" model.elementColorDict)]
+      , E.alignLeft, Background.color (getColor "background" model.elementColorDict)
+      , E.behindContent
+          ( E.el
+            [ E.height E.fill, E.width (E.px 10), Cursor.ewResize, EEvents.onMouseDown ResizeElementMenuDown
+            , E.moveRight (toFloat model.elementMenuWidth)
+            ]
+            ( E.el
+                [ E.height E.fill, E.width (E.px 2), Background.color (getColor "elementText" model.elementColorDict)
+                , E.behindContent 
+                    ( E.el 
+                        [ E.height E.fill, E.width (E.px 2) , Border.glow (getColor "background" model.elementColorDict) 55 ]
+                        ( E.none )
+                    )
+                ]
+                ( E.none )
+            )
+          )
+      ]
       [ E.row
           [ E.scrollbarX, E.centerX, E.width E.fill, E.height E.fill, E.spacingXY 0 10 ] 
           [ E.column
@@ -133,20 +150,24 @@ elementsMenu model =
                 [ Font.size 40, Font.bold, E.paddingEach { top = 40, right = 0, bottom = 30, left = 30 }
                 , getFont "Inconsolata", Font.color (getColor "elementText" model.elementColorDict)
                 ] 
-                (E.text "ELEMENTS")
+                ( E.text "ELEMENTS" )
             , E.el
                 [ E.width ( E.px (round (toFloat model.elementMenuWidth/5*4)) |> E.minimum (250) ), E.height (E.px 2), E.centerX
-                , Background.color (getColor "elementText" model.elementColorDict)]
+                , Background.color (getColor "elementText" model.elementColorDict)
+                ]
                 ( E.text "" )
             , E.column
                 [ E.width E.shrink, E.height E.fill, E.scrollbarY, E.centerX ]
                 ( listOfElements )
+            , E.el
+                [ E.width ( E.px (round (toFloat model.elementMenuWidth/5*4)) |> E.minimum (250) ), E.height (E.px 2), E.centerX
+                , Background.color (getColor "elementText" model.elementColorDict)
+                ]
+                ( E.text "" )
             , creationMenu model
             ]
           ]
-      , E.el
-          [ E.height E.fill, E.width (E.px 5), Cursor.ewResize, EEvents.onMouseDown ResizeElementMenuDown ]
-          ( E.none )
+      
       ]
 
 {--------------------------------------- SUB-MENUS ---------------------------------------}

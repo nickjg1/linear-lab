@@ -352,6 +352,7 @@ renderG2 grid =
                 |> fixedwidth
                 |> filled grid.xAxisColor
                 |> scale (grid.scale * 0.02)
+                |> move (0,-0.2*grid.scale)
                 |> rotate angle
                 |> case ( (0, grid.scale * toFloat offset) |> crossV2 grid.transformationMatrix ) of
                     Nothing -> move (0, 0)
@@ -379,6 +380,7 @@ renderG2 grid =
                 |> fixedwidth
                 |> filled grid.yAxisColor
                 |> scale (grid.scale * 0.02)
+                |> move (0,-0.2*grid.scale)
                 |> rotate angle
                 |> case ( (grid.scale * toFloat offset, 1) |> crossV2 grid.transformationMatrix ) of
                     Nothing -> move (0, 0)
@@ -419,7 +421,8 @@ renderG2 grid =
         |> fixedwidth 
         |> filled grid.xAxisColor
         |> scale (grid.scale * 0.02)
-        |> move (1, 1)
+        |> move (1, 1-0.2*grid.scale)
+
     ] |> group
       |> move (grid.offset)
 
