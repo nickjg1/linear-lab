@@ -1,6 +1,6 @@
 const DefinitionBox = ({ title, content }) => {
 	return (
-		<div className="text-offBlack flex flex-col p-[1rem] lg:flex-row  bg-offWhite rounded-lg overflow-hidden my-[1rem]">
+		<div className="text-offBlack flex flex-col p-[0.5rem] lg:flex-row  bg-offWhite rounded-lg overflow-hidden my-[1.5rem]">
 			<div className="flex items-center justify-center mx-[2rem]">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
