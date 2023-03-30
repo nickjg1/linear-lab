@@ -1,5 +1,6 @@
 import React from 'react';
 import DefinitionBox from './DefinitionBox';
+import LessonImage from './LessonImage';
 
 const LessonPage = () => {
 	return (
@@ -7,10 +8,6 @@ const LessonPage = () => {
 			<h1>Vectors</h1>
 			<DefinitionBox
 				title="Definition"
-				content="Don't forget that our calculus test is today!"
-			/>
-			<DefinitionBox
-				title="Example"
 				content="Don't forget that our calculus test is today!"
 			/>
 		</div>

@@ -22,7 +22,6 @@ const Navbar = () => {
 					alt="logo"
 				/>
 			</a>
-
 			<label for="menu-toggle" className="cursor-pointer lg:hidden block">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -40,7 +39,6 @@ const Navbar = () => {
 				</svg>
 			</label>
 			<input type="checkbox" className="hidden" id="menu-toggle" />
-
 			<div
 				className="hidden lg:flex lg:items-centre lg:w-auto w-full"
 				id="menu"
@@ -75,7 +73,8 @@ const Navbar = () => {
 					</ul>
 				</nav>
 			</div>
-			<div className="lg:flex lg:ml-auto" id="menu">
+
+			<div className="hidden lg:flex lg:ml-auto">
 				<ul>
 					<li className=" lg:flex lg:items-center ">
 						<div className="  mt-1 ">
