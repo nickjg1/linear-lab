@@ -749,7 +749,7 @@ defaultVisVector2D =
 -- Default Grid2D
 defaultGrid2D : Grid2D
 defaultGrid2D =
-  { transformationMatrix = [(1,-20), (-1,1)]
+  { transformationMatrix = identityMatrix2D
   , vectorObjects = Dict.empty
   , xAxisColor = black
   , yAxisColor = black

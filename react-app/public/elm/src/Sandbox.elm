@@ -128,8 +128,10 @@ elementsMenu model =
       [ E.column
           [ E.centerX, E.width E.fill, E.height E.fill, E.spacingXY 0 10, E.scrollbars ]
           ( E.el 
-              [ E.centerX, Font.size 48, E.paddingXY 0 20 ]
-              (E.text "Elements")
+              [ E.centerX, Font.size 48, Font.bold, E.paddingXY 0 20
+              , getFont "Inconsolata" model.fonts
+              ] 
+              (E.text "ELEMENTS")
             :: 
             listOfElements
             ++ 
@@ -765,7 +767,6 @@ update msg model =
             )
             model.visualElements
 
-        --ParseVectorSumInput (eID, gID, veID) vID xy input
         vectorSumsList = Dict.toList vectorSumsToTest
         firstParam = List.map Tuple.first vectorSumsList
         secondParam = 
@@ -824,8 +825,20 @@ update msg model =
 getColor : String -> Dict String E.Color -> E.Color
 getColor key dict =
   case ( Dict.get key dict)  of
-    Nothing -> E.rgb 255 255 255
+    Nothing -> E.rgb 0 0 0
     Just col -> col 
+
+getFont : String -> Dict String (E.Attribute Msg) -> E.Attribute Msg
+getFont key dict =
+  case (Dict.get key dict)  of
+    Nothing -> 
+      Font.family
+        [ Font.external
+          { name = "Comic Neue"
+          , url = "https://fonts.googleapis.com/css?family=Comic+Neue"
+          }
+        ]
+    Just font -> font 
 
 renderIVVL : IVVL.LibModel -> String -> List (Shape Msg)
 renderIVVL model k = 
@@ -890,6 +903,7 @@ type alias Model =
   , elementMenuState : (Int, (Int, Int), Bool) -- SizeBefore, CursorPosStart, isDragging
 
   , colors : Dict String E.Color  
+  , fonts : Dict String (E.Attribute Msg)
   
   , mouseX : Int
   , mouseY : Int
@@ -927,6 +941,35 @@ initialModel =
         , ("element", E.rgb255 100 100 100)
         , ("background", E.rgb255 200 255 255)
         , ("defaultVector", E.rgb255 0 0 0)
+
+        , ("primaryDark", E.rgb255 50 47 86)
+        , ("primaryLight", E.rgb255 0 120 255)
+        , ("secondaryLight", E.rgb255 0 231 144)
+        , ("offBlack", E.rgb255 38 32 48)
+        , ("secondaryDark", E.rgb255 47 82 92)
+        , ("highlight", E.rgb255 238 105 234)
+        , ("secondaryHighlight", E.rgb255 251 216 119)
+        , ("offWhite", E.rgb255 255 250 236)
+        ]
+
+    fontDict =
+      Dict.fromList
+        [ ("Inconsolata", 
+            Font.family
+              [ Font.external
+                { name = "Inconsolata"
+                , url = "https://fonts.googleapis.com/css?family=Inconsolata"
+                }
+              ]
+          )
+        , ("Assistant", 
+            Font.family
+              [ Font.external
+                { name = "Assistant"
+                , url = "https://fonts.googleapis.com/css?family=Assistant"
+                }
+              ]
+          )
         ]
 
     model =  
@@ -942,6 +985,7 @@ initialModel =
       , elementMenuState = (500, (0,0), False)
 
       , colors = colorDict
+      , fonts = fontDict
 
       , mouseX = 0
       , mouseY = 0
