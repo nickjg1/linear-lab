@@ -9,7 +9,7 @@ const Navbar = () => {
 	};
 
 	return (
-		<header className="lg:px-16 px-3 ml-2 lg:ml-0 bg-offBlack flex flex-wrap justify-between lg:justify-start items-center lg:py-2 py-4 border-b-2 ">
+		<header className="md:px-16 px-3 ml-2 md:ml-0 bg-offBlack flex flex-wrap justify-between md:justify-start items-center md:py-2 py-4 border-b-2 ">
 			<a
 				href="/"
 				onClick={() => {
@@ -22,7 +22,7 @@ const Navbar = () => {
 					alt="logo"
 				/>
 			</a>
-			<label for="menu-toggle" className="cursor-pointer lg:hidden block">
+			<label for="menu-toggle" className="cursor-pointer md:hidden block">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					fill="none"
@@ -40,12 +40,12 @@ const Navbar = () => {
 			</label>
 			<input type="checkbox" className="hidden" id="menu-toggle" />
 			<div
-				className="hidden lg:flex lg:items-centre lg:w-auto w-full"
+				className="hidden md:flex md:items-centre md:w-auto w-full"
 				id="menu"
 			>
 				<nav>
-					<ul className="lg:flex items-center justify-between text-offWhite pt-4 lg:pt-0">
-						<li className="navLi hidden lg:block">
+					<ul className="md:flex items-center justify-between text-offWhite pt-4 md:pt-0">
+						<li className="navLi hidden md:block">
 							<Dropdown />
 						</li>
 
@@ -62,7 +62,7 @@ const Navbar = () => {
 						</li>
 
 						<li
-							className="navLi lg:hidden block"
+							className="navLi md:hidden block"
 							onClick={() => {
 								navigate('/lessons');
 								menuToggle(false);
@@ -74,9 +74,9 @@ const Navbar = () => {
 				</nav>
 			</div>
 
-			<div className="hidden lg:flex lg:ml-auto">
+			<div className="hidden md:flex md:ml-auto">
 				<ul>
-					<li className=" lg:flex lg:items-center ">
+					<li className=" md:flex md:items-center ">
 						<div className="  mt-1 ">
 							<div className="cursor-pointer rounded-full bg-indigo-700 relative shadow-sm">
 								<input
