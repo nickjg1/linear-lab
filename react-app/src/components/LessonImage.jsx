@@ -6,7 +6,7 @@ const LessonImage = ({ src, caption, alt, figNum }) => {
 				src={src}
 				className="rounded-lg w-[100%] object-contain "
 			/>
-			<p>
+			<p className="text-gray-500">
 				<strong>Figure {figNum}:</strong> {caption}
 			</p>
 		</div>
