@@ -123,20 +123,27 @@ elementsMenu model =
     
   in
     E.row
-      [ E.width ((E.px model.elementMenuWidth) |> maximum model.elementMenuWidthMax), E.height (E.fill)
-      , E.alignLeft, Background.color (getColor "elementMenu" model.colors)  ]
-      [ E.column
-          [ E.centerX, E.width E.fill, E.height E.fill, E.spacingXY 0 10, E.scrollbars ]
-          ( E.el 
-              [ E.centerX, Font.size 48, Font.bold, E.paddingXY 0 20
-              , getFont "Inconsolata" model.fonts
-              ] 
-              (E.text "ELEMENTS")
-            :: 
-            listOfElements
-            ++ 
-            [creationMenu model]
-          ) 
+      [ E.width ((E.px model.elementMenuWidth) |> E.maximum model.elementMenuWidthMax), E.height (E.fill)
+      , E.alignLeft, Background.color (getColor "background" model.elementColorDict)]
+      [ E.row
+          [ E.scrollbarX, E.centerX, E.width E.fill, E.height E.fill, E.spacingXY 0 10 ] 
+          [ E.column
+            [ E.centerX, E.width E.fill, E.height E.fill, E.spacingXY 0 10 ]
+            [ E.el 
+                [ Font.size 40, Font.bold, E.paddingEach { top = 40, right = 0, bottom = 30, left = 30 }
+                , getFont "Inconsolata", Font.color (getColor "elementText" model.elementColorDict)
+                ] 
+                (E.text "ELEMENTS")
+            , E.el
+                [ E.width ( E.px (round (toFloat model.elementMenuWidth/5*4)) |> E.minimum (250) ), E.height (E.px 2), E.centerX
+                , Background.color (getColor "elementText" model.elementColorDict)]
+                ( E.text "" )
+            , E.column
+                [ E.width E.shrink, E.height E.fill, E.scrollbarY, E.centerX ]
+                ( listOfElements )
+            , creationMenu model
+            ]
+          ]
       , E.el
           [ E.height E.fill, E.width (E.px 5), Cursor.ewResize, EEvents.onMouseDown ResizeElementMenuDown ]
           ( E.none )
@@ -155,7 +162,7 @@ creationMenu model =
               [ E.width E.fill ]
               ( Input.button
                   [ E.width (px 250), E.centerX, Border.width 1
-                  , E.focused [ Background.color (E.rgb255 150 80 255) ]
+                  , E.focused [ Background.color (getColor "buttonBackground" model.elementColorDict) ]
                   ]
                   { onPress = message
                   , label = 
@@ -169,7 +176,7 @@ creationMenu model =
         myVector =
           newVV2
             |> endTypeVV2 Directional
-            |> colorVV2 (getColor "defaultVector" model.colors)  
+            |> colorVV2 (getColor "defaultVector" model.elementColorDict)  
       in
         List.map2 
           optionButton 
@@ -195,7 +202,7 @@ vectorElement model (eID, gID, veID) vv2 ve =
         visualElement = (Vector vID (iX, iY) pass)
       in
         ( E.row
-            [ E.centerX, Background.color (getColor "element" model.colors), E.spacingXY 10 0, E.paddingXY 5 0, rounded 10 ]
+            [ E.centerX, E.spacingXY 10 0, E.paddingXY 5 0, rounded 10 ]
             [ E.el
                 []
                 ( Input.button
@@ -209,16 +216,16 @@ vectorElement model (eID, gID, veID) vv2 ve =
                     } 
                 )
             , E.el
-                [ Font.size 24 ]
+                [ Font.size 24, Font.color (getColor "elementText" model.elementColorDict) ]
                 ( E.text "vector" )
             , E.el
-                [ Font.size 32 ]
+                [ Font.size 32, Font.color (getColor "elementText" model.elementColorDict) ]
                 ( E.text (String.fromInt veID) )
             , E.el
-                [ ]
+                [ Font.color (getColor "elementText" model.elementColorDict) ]
                 ( E.text "=" )
             , E.el
-                [ E.height E.fill, E.centerY, Font.size 70, Font.hairline ]
+                [ E.height E.fill, E.centerY, Font.size 70, Font.hairline, Font.color (getColor "elementText" model.elementColorDict) ]
                 ( E.text "[" )
             , E.column
                 [ ]
@@ -244,7 +251,7 @@ vectorElement model (eID, gID, veID) vv2 ve =
                     )
                 ]
             , E.el
-                [ E.height E.fill, E.centerY, Font.size 70, Font.hairline ]
+                [ E.height E.fill, E.centerY, Font.size 70, Font.hairline, Font.color (getColor "elementText" model.elementColorDict) ]
                 ( E.text "]")
             ]
         )
@@ -388,15 +395,15 @@ update msg model =
         newWidgetDict = Dict.map (\k _ -> Widget.init (toFloat width) (toFloat height) k) model.ivvlDict
         newWidgetCommands = (List.map (\(k,v) -> Cmd.map (WidgetMsg k) (Tuple.second v)) (Dict.toList newWidgetDict))
         newElementWindowMax = round (toFloat width / 4)
-        newElementWindowWidth = round ((toFloat model.width / toFloat width) * toFloat model.elementMenuWidth)
+        newElementWindowWidth = round ((toFloat width / toFloat model.width) * toFloat model.elementMenuWidth)
+        newElementWindowState = (newElementWindowWidth, (0,0), False)
       in
-        ( { model | width = width, height = height, widgetDict = newWidgetDict, elementMenuWidthMax = newElementWindowMax, elementMenuWidth = newElementWindowWidth }, Cmd.batch newWidgetCommands)
+        ( { model | width = width, height = height, widgetDict = newWidgetDict, elementMenuWidthMax = newElementWindowMax, elementMenuWidth = newElementWindowWidth, elementMenuState = newElementWindowState }, Cmd.batch newWidgetCommands)
     Tick _ -> ( model, Task.perform (\_-> UpdateContinuous) Time.now )
     MouseMove x y -> ( { model | mouseX = x, mouseY = y }, Cmd.none )
 
     ResizeElementMenuDown -> 
       let
-        
         cursorPosition = (model.mouseX, model.mouseY)
 
         isStart = 
@@ -427,9 +434,7 @@ update msg model =
     
     ResizeElementMenuUp -> 
       let
-        newElementMenuState = 
-          case model.elementMenuState of
-            (_, b, _) -> (model.elementMenuWidth, b, False)
+        newElementMenuState = (model.elementMenuWidth, (0,0), False)
       in
         case model.elementMenuState of
           (_, _, False) -> (model, Cmd.none)
@@ -824,13 +829,17 @@ update msg model =
 
 getColor : String -> Dict String E.Color -> E.Color
 getColor key dict =
-  case ( Dict.get key dict)  of
-    Nothing -> E.rgb 0 0 0
+  case ( Dict.get key dict )  of
+    Nothing -> E.rgb255 25 25 25
     Just col -> col 
 
-getFont : String -> Dict String (E.Attribute Msg) -> E.Attribute Msg
-getFont key dict =
-  case (Dict.get key dict)  of
+setColor : String -> String -> Dict String E.Color -> Dict String E.Color
+setColor colourID key dict =
+  Dict.update key (\_ -> Dict.get colourID colorDict) dict
+
+getFont : String -> E.Attribute Msg
+getFont key =
+  case (Dict.get key fontDict)  of
     Nothing -> 
       Font.family
         [ Font.external
@@ -888,6 +897,42 @@ getVisualModel index dict =
   in
     final
 
+{--------------------------------------- HELPERS ---------------------------------------}
+
+colorDict : Dict String E.Color
+colorDict = 
+      Dict.fromList
+        [ ("primaryDark", E.rgb255 50 47 86)
+        , ("primaryLight", E.rgb255 0 120 255)
+        , ("secondaryLight", E.rgb255 0 231 144)
+        , ("offBlack", E.rgb255 21 15 30)
+        , ("secondaryDark", E.rgb255 47 82 92)
+        , ("highlight", E.rgb255 238 105 234)
+        , ("secondaryHighlight", E.rgb255 251 216 119)
+        , ("offWhite", E.rgb255 255 250 236)
+        ]
+
+fontDict : Dict String (E.Attribute msg)
+fontDict =
+  Dict.fromList
+    [ ("Inconsolata", 
+        Font.family
+          [ Font.external
+            { name = "Inconsolata"
+            , url = "https://fonts.googleapis.com/css?family=Inconsolata"
+            }
+          ]
+      )
+    , ("Assistant", 
+        Font.family
+          [ Font.external
+            { name = "Assistant"
+            , url = "https://fonts.googleapis.com/css?family=Assistant"
+            }
+          ]
+      )
+    ]
+
 {--------------------------------------- MODEL ---------------------------------------}
 
 type alias Model =
@@ -902,8 +947,7 @@ type alias Model =
   , elementMenuWidthMax : Int
   , elementMenuState : (Int, (Int, Int), Bool) -- SizeBefore, CursorPosStart, isDragging
 
-  , colors : Dict String E.Color  
-  , fonts : Dict String (E.Attribute Msg)
+  , elementColorDict : Dict String E.Color
   
   , mouseX : Int
   , mouseY : Int
@@ -921,12 +965,14 @@ initialModel =
                         ( newVV2
                           |> setVV2 (1, 1)
                           |> endTypeVV2 Directional
-                          |> colorVV2 (getColor "defaultVector" colorDict)
+                          |> colorVV2 (getColor "defaultVector" eColorDict)
                         ) 
-                      
+                      |> xAxisColorG2 (getColor "axes" eColorDict)
+                      |> yAxisColorG2 (getColor "axes" eColorDict)
+                      |> gridlinesColorG2 (getColor "axes" eColorDict)
                     )
                     preset.grids
-              , backgroundColor = elementToGSVGColor (getColor "background" colorDict)
+              , backgroundColor = elementToGSVGColor (getColor "background" eColorDict)
               }
 
     preVModel = 
@@ -935,41 +981,14 @@ initialModel =
 
     visualWidgets = Dict.fromList [ ("embed1", Widget.init 1920 1080 "embed1") ]
 
-    colorDict = 
+    eColorDict =
       Dict.fromList
-        [ ("elementMenu", E.rgb255 150 150 150)
-        , ("element", E.rgb255 100 100 100)
-        , ("background", E.rgb255 200 255 255)
-        , ("defaultVector", E.rgb255 0 0 0)
-
-        , ("primaryDark", E.rgb255 50 47 86)
-        , ("primaryLight", E.rgb255 0 120 255)
-        , ("secondaryLight", E.rgb255 0 231 144)
-        , ("offBlack", E.rgb255 38 32 48)
-        , ("secondaryDark", E.rgb255 47 82 92)
-        , ("highlight", E.rgb255 238 105 234)
-        , ("secondaryHighlight", E.rgb255 251 216 119)
-        , ("offWhite", E.rgb255 255 250 236)
-        ]
-
-    fontDict =
-      Dict.fromList
-        [ ("Inconsolata", 
-            Font.family
-              [ Font.external
-                { name = "Inconsolata"
-                , url = "https://fonts.googleapis.com/css?family=Inconsolata"
-                }
-              ]
-          )
-        , ("Assistant", 
-            Font.family
-              [ Font.external
-                { name = "Assistant"
-                , url = "https://fonts.googleapis.com/css?family=Assistant"
-                }
-              ]
-          )
+        [ ("elementText", getColor "offWhite" colorDict)
+        , ("background", getColor "offBlack" colorDict)
+        , ("defaultVector", getColor "primaryLight" colorDict)
+        , ("buttonBackground", getColor "offWhite" colorDict)
+        , ("axes", getColor "offWhite" colorDict)
+        , ("inputBackground", E.rgb255 73 65 85)
         ]
 
     model =  
@@ -980,12 +999,10 @@ initialModel =
       , visualElements = Dict.fromList [(("embed1", 1, 1), Vector 1 ("1", "1") True)]
       , focusedEmbed = "embed1"
 
-      , elementMenuWidth = 500
-      , elementMenuWidthMax = 500
-      , elementMenuState = (500, (0,0), False)
-
-      , colors = colorDict
-      , fonts = fontDict
+      , elementMenuWidth = round (1920/4)
+      , elementMenuWidthMax = round (1920/4)
+      , elementMenuState = (round(1920/4), (0,0), False)
+      , elementColorDict = eColorDict
 
       , mouseX = 0
       , mouseY = 0

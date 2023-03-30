@@ -389,11 +389,6 @@ renderG2 grid =
         (List.range -50 50)
       |> group
     
-    , text "0"
-        |> fixedwidth 
-        |> filled grid.xAxisColor
-        |> scale (grid.scale * 0.02)
-        |> move (1, 1)
     , renderVV2 
         ( vv2FromCoordinates (-10000, 0) (10000, 0) 
             |> crossVV2 grid.transformationMatrix 
@@ -408,7 +403,6 @@ renderG2 grid =
             |> lineTypeVV2 defaultLineType
             |> centerVV2
         )
-
     , let
         vectorUpdater record scalar = { record | vector = scalarV2 scalar record.vector }
         listOfVectors = Dict.values (Dict.map (\_ v -> vectorUpdater v grid.scale) grid.vectorObjects)
@@ -421,6 +415,11 @@ renderG2 grid =
       in
         List.map renderVV2 (listOfSkewedVectors)
           |> group
+    , text "0"
+        |> fixedwidth 
+        |> filled grid.xAxisColor
+        |> scale (grid.scale * 0.02)
+        |> move (1, 1)
     ] |> group
       |> move (grid.offset)
 
