@@ -12,7 +12,7 @@ export default function Navbar() {
 	return (
 		<Menu as="div" className="relative inline-block text-left ">
 			<div>
-				<Menu.Button className="inline-flex font-sans w-full justify-center gap-x-1 group-hover:text-gray-400 transition duration-200 ">
+				<Menu.Button className="inline-flex font-sans w-full justify-center gap-x-1  ">
 					Lessons
 					<ChevronDownIcon className="mt-1 w-5 group-hover:text-gray-400" />
 				</Menu.Button>
