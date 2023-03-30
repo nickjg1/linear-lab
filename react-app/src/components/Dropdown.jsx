@@ -71,18 +71,15 @@ export default function Navbar() {
 
 						<Menu.Item>
 							{({ active }) => (
-								<button
-									type="submit"
+								<a
+									href="#/lessons"
 									className={classNames(
 										active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-										'block w-full px-4 py-2 text-left text-sm'
+										'block px-4 py-2 text-sm'
 									)}
-									onClick={() => {
-										navigate('/lessons');
-									}}
 								>
 									All Lessons
-								</button>
+								</a>
 							)}
 						</Menu.Item>
 					</div>

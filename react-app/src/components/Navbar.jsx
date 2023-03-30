@@ -52,7 +52,7 @@ const Navbar = () => {
 						<li className="navLi">
 							<a
 								className=""
-								href="/sandbox"
+								href="#/sandbox"
 								onClick={() => {
 									menuToggle(false);
 								}}

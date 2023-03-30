@@ -14,7 +14,6 @@ const DefinitionBox = ({ title, content }) => {
 						clip-rule="evenodd"
 					/>
 				</svg>
-
 				<p className="font-bold pl-[0.5rem]">{title} </p>
 			</div>
 			<p>{content}</p>

@@ -10,6 +10,7 @@ const LessonPage = () => {
 				title="Definition"
 				content="Don't forget that our calculus test is today!"
 			/>
+			<LessonImage src="" caption="" alt="" />
 		</div>
 	);
 };
