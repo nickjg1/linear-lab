@@ -20,19 +20,13 @@
         @apply text-offWhite
     }
     h1{
-        font-size: 54pt;
-        font-weight: 800;
-        @apply text-center my-[24pt]
+        @apply text-center my-[18pt] md:my-[24pt] text-[36pt] md:text-[54pt] font-[800]
     }
     h2{
-        font-size: 32pt;
-        font-weight: 900;
-        @apply my-[18pt]
+        @apply my-[12pt] md:my-[18pt] text-[22pt] md:text-[36pt] font-[900]
     }
     h3{
-        font-size: 24pt;
-        font-weight: 800;
-        @apply my-[12pt] uppercase
+        @apply my-[8pt] md:my-[12pt] text-[18pt] md:text-[24pt] font-[800] uppercase
     }
     
     h4 {
@@ -72,7 +66,7 @@ body {
     @apply bg-offBlack text-offWhite;
 }
 
-section {
+.articleBody {
     @apply float-left w-[100%] lg:w-2/3
 }
 
@@ -81,11 +75,12 @@ section {
 }
 
 i.highlight{
-    @apply bg-highlight rounded-md p-1 not-italic
+    @apply bg-highlightTransparent rounded-md p-0.5 not-italic
 }
 
 i.highlight:after{
     content: ' ';
+    
 }
 
 i.highlight:before{
