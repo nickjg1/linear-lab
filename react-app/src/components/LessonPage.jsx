@@ -2,6 +2,7 @@ import React from "react";
 import AsideBox from "./AsideBox";
 import DefinitionBox from "./DefinitionBox";
 import LessonImage from "./LessonImage";
+var Latex = require("react-latex");
 
 const LessonPage = () => {
   return (
@@ -125,6 +126,56 @@ const LessonPage = () => {
           alt="vectorimg"
           figNum={2}
         />
+        <h5>Algebraic Representation:</h5>
+        <p>
+          The most abstract, but most computationally useful definition is the
+          algebraic representation of the vector. To feel confident in linear
+          algebra, it is important that one can intuitively grasp this concept.
+          To define an algebraic vector, let’s first build off the intuitive
+          concept of the arrow vector. Let’s imagine an **arrow vector** sitting
+          on a Cartesian plane—or <strong>X-Y plane</strong>—with its{" "}
+          <strong>tail</strong>
+          end sitting at the <strong>origin,</strong> and the{" "}
+          <strong>head</strong> of the arrow sitting elsewhere on the plane. The
+          position of the head on the plane can be described by a pair of
+          coordinates.{" "}
+          <strong>
+            These coordinates encode the instructions for reaching the head of
+            that vector, starting from it’s tail, which is always on the origin.
+          </strong>{" "}
+          This means that all vectors can be written as simply a set of
+          coordinates. Vectors are typically written with a set of numbers{" "}
+          <strong>vertically,</strong> and with brackets around them. Let’s take
+          a look at an example of a vector that lives in
+          <strong> two-dimensions</strong>.
+        </p>
+        <LessonImage
+          src="https://tasty-frill-5f8.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F1d6298ed-b8b6-4f64-9331-4f4162ed2c61%2FUntitled.png?id=32b3b281-e0d9-4dd9-a4ea-fa7a3cb52aed&table=block&spaceId=52114063-5293-4fd1-98f0-0f98a42e8d6b&width=1230&userId=&cache=v2"
+          caption="A 2 dimensional vector represented by the coordinates (-2, 3). "
+          figNum={2}
+        />
+        <p>
+          Let’s say we have a vector described by the coordinates{" "}
+          <Latex>
+            $\begin&#123;bmatrix&#125;-2 \\ 3 \end&#123;bmatrix&#125;$
+          </Latex>
+           (read as the x coordinate is -2, and y coordinate is 3). To reach the
+          <strong> head</strong> of the vector, we take{" "}
+          <strong>2 steps to the left</strong>
+          (represented by the -2) and <strong>3 steps up</strong> (represented
+          by the 3). We’ll talk about it more later but notice how in{" "}
+          <strong>Interactive Figure 2</strong> you can break the vector up into
+          two component vectors along the vertical and horizontal axis. This is
+          an important property of vectors, and one we will explore more when we
+          discuss **vector addition** and **vector basis**. For now, you don’t
+          have to worry about it. What if we want a vector that lives in
+          **three-dimensions**? We can represent a 3-D vector by an ordered
+          **triple** of numbers, such as [-2, 3, 1]
+          *********************(replace with latex)*********************
+          (*Interactive Figure 3)*. The last number in this column now
+          **encodes** the **instruction** on where to **move** along the third
+          axis (typically the **Z-axis)** to reach the **tip** of the vector.
+        </p>
       </div>
     </div>
   );
