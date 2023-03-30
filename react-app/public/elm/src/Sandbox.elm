@@ -52,7 +52,10 @@ htmlOutput model =
       , E.inFront (zoomMenu model)
       , EEvents.onMouseUp ResizeElementMenuUp
       ]
-      ( widgetDisplay model [ E.width E.fill, E.height E.fill, Cursor.move ] model.focusedEmbed
+      ( E.row
+          [ E.width E.fill, E.height E.fill ]
+          [ widgetDisplay model [ E.width E.fill, E.height E.fill, Cursor.move ] model.focusedEmbed
+          ]
       )
   ]
 
@@ -121,7 +124,7 @@ elementsMenu model =
   in
     E.row
       [ E.width ((E.px model.elementMenuWidth) |> maximum model.elementMenuWidthMax), E.height (E.fill)
-      , E.alignLeft, Background.color (E.rgb 0.7 0.5 1)  ]
+      , E.alignLeft, Background.color (getColor "elementMenu" model.colors)  ]
       [ E.column
           [ E.centerX, E.width E.fill, E.height E.fill, E.spacingXY 0 10, E.scrollbars ]
           ( E.el 
@@ -163,7 +166,8 @@ creationMenu model =
 
         myVector =
           newVV2
-              |> endTypeVV2 Directional
+            |> endTypeVV2 Directional
+            |> colorVV2 (getColor "defaultVector" model.colors)  
       in
         List.map2 
           optionButton 
@@ -189,7 +193,7 @@ vectorElement model (eID, gID, veID) vv2 ve =
         visualElement = (Vector vID (iX, iY) pass)
       in
         ( E.row
-            [ E.centerX, Background.color (E.rgb 1 0.5 1), E.spacingXY 10 0, E.paddingXY 5 0, rounded 10 ]
+            [ E.centerX, Background.color (getColor "element" model.colors), E.spacingXY 10 0, E.paddingXY 5 0, rounded 10 ]
             [ E.el
                 []
                 ( Input.button
@@ -817,6 +821,12 @@ update msg model =
     
 {--------------------------------------- HELPERS ---------------------------------------}
 
+getColor : String -> Dict String E.Color -> E.Color
+getColor key dict =
+  case ( Dict.get key dict)  of
+    Nothing -> E.rgb 255 255 255
+    Just col -> col 
+
 renderIVVL : IVVL.LibModel -> String -> List (Shape Msg)
 renderIVVL model k = 
   [ IVVL.renderLibModel model (IVVLMoveMsg k) (IVVLMsg k (ReleaseMove)) ]
@@ -878,6 +888,8 @@ type alias Model =
   , elementMenuWidth : Int
   , elementMenuWidthMax : Int
   , elementMenuState : (Int, (Int, Int), Bool) -- SizeBefore, CursorPosStart, isDragging
+
+  , colors : Dict String E.Color  
   
   , mouseX : Int
   , mouseY : Int
@@ -887,16 +899,20 @@ initialModel : (Model, Cmd Msg)
 initialModel =
   let
     preset = IVVL.defaultLibModel
-    preset2 = { preset | grids = Dict.insert 1 
-                                 ( newG2
-                                    |> IVVL.addVVectorG2 
-                                      ( newVV2
-                                       |> setVV2 (1, 1)
-                                       |> endTypeVV2 Directional
-                                      ) 
-                                    
-                                 )
-                                 preset.grids
+    preset2 = { preset 
+              | grids = 
+                  Dict.insert 1 
+                    ( newG2
+                      |> IVVL.addVVectorG2 
+                        ( newVV2
+                          |> setVV2 (1, 1)
+                          |> endTypeVV2 Directional
+                          |> colorVV2 (getColor "defaultVector" colorDict)
+                        ) 
+                      
+                    )
+                    preset.grids
+              , backgroundColor = elementToGSVGColor (getColor "background" colorDict)
               }
 
     preVModel = 
@@ -904,6 +920,14 @@ initialModel =
                     ]
 
     visualWidgets = Dict.fromList [ ("embed1", Widget.init 1920 1080 "embed1") ]
+
+    colorDict = 
+      Dict.fromList
+        [ ("elementMenu", E.rgb255 150 150 150)
+        , ("element", E.rgb255 100 100 100)
+        , ("background", E.rgb255 200 255 255)
+        , ("defaultVector", E.rgb255 0 0 0)
+        ]
 
     model =  
       { width = 1920
@@ -916,6 +940,8 @@ initialModel =
       , elementMenuWidth = 500
       , elementMenuWidthMax = 500
       , elementMenuState = (500, (0,0), False)
+
+      , colors = colorDict
 
       , mouseX = 0
       , mouseY = 0
