@@ -11,7 +11,7 @@ const Navbar = () => {
 	return (
 		<header className="md:px-16 px-3 ml-2 md:ml-0 bg-offBlack flex flex-wrap justify-between md:justify-start items-center md:py-2 py-4 border-b-2 ">
 			<a
-				href="/"
+				href="#/"
 				onClick={() => {
 					menuToggle(false);
 				}}
