@@ -9,7 +9,7 @@ const Navbar = () => {
 	};
 
 	return (
-		<header className="lg:px-16 px-4 bg-offBlack flex flex-wrap justify-between lg:justify-start items-center lg:py-2 py-4 border-b-2 ">
+		<header className="lg:px-16 px-3 ml-2 lg:ml-0 bg-offBlack flex flex-wrap justify-between lg:justify-start items-center lg:py-2 py-4 border-b-2 ">
 			<a
 				href="/"
 				onClick={() => {

@@ -38,7 +38,14 @@
     h4 {
         font-size: 18pt;
         font-weight: 700;
-        @apply my-[12pt]
+        @apply mb-[12pt] mt-[24pt]
+    }
+
+    h5 {
+        font-size: 14pt;
+        font-weight: 600;
+        @apply mb-[12pt] mt-[24pt] italic
+
     }
 
     p {
@@ -69,12 +76,12 @@ section {
     @apply float-left w-[100%] lg:w-2/3
 }
 
-aside {
-    @apply float-right w-[100%] lg:w-1/3 p-[2rem] pt-0
+.asideBox {
+    @apply float-right w-[100%] lg:w-1/3 p-[2rem] pt-0  
 }
 
 i.highlight{
-    @apply bg-highlight w-[100%] rounded-md p-1 not-italic
+    @apply bg-highlight rounded-md p-1 not-italic
 }
 
 i.highlight:after{
@@ -83,4 +90,8 @@ i.highlight:after{
 
 i.highlight:before{
     content: ' ';
+}
+
+hr{
+    @apply border-[0.5px] border-offWhite mx-[2rem] my-[5rem]
 }

@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 const LessonImage = ({ src, caption, alt, figNum }) => {
 	return (
 		<div className="my-[2rem]">
