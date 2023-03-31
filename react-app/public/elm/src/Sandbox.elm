@@ -147,6 +147,7 @@ elementsMenu model =
                 ( Icon.drag
                     [ Attributes.attribute "fill" (colorToHex (getColor "elementText" model.elementColorDict))
                     , Attributes.attribute "width" "40px"
+                    , Attributes.attribute "height" "40px"
                     ]
                 )  
               ) 
@@ -478,7 +479,7 @@ update msg model =
         )
     Tick _ -> ( model, Task.perform (\_-> UpdateContinuous) Time.now )
     MouseMove x y -> ( { model | mouseX = x, mouseY = y }, Cmd.none )
-    
+
     Scroll value -> 
       let 
         newValue =
