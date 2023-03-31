@@ -90,3 +90,7 @@ i.highlight:before{
 hr{
     @apply border-[0.5px] border-offWhite mx-[2rem] my-[5rem]
 }
+
+.fl:first-letter {
+    text-transform:uppercase;
+    }
