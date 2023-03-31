@@ -179,11 +179,14 @@ creationMenu model =
     ( let
         optionButton = 
           (\title message ->
-            E.el
+            E.row
               [ E.width E.fill ]
-              ( Input.button
-                  [ E.width (px 250), E.centerX, Border.width 1
-                  , E.focused [ Background.color (getColor "buttonBackground" model.elementColorDict) ]
+              [ E.el
+                [ E.width E.fill ]
+                ( Input.button
+                  [ E.width (px 175), E.centerX, Border.width 1
+                  -- , E.focused [ Background.color (getColor "buttonBackground" model.elementColorDict) ]
+                  , Background.color (getColor "buttonBackground" model.elementColorDict)
                   ]
                   { onPress = message
                   , label = 
@@ -191,7 +194,8 @@ creationMenu model =
                         [ E.centerX, paddingXY 0 5 ]
                         ( E.text title )
                   }
-              )
+                )
+              ]
           )
 
         myVector =
@@ -199,12 +203,22 @@ creationMenu model =
             |> endTypeVV2 Directional
             |> colorVV2 (getColor "defaultVector" model.elementColorDict)  
       in
-        List.map2 
-          optionButton 
-          ["Add Vector Element", "Add VectorSum Element"] 
-          [ Just (AddElement VectorType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1)))
-          , Just (AddElement VectorSumType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1))) 
+        [E.row
+          [ E.width E.fill ]
+          [
+            E.column
+            [ E.width E.fill  ]
+            (List.map2 optionButton ["⁺↗ AddVector ", "↖↗ VectorSum "] -- ["Add Vector Element", "Add VectorSum Element"]
+              [ Just (AddElement VectorType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1))),
+                Just (AddElement VectorSumType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1)))])
+          
+          ,
+            E.column
+            [ E.width E.fill ]
+            (List.map2 optionButton ["Nice PP" , "Nice PP"] 
+              [ Nothing ,Nothing ])
           ]
+        ]
     )
 
 {--------------------------------------- ELEMENTS ---------------------------------------}
