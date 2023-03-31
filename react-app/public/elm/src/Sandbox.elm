@@ -24,14 +24,19 @@ import Element.Cursor as Cursor exposing (..)
 import Element.Events as EEvents exposing (..)
 
 import Json.Decode as Decode exposing (..)
+import Hex as Hex
 
 import Task
 
 import Html exposing (Html)
+import Html.Attributes as Attributes exposing (..)
 
 import Dict exposing (..)
 import IVVL exposing (..)
 import Html exposing (..)
+
+import ElmSVG.Icons as Icon exposing (..)
+import Svg as Svg exposing (..)
 
 {------------------------------------------------------------------------------
                              _    _ _______ __  __ _      
@@ -125,21 +130,33 @@ elementsMenu model =
     E.row
       [ E.width ((E.px model.elementMenuWidth) |> E.maximum model.elementMenuWidthMax), E.height (E.fill)
       , E.alignLeft, Background.color (getColor "background" model.elementColorDict)
+      , E.inFront
+          ( E.el
+              [ E.rotate (pi/2), E.centerY, E.moveRight (toFloat model.elementMenuWidth - 19), EEvents.onMouseDown ResizeElementMenuDown, Cursor.ewResize ]
+              ( E.html 
+                ( Icon.drag
+                    [ Attributes.attribute "fill" (colorToHex (getColor "elementText" model.elementColorDict))
+                    , Attributes.attribute "width" "40px"
+                    ]
+                )  
+              ) 
+          )
       , E.behindContent
           ( E.el
-            [ E.height E.fill, E.width (E.px 10), Cursor.ewResize, EEvents.onMouseDown ResizeElementMenuDown
-            , E.moveRight (toFloat model.elementMenuWidth)
-            ]
-            ( E.el
-                [ E.height E.fill, E.width (E.px 2), Background.color (getColor "elementText" model.elementColorDict)
-                , E.behindContent 
-                    ( E.el 
-                        [ E.height E.fill, E.width (E.px 2) , Border.glow (getColor "background" model.elementColorDict) 55 ]
-                        ( E.none )
-                    )
-                ]
-                ( E.none )
-            )
+              [ E.height E.fill, E.width (E.px 10), E.moveRight (toFloat model.elementMenuWidth) ]
+              ( E.el
+                  [ E.height E.fill, E.width (E.px 2), Background.color (getColor "elementText" model.elementColorDict)
+                  , E.behindContent 
+                      ( E.el 
+                          [ E.height E.fill, E.width (E.px 2), Border.glow (getColor "background" model.elementColorDict) 55 ]
+                          ( E.none )
+                      )
+                  , E.inFront
+                      ( E.none
+                      )
+                  ]
+                  ( E.none )
+              )
           )
       ]
       [ E.row
@@ -174,52 +191,53 @@ elementsMenu model =
 
 creationMenu : Model -> Element Msg
 creationMenu model =
-  E.column
-    [ E.width E.fill, E.paddingXY 0 10 ]
-    ( let
-        optionButton = 
-          (\title message ->
-            E.row
-              [ E.width E.fill ]
-              [ E.el
-                [ E.width E.fill ]
-                ( Input.button
-                  [ E.width (px 175), E.centerX, Border.width 1
-                  -- , E.focused [ Background.color (getColor "buttonBackground" model.elementColorDict) ]
-                  , Background.color (getColor "buttonBackground" model.elementColorDict)
-                  ]
-                  { onPress = message
-                  , label = 
-                      E.el
-                        [ E.centerX, paddingXY 0 5 ]
-                        ( E.text title )
-                  }
-                )
+  let
+    optionButton = 
+      (\title message ->
+        E.row
+          [ E.width E.fill ]
+          [ E.el
+            [ E.width E.fill ]
+            ( Input.button
+              [ E.width (px 200), E.height (px 50), E.centerX, Border.width 1, Border.rounded 10
+              -- , E.focused [ Background.color (getColor "buttonBackground" model.elementColorDict) ]
+              , Background.color (getColor "buttonBackground" model.elementColorDict)
+              ]
+              { onPress = message
+              , label = 
+                  E.el
+                    [ E.centerX, paddingXY 0 5, getFont "Assistant", Font.bold, Font.size 20 ]
+                    ( E.text title )
+              }
+            )
+          ]
+      )
+
+    myVector =
+      newVV2
+        |> endTypeVV2 Directional
+        |> colorVV2 (getColor "defaultVector" model.elementColorDict)  
+  in
+    E.column
+      [ E.width E.fill, E.paddingXY 0 20 ]
+      [ E.column
+        [ E.width E.fill, E.paddingXY 20 0, E.spacingXY 0 10 ]
+        [ E.row
+          [ E.centerX, E.spacingXY 10 0 ]
+          ( List.map2 optionButton 
+              ["⁺↗ Add Vector", "ˣ↗ Scale Vector"] -- ["Add Vector Element", "Add VectorSum Element"]
+              [ Just (AddElement VectorType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1)))
+              , Just (AddElement VectorSumType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1)))
               ]
           )
-
-        myVector =
-          newVV2
-            |> endTypeVV2 Directional
-            |> colorVV2 (getColor "defaultVector" model.elementColorDict)  
-      in
-        [E.row
-          [ E.width E.fill ]
-          [
-            E.column
-            [ E.width E.fill  ]
-            (List.map2 optionButton ["⁺↗ AddVector ", "↖↗ VectorSum "] -- ["Add Vector Element", "Add VectorSum Element"]
-              [ Just (AddElement VectorType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1))),
-                Just (AddElement VectorSumType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1)))])
-          
-          ,
-            E.column
-            [ E.width E.fill ]
-            (List.map2 optionButton ["Nice PP" , "Nice PP"] 
-              [ Nothing ,Nothing ])
-          ]
+        , E.row
+          [ E.centerX, E.spacingXY 10 0 ]
+          ( List.map2 optionButton 
+              ["↖⁺↗ Vector Sum" , "↖⁻↗ Vector Difference"] 
+              [ Nothing, Nothing ]
+          )
         ]
-    )
+      ]
 
 {--------------------------------------- ELEMENTS ---------------------------------------}
 
@@ -429,11 +447,22 @@ update msg model =
       let
         newWidgetDict = Dict.map (\k _ -> Widget.init (toFloat width) (toFloat height) k) model.ivvlDict
         newWidgetCommands = (List.map (\(k,v) -> Cmd.map (WidgetMsg k) (Tuple.second v)) (Dict.toList newWidgetDict))
-        newElementWindowMax = round (toFloat width / 4)
+        newElementWindowMax = round (toFloat width / 2)
+        newElementWindowMin = round (toFloat width / 16)
         newElementWindowWidth = round ((toFloat width / toFloat model.width) * toFloat model.elementMenuWidth)
         newElementWindowState = (newElementWindowWidth, (0,0), False)
       in
-        ( { model | width = width, height = height, widgetDict = newWidgetDict, elementMenuWidthMax = newElementWindowMax, elementMenuWidth = newElementWindowWidth, elementMenuState = newElementWindowState }, Cmd.batch newWidgetCommands)
+        ( { model 
+            | width = width
+            , height = height
+            , widgetDict = newWidgetDict
+            , elementMenuWidthMax = newElementWindowMax
+            , elementMenuWidthMin = newElementWindowMin
+            , elementMenuWidth = newElementWindowWidth
+            , elementMenuState = newElementWindowState 
+          }
+          , Cmd.batch newWidgetCommands
+        )
     Tick _ -> ( model, Task.perform (\_-> UpdateContinuous) Time.now )
     MouseMove x y -> ( { model | mouseX = x, mouseY = y }, Cmd.none )
 
@@ -462,9 +491,16 @@ update msg model =
           case List.minimum [initialWidth - offset, model.elementMenuWidthMax ] of
             Nothing -> model.elementMenuWidthMax
             Just val -> val
+
+        restrictedWidth =
+          if (newWidth >= model.elementMenuWidthMax)
+            then model.elementMenuWidthMax
+            else if (newWidth <= model.elementMenuWidthMin)
+              then model.elementMenuWidthMin
+              else newWidth
       in
         if isStart
-          then ( { model | elementMenuWidth = newWidth, elementMenuState = newState }, Cmd.none)
+          then ( { model | elementMenuWidth = restrictedWidth, elementMenuState = newState }, Cmd.none)
           else ( { model | elementMenuState = newState }, Cmd.none)
     
     ResizeElementMenuUp -> 
@@ -932,6 +968,17 @@ getVisualModel index dict =
   in
     final
 
+colorToHex : E.Color -> String
+colorToHex eCol =
+  let
+    colors = toRgb eCol
+    red = Hex.toString (round (colors.red * 255))
+    blue = Hex.toString (round (colors.blue * 255))
+    green = Hex.toString (round (colors.green * 255))
+    together = String.concat ["#", red, green, blue] 
+  in 
+    together
+
 {--------------------------------------- HELPERS ---------------------------------------}
 
 colorDict : Dict String E.Color
@@ -980,6 +1027,7 @@ type alias Model =
 
   , elementMenuWidth : Int
   , elementMenuWidthMax : Int
+  , elementMenuWidthMin : Int
   , elementMenuState : (Int, (Int, Int), Bool) -- SizeBefore, CursorPosStart, isDragging
 
   , elementColorDict : Dict String E.Color
@@ -1035,7 +1083,8 @@ initialModel =
       , focusedEmbed = "embed1"
 
       , elementMenuWidth = round (1920/4)
-      , elementMenuWidthMax = round (1920/4)
+      , elementMenuWidthMax = round (1920/2)
+      , elementMenuWidthMin = round (1920/16)
       , elementMenuState = (round(1920/4), (0,0), False)
       , elementColorDict = eColorDict
 
