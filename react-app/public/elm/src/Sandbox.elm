@@ -28,12 +28,12 @@ import Hex as Hex
 
 import Task
 
-import Html exposing (Html)
+import Html exposing (..)
+import Html.Events as HEvents exposing (..)
 import Html.Attributes as Attributes exposing (..)
 
 import Dict exposing (..)
 import IVVL exposing (..)
-import Html exposing (..)
 
 import ElmSVG.Icons as Icon exposing (..)
 import Svg as Svg exposing (..)
@@ -51,43 +51,53 @@ import Svg as Svg exposing (..)
 
 htmlOutput : Model -> List (Html Msg)
 htmlOutput model = 
-  [ E.layout 
-      [ E.width E.fill, E.height E.fill
-      , E.inFront (elementsMenu model)
-      , E.inFront (zoomMenu model)
-      , EEvents.onMouseUp ResizeElementMenuUp
-      ]
-      ( E.row
-          [ E.width E.fill, E.height E.fill ]
-          [ widgetDisplay model [ E.width E.fill, E.height E.fill, Cursor.move ] model.focusedEmbed
-          ]
-      )
-  ]
+  let
+    decodeScrollEvent = 
+      Decode.field "deltaY" Decode.float
+  in
+    [ E.layout 
+        [ E.width E.fill, E.height E.fill
+        , E.inFront (elementsMenu model)
+        , E.inFront (zoomMenu model)
+        , EEvents.onMouseUp ResizeElementMenuUp
+        ]
+        ( E.row
+            [ E.width E.fill, E.height E.fill ]
+            [ widgetDisplay model 
+                [ E.width E.fill, E.height E.fill, Cursor.move
+                , htmlAttribute 
+                  ( HEvents.on "wheel" (Decode.map (Scroll) decodeScrollEvent)
+                  )
+                ] 
+                model.focusedEmbed
+            ]
+        )
+    ]
 
 {--------------------------------------- MENUS ---------------------------------------}
 
 zoomMenu : Model -> Element Msg
 zoomMenu model =
   E.column
-    [ E.alignRight, E.alignBottom, E.moveUp 20, E.moveLeft 20 ]
+    [ E.alignRight, E.alignBottom, E.moveUp 20, E.moveLeft 20, E.spacingXY 0 10 ]
     [ Input.button
-        [ Border.width 1, E.width (E.px 30), E.height (E.px 30)
-        , Background.color (rgb255 255 255 255)
+        [ E.width (E.px 45), E.height (E.px 45), Border.rounded 5, Border.width 5, Border.color (getColor "offWhite" colorDict)
+        , Background.color (getColor "offWhite" colorDict)
         ]
         { onPress = Just (IVVLMsg model.focusedEmbed (IVVL.ScaleG2 1.5 1))
         , label = 
             E.el
-              [ E.centerX ]
+              [ E.centerX, getFont "Assistant", Font.color (getColor "offBlack" colorDict), Font.size 40, Font.bold, E.moveUp 3 ]
               ( E.text "+" )
         } 
     , Input.button
-        [ Border.width 1, E.width (E.px 30), E.height (E.px 30)
-        , Background.color (rgb255 255 255 255)
+        [ E.width (E.px 45), E.height (E.px 45), Border.rounded 5, Border.width 5, Border.color (getColor "offWhite" colorDict)
+        , Background.color (getColor "offBlack" colorDict)
         ]
         { onPress = Just (IVVLMsg model.focusedEmbed (IVVL.ScaleG2 0.666 1))
         , label = 
             E.el
-              [ E.centerX]
+              [ E.centerX, getFont "Assistant", Font.color (getColor "offWhite" colorDict), Font.size 40, Font.bold, E.moveUp 7 ]
               ( E.text "-" )
         } 
     ]
@@ -404,7 +414,9 @@ widgetDisplay : Model -> List (E.Attribute Msg) -> String -> Element Msg
 widgetDisplay model style widgetId = 
   E.el 
     style
-    <| E.html (Widget.view (getWidgetModel widgetId model.widgetDict) (renderIVVL (getVisualModel widgetId model.ivvlDict) widgetId) )
+    ( E.html 
+      (Widget.view (getWidgetModel widgetId model.widgetDict) (renderIVVL (getVisualModel widgetId model.ivvlDict) widgetId) )
+    )
 
 {--------------------------------------- MESSAGES ---------------------------------------}
 
@@ -423,6 +435,7 @@ type ElementType = VectorType
 type Msg = Tick Time.Posix
          | WindowResize Int Int
          | MouseMove Int Int
+         | Scroll Float
          | Blank
 
          | ResizeElementMenuDown
@@ -465,6 +478,15 @@ update msg model =
         )
     Tick _ -> ( model, Task.perform (\_-> UpdateContinuous) Time.now )
     MouseMove x y -> ( { model | mouseX = x, mouseY = y }, Cmd.none )
+    
+    Scroll value -> 
+      let 
+        newValue =
+          if value > 0
+            then (2/3)
+            else (3/2)
+      in
+        ( model, Task.perform (\_-> (IVVLMsg model.focusedEmbed (IVVL.ScaleG2 newValue 1))) Time.now ) 
 
     ResizeElementMenuDown -> 
       let
