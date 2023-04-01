@@ -1,24 +1,67 @@
-import LessonCard from './LessonCard';
+import LessonCard from "./LessonCard";
+
 const Lessons = () => {
-	const LessonArr = [
-		{
-			title: 'vectors',
-			image:
-				'https://imgs.search.brave.com/FDVZez-eVaaToLgfDUsPLfDZj8AsstmtCrwAjlQoRZY/rs:fit:474:344:1/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlh/Lm9yZy93aWtpcGVk/aWEvY29tbW9ucy90/aHVtYi8yLzJmL0xp/bmVhcl9zdWJzcGFj/ZXNfd2l0aF9zaGFk/aW5nLnN2Zy81MDBw/eC1MaW5lYXJfc3Vi/c3BhY2VzX3dpdGhf/c2hhZGluZy5zdmcu/cG5n',
-			text: 'Learn about vectors, their components, and how to use them to solve problems.',
-		},
-	];
-	return (
-		<div className="flex justify-center py-10">
-			{LessonArr.map((lesson) => (
-				<LessonCard
-					title={lesson.title}
-					image={lesson.image}
-					text={lesson.text}
-				/>
-			))}
-		</div>
-	);
+    const vectorLessons = [
+        {
+            title: "1. Introduction to Vectors",
+            text: "Learn about vectors, their components, and how to use them to solve problems.",
+            image: "/images/lessons/featured/vector-lesson.png",
+            pageLink: "vectors",
+        },
+        {},
+        {},
+        {},
+    ];
+
+    const matrixLessons = [
+        {
+            title: "1. Introduction to Vectors",
+            text: "Learn about vectors, their components, and how to use them to solve problems.",
+            image: "/images/lessons/featured/vector-lesson.png",
+        },
+    ];
+
+    return (
+        <>
+            <div className='w-[90vw] lg:w-[75vw] mx-auto mt-[4rem]'>
+                <h2 className='text-center'>Vectors</h2>
+                <p className='text-center'>
+                    Learn about vectors, their components, and how to use them
+                    to solve problems.
+                </p>
+                {/* TODO: Make this gallery into a component */}
+                <div className='flex justify-center flex-wrap grow'>
+                    {vectorLessons.map((lesson) => (
+                        <LessonCard
+                            title={lesson.title}
+                            image={lesson.image}
+                            text={lesson.text}
+                            pageLink={lesson.pageLink}
+                        />
+                    ))}
+                </div>
+                <hr />
+            </div>
+
+            <div className='w-[90vw] lg:w-[75vw] mx-auto mt-[4rem]'>
+                <h2 className='text-center'>Matrices</h2>
+                <p className='text-center'>
+                    Learn about matrices, their components, and how to use them
+                    to solve problems.
+                </p>
+            </div>
+            <div className='flex justify-center w-[90vw] lg:w-[75vw] mx-auto flex-wrap'>
+                {matrixLessons.map((lesson) => (
+                    <LessonCard
+                        title={lesson.title}
+                        image={lesson.image}
+                        text={lesson.text}
+                        pageLink={lesson.pageLink}
+                    />
+                ))}
+            </div>
+        </>
+    );
 };
 
 export default Lessons;
