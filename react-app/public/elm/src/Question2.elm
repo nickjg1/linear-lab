@@ -1,4 +1,4 @@
-module Questions1 exposing (..)
+module Question2 exposing (..)
 
 {--------------------------------------- IMPORTS ---------------------------------------}
 
@@ -237,8 +237,9 @@ creationMenu model =
         [ E.row
           [ E.centerX, E.spacingXY 10 0 ]
           ( List.map2 optionButton 
-              ["⁺↗ Add Vector"] -- ["Add Vector Element", "Add VectorSum Element"]
-              [ Just (AddElement VectorType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1)))
+              ["⁺↗ Add Vector" , "↖⁺↗ Vector Sum"] 
+              [ Just (AddElement VectorType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1))),
+                Just (AddElement VectorSumType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1)))
               ]
           )
         ]
@@ -249,18 +250,32 @@ creationMenu model =
 answerElement : Model -> Element Msg
 answerElement model = 
   let
+
       allelements = Dict.values model.visualElements
 
       imp = 
         List.map 
           (\e -> 
               case e of
-                Vector _ (a,b) _ -> (Maybe.withDefault 0 (String.toFloat a) , Maybe.withDefault 0 (String.toFloat b) )
-                _ -> (0.0, 0.0)
+                VectorSum x _ _ -> (x)
+                _ -> (0)
           )
           allelements
+      theModel = getVisualModel model.focusedEmbed model.ivvlDict
+      theGrid = 
+          case (Dict.get 1 theModel.grids) of
+            Just x -> x
+            _ -> defaultGrid2D
+      theVector vID =
+          case (Dict.get vID theGrid.vectorObjects) of
+            Just x -> x
+            _ -> defaultVisVector2D
 
-      flag = List.member (5,2) imp
+      sumanswer = List.map theVector imp
+
+      v1 = List.map (\x -> ((String.fromFloat (firstV2 x.vector)),(String.fromFloat (secondV2 x.vector)))) sumanswer
+
+      flag = List.member (("5","2")) v1
 
   in
     if flag then
@@ -1091,12 +1106,6 @@ initialModel =
                           |> endTypeVV2 Directional
                           |> colorVV2 (getColor "defaultVector" eColorDict)
                         ) 
-                      |> IVVL.addVVectorG2 
-                        ( newVV2
-                          |> setVV2 (5, 2)
-                          |> endTypeVV2 Directional
-                          |> colorVV2 (getColor "AnswerVector" eColorDict)
-                        ) 
                       |> xAxisColorG2 (getColor "axes" eColorDict)
                       |> yAxisColorG2 (getColor "axes" eColorDict)
                       |> gridlinesColorG2 (getColor "axes" eColorDict)
@@ -1150,7 +1159,7 @@ initialModel =
 
 view : Model -> { title : String, body : List (Html Msg) } 
 view model =
-  { title = "Question1"
+  { title = "Question2"
   , body = htmlOutput model
   }   
 
