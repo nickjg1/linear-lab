@@ -1,4 +1,4 @@
-module Questions1 exposing (..)
+module Question1 exposing (..)
 
 {--------------------------------------- IMPORTS ---------------------------------------}
 

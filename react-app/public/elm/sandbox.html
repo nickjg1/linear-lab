@@ -4547,12 +4547,20 @@ var $elm$core$Set$toList = function (_v0) {
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
+var $author$project$Sandbox$MouseMove = F2(
+	function (a, b) {
+		return {$: 'MouseMove', a: a, b: b};
+	});
 var $author$project$Sandbox$Tick = function (a) {
 	return {$: 'Tick', a: a};
 };
 var $author$project$Sandbox$WindowResize = F2(
 	function (a, b) {
 		return {$: 'WindowResize', a: a, b: b};
+	});
+var $elm$core$Basics$apL = F2(
+	function (f, x) {
+		return f(x);
 	});
 var $elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
@@ -4815,10 +4823,6 @@ var $elm$core$Elm$JsArray$initialize = _JsArray_initialize;
 var $elm$core$Array$Leaf = function (a) {
 	return {$: 'Leaf', a: a};
 };
-var $elm$core$Basics$apL = F2(
-	function (f, x) {
-		return f(x);
-	});
 var $elm$core$Basics$apR = F2(
 	function (x, f) {
 		return f(x);
@@ -5264,7 +5268,11 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$document = _Browser_document;
+var $elm$json$Json$Decode$field = _Json_decodeField;
 var $author$project$IVVL$Directional = {$: 'Directional'};
+var $author$project$IVVL$Solid = function (a) {
+	return {$: 'Solid', a: a};
+};
 var $author$project$Sandbox$Vector = F3(
 	function (a, b, c) {
 		return {$: 'Vector', a: a, b: b, c: c};
@@ -5483,7 +5491,55 @@ var $author$project$IVVL$addVVectorG2 = F2(
 			});
 	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $author$project$IVVL$NotDragging = {$: 'NotDragging'};
+var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
+var $elm$core$Dict$fromList = function (assocs) {
+	return A3(
+		$elm$core$List$foldl,
+		F2(
+			function (_v0, dict) {
+				var key = _v0.a;
+				var value = _v0.b;
+				return A3($elm$core$Dict$insert, key, value, dict);
+			}),
+		$elm$core$Dict$empty,
+		assocs);
+};
+var $mdgriffith$elm_ui$Internal$Model$Rgba = F4(
+	function (a, b, c, d) {
+		return {$: 'Rgba', a: a, b: b, c: c, d: d};
+	});
+var $mdgriffith$elm_ui$Element$rgb255 = F3(
+	function (red, green, blue) {
+		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
+	});
+var $author$project$Sandbox$colorDict = $elm$core$Dict$fromList(
+	_List_fromArray(
+		[
+			_Utils_Tuple2(
+			'primaryDark',
+			A3($mdgriffith$elm_ui$Element$rgb255, 50, 47, 86)),
+			_Utils_Tuple2(
+			'primaryLight',
+			A3($mdgriffith$elm_ui$Element$rgb255, 0, 120, 255)),
+			_Utils_Tuple2(
+			'secondaryLight',
+			A3($mdgriffith$elm_ui$Element$rgb255, 0, 231, 144)),
+			_Utils_Tuple2(
+			'offBlack',
+			A3($mdgriffith$elm_ui$Element$rgb255, 21, 15, 30)),
+			_Utils_Tuple2(
+			'secondaryDark',
+			A3($mdgriffith$elm_ui$Element$rgb255, 47, 82, 92)),
+			_Utils_Tuple2(
+			'highlight',
+			A3($mdgriffith$elm_ui$Element$rgb255, 238, 105, 234)),
+			_Utils_Tuple2(
+			'secondaryHighlight',
+			A3($mdgriffith$elm_ui$Element$rgb255, 251, 216, 119)),
+			_Utils_Tuple2(
+			'offWhite',
+			A3($mdgriffith$elm_ui$Element$rgb255, 255, 250, 236))
+		]));
 var $MacCASOutreach$graphicsvg$GraphicSVG$Solid = function (a) {
 	return {$: 'Solid', a: a};
 };
@@ -5515,41 +5571,48 @@ var $MacCASOutreach$graphicsvg$GraphicSVG$rgba = F4(
 					red: $MacCASOutreach$graphicsvg$GraphicSVG$ssc(r)
 				}));
 	});
-var $MacCASOutreach$graphicsvg$GraphicSVG$black = A4($MacCASOutreach$graphicsvg$GraphicSVG$rgba, 0, 0, 0, 1);
-var $author$project$IVVL$Solid = function (a) {
-	return {$: 'Solid', a: a};
+var $MacCASOutreach$graphicsvg$GraphicSVG$rgb = F3(
+	function (r, g, b) {
+		return A4($MacCASOutreach$graphicsvg$GraphicSVG$rgba, r, g, b, 1);
+	});
+var $mdgriffith$elm_ui$Element$toRgb = function (_v0) {
+	var r = _v0.a;
+	var g = _v0.b;
+	var b = _v0.c;
+	var a = _v0.d;
+	return {alpha: a, blue: b, green: g, red: r};
 };
-var $author$project$IVVL$defaultLineType = $author$project$IVVL$Solid(1);
-var $author$project$IVVL$defaultMatrix2D = _List_fromArray(
+var $author$project$IVVL$elementToGSVGColor = function (eColor) {
+	var channels = $mdgriffith$elm_ui$Element$toRgb(eColor);
+	return A3($MacCASOutreach$graphicsvg$GraphicSVG$rgb, channels.red * 255, channels.green * 255, channels.blue * 255);
+};
+var $author$project$IVVL$colorVV2 = F2(
+	function (eCol, visVec) {
+		return _Utils_update(
+			visVec,
+			{
+				color: $author$project$IVVL$elementToGSVGColor(eCol)
+			});
+	});
+var $author$project$IVVL$NotDragging = {$: 'NotDragging'};
+var $MacCASOutreach$graphicsvg$GraphicSVG$black = A4($MacCASOutreach$graphicsvg$GraphicSVG$rgba, 0, 0, 0, 1);
+var $author$project$IVVL$identityMatrix2D = _List_fromArray(
 	[
-		_Utils_Tuple2(0, 0),
-		_Utils_Tuple2(0, 0)
+		_Utils_Tuple2(1, 0),
+		_Utils_Tuple2(0, 1)
 	]);
-var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
 var $author$project$IVVL$defaultGrid2D = {
+	gridlinesColor: $MacCASOutreach$graphicsvg$GraphicSVG$black,
 	offset: _Utils_Tuple2(0, 0),
 	scale: 100,
 	startingOffset: _Utils_Tuple2(0, 0),
-	transformationMatrix: $author$project$IVVL$defaultMatrix2D,
+	transformationMatrix: $author$project$IVVL$identityMatrix2D,
 	vectorObjects: $elm$core$Dict$empty,
-	xColor: $MacCASOutreach$graphicsvg$GraphicSVG$black,
-	xLineType: $author$project$IVVL$defaultLineType,
-	yColor: $MacCASOutreach$graphicsvg$GraphicSVG$black,
-	yLineType: $author$project$IVVL$defaultLineType
-};
-var $elm$core$Dict$fromList = function (assocs) {
-	return A3(
-		$elm$core$List$foldl,
-		F2(
-			function (_v0, dict) {
-				var key = _v0.a;
-				var value = _v0.b;
-				return A3($elm$core$Dict$insert, key, value, dict);
-			}),
-		$elm$core$Dict$empty,
-		assocs);
+	xAxisColor: $MacCASOutreach$graphicsvg$GraphicSVG$black,
+	yAxisColor: $MacCASOutreach$graphicsvg$GraphicSVG$black
 };
 var $author$project$IVVL$defaultLibModel = {
+	backgroundColor: A3($MacCASOutreach$graphicsvg$GraphicSVG$rgb, 100, 100, 100),
 	grids: $elm$core$Dict$fromList(
 		_List_fromArray(
 			[
@@ -5564,7 +5627,25 @@ var $author$project$IVVL$endTypeVV2 = F2(
 			visVec,
 			{endType: et});
 	});
+var $author$project$Sandbox$getColor = F2(
+	function (key, dict) {
+		var _v0 = A2($elm$core$Dict$get, key, dict);
+		if (_v0.$ === 'Nothing') {
+			return A3($mdgriffith$elm_ui$Element$rgb255, 25, 25, 25);
+		} else {
+			var col = _v0.a;
+			return col;
+		}
+	});
 var $elm$browser$Browser$Dom$getViewport = _Browser_withWindow(_Browser_getViewport);
+var $author$project$IVVL$gridlinesColorG2 = F2(
+	function (eColor, grid) {
+		return _Utils_update(
+			grid,
+			{
+				gridlinesColor: $author$project$IVVL$elementToGSVGColor(eColor)
+			});
+	});
 var $MacCASOutreach$graphicsvg$GraphicSVG$Widget$WidgetResize = function (a) {
 	return {$: 'WidgetResize', a: a};
 };
@@ -5616,12 +5697,42 @@ var $MacCASOutreach$graphicsvg$GraphicSVG$Widget$init = F3(
 			{ch: h, cw: w, id: id, wh: 0, ww: 0},
 			$MacCASOutreach$graphicsvg$GraphicSVG$Widget$getContainerSize(id));
 	});
+var $author$project$IVVL$lineTypeVV2 = F2(
+	function (lt, visVec) {
+		return _Utils_update(
+			visVec,
+			{lineType: lt});
+	});
 var $elm$core$Platform$Cmd$map = _Platform_map;
 var $author$project$IVVL$newG2 = $author$project$IVVL$defaultGrid2D;
 var $author$project$IVVL$None = {$: 'None'};
 var $author$project$IVVL$defaultEndType = $author$project$IVVL$None;
+var $author$project$IVVL$defaultLineType = $author$project$IVVL$Solid(1);
 var $author$project$IVVL$defaultVector2D = _Utils_Tuple2(0, 0);
-var $author$project$IVVL$defaultVisVector2D = {endType: $author$project$IVVL$defaultEndType, lineType: $author$project$IVVL$defaultLineType, vector: $author$project$IVVL$defaultVector2D};
+var $author$project$IVVL$Dashed = function (a) {
+	return {$: 'Dashed', a: a};
+};
+var $author$project$IVVL$Dotted = function (a) {
+	return {$: 'Dotted', a: a};
+};
+var $author$project$IVVL$sizeLT = F2(
+	function (size, lt) {
+		switch (lt.$) {
+			case 'Solid':
+				return $author$project$IVVL$Solid(size);
+			case 'Dotted':
+				return $author$project$IVVL$Dotted(size);
+			default:
+				return $author$project$IVVL$Dashed(size);
+		}
+	});
+var $author$project$IVVL$defaultVisVector2D = {
+	color: A3($MacCASOutreach$graphicsvg$GraphicSVG$rgb, 0, 0, 0),
+	endType: $author$project$IVVL$defaultEndType,
+	lineType: A2($author$project$IVVL$sizeLT, 2, $author$project$IVVL$defaultLineType),
+	offset: _Utils_Tuple2(0, 0),
+	vector: $author$project$IVVL$defaultVector2D
+};
 var $author$project$IVVL$newVV2 = $author$project$IVVL$defaultVisVector2D;
 var $elm$core$Basics$round = _Basics_round;
 var $elm$core$Tuple$second = function (_v0) {
@@ -5633,6 +5744,22 @@ var $author$project$IVVL$setVV2 = F2(
 		return _Utils_update(
 			visVec,
 			{vector: vec});
+	});
+var $author$project$IVVL$xAxisColorG2 = F2(
+	function (eColor, grid) {
+		return _Utils_update(
+			grid,
+			{
+				xAxisColor: $author$project$IVVL$elementToGSVGColor(eColor)
+			});
+	});
+var $author$project$IVVL$yAxisColorG2 = F2(
+	function (eColor, grid) {
+		return _Utils_update(
+			grid,
+			{
+				yAxisColor: $author$project$IVVL$elementToGSVGColor(eColor)
+			});
 	});
 var $author$project$Sandbox$initialModel = function () {
 	var visualWidgets = $elm$core$Dict$fromList(
@@ -5663,22 +5790,66 @@ var $author$project$Sandbox$initialModel = function () {
 		},
 		$elm$browser$Browser$Dom$getViewport);
 	var preset = $author$project$IVVL$defaultLibModel;
+	var finalCmd = $elm$core$Platform$Cmd$batch(
+		_Utils_ap(
+			widgetCommands,
+			_List_fromArray(
+				[viewPortCommand])));
+	var eColorDict = $elm$core$Dict$fromList(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'elementText',
+				A2($author$project$Sandbox$getColor, 'offWhite', $author$project$Sandbox$colorDict)),
+				_Utils_Tuple2(
+				'background',
+				A2($author$project$Sandbox$getColor, 'offBlack', $author$project$Sandbox$colorDict)),
+				_Utils_Tuple2(
+				'defaultVector',
+				A3($mdgriffith$elm_ui$Element$rgb255, 50, 210, 255)),
+				_Utils_Tuple2(
+				'buttonBackground',
+				A2($author$project$Sandbox$getColor, 'offWhite', $author$project$Sandbox$colorDict)),
+				_Utils_Tuple2(
+				'axes',
+				A2($author$project$Sandbox$getColor, 'offWhite', $author$project$Sandbox$colorDict)),
+				_Utils_Tuple2(
+				'inputBackground',
+				A3($mdgriffith$elm_ui$Element$rgb255, 73, 65, 85))
+			]));
 	var preset2 = _Utils_update(
 		preset,
 		{
+			backgroundColor: $author$project$IVVL$elementToGSVGColor(
+				A2($author$project$Sandbox$getColor, 'background', eColorDict)),
 			grids: A3(
 				$elm$core$Dict$insert,
 				1,
 				A2(
-					$author$project$IVVL$addVVectorG2,
+					$author$project$IVVL$gridlinesColorG2,
+					A2($author$project$Sandbox$getColor, 'axes', eColorDict),
 					A2(
-						$author$project$IVVL$endTypeVV2,
-						$author$project$IVVL$Directional,
+						$author$project$IVVL$yAxisColorG2,
+						A2($author$project$Sandbox$getColor, 'axes', eColorDict),
 						A2(
-							$author$project$IVVL$setVV2,
-							_Utils_Tuple2(1, 1),
-							$author$project$IVVL$newVV2)),
-					$author$project$IVVL$newG2),
+							$author$project$IVVL$xAxisColorG2,
+							A2($author$project$Sandbox$getColor, 'axes', eColorDict),
+							A2(
+								$author$project$IVVL$addVVectorG2,
+								A2(
+									$author$project$IVVL$lineTypeVV2,
+									$author$project$IVVL$Solid(4),
+									A2(
+										$author$project$IVVL$colorVV2,
+										A2($author$project$Sandbox$getColor, 'defaultVector', eColorDict),
+										A2(
+											$author$project$IVVL$endTypeVV2,
+											$author$project$IVVL$Directional,
+											A2(
+												$author$project$IVVL$setVV2,
+												_Utils_Tuple2(1, 1),
+												$author$project$IVVL$newVV2)))),
+								$author$project$IVVL$newG2)))),
 				preset.grids)
 		});
 	var preVModel = $elm$core$Dict$fromList(
@@ -5687,9 +5858,20 @@ var $author$project$Sandbox$initialModel = function () {
 				_Utils_Tuple2('embed1', preset2)
 			]));
 	var model = {
+		elementColorDict: eColorDict,
+		elementMenuState: _Utils_Tuple3(
+			$elm$core$Basics$round(1920 / 4),
+			_Utils_Tuple2(0, 0),
+			false),
+		elementMenuWidth: $elm$core$Basics$round(1920 / 4),
+		elementMenuWidthMax: $elm$core$Basics$round(1920 / 2),
+		elementMenuWidthMin: $elm$core$Basics$round(1920 / 16),
 		focusedEmbed: 'embed1',
+		focusedGrid: 1,
 		height: 1080,
 		ivvlDict: preVModel,
+		mouseX: 0,
+		mouseY: 0,
 		visualElements: $elm$core$Dict$fromList(
 			_List_fromArray(
 				[
@@ -5704,13 +5886,9 @@ var $author$project$Sandbox$initialModel = function () {
 		widgetDict: visualWidgets,
 		width: 1920
 	};
-	var finalCmd = $elm$core$Platform$Cmd$batch(
-		_Utils_ap(
-			widgetCommands,
-			_List_fromArray(
-				[viewPortCommand])));
 	return _Utils_Tuple2(model, finalCmd);
 }();
+var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $elm$browser$Browser$AnimationManager$Time = function (a) {
 	return {$: 'Time', a: a};
 };
@@ -5840,9 +6018,7 @@ var $elm$browser$Browser$AnimationManager$onAnimationFrame = function (tagger) {
 		$elm$browser$Browser$AnimationManager$Time(tagger));
 };
 var $elm$browser$Browser$Events$onAnimationFrame = $elm$browser$Browser$AnimationManager$onAnimationFrame;
-var $elm$browser$Browser$Events$Window = {$: 'Window'};
-var $elm$json$Json$Decode$field = _Json_decodeField;
-var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $elm$browser$Browser$Events$Document = {$: 'Document'};
 var $elm$browser$Browser$Events$MySub = F3(
 	function (a, b, c) {
 		return {$: 'MySub', a: a, b: b, c: c};
@@ -6117,6 +6293,8 @@ var $elm$browser$Browser$Events$on = F3(
 		return $elm$browser$Browser$Events$subscription(
 			A3($elm$browser$Browser$Events$MySub, node, name, decoder));
 	});
+var $elm$browser$Browser$Events$onMouseMove = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'mousemove');
+var $elm$browser$Browser$Events$Window = {$: 'Window'};
 var $elm$browser$Browser$Events$onResize = function (func) {
 	return A3(
 		$elm$browser$Browser$Events$on,
@@ -6131,14 +6309,32 @@ var $elm$browser$Browser$Events$onResize = function (func) {
 				A2($elm$json$Json$Decode$field, 'innerWidth', $elm$json$Json$Decode$int),
 				A2($elm$json$Json$Decode$field, 'innerHeight', $elm$json$Json$Decode$int))));
 };
+var $author$project$Sandbox$Blank = {$: 'Blank'};
 var $author$project$IVVL$HoldMove = function (a) {
 	return {$: 'HoldMove', a: a};
 };
+var $author$project$Sandbox$IVVLMsg = F2(
+	function (a, b) {
+		return {$: 'IVVLMsg', a: a, b: b};
+	});
+var $author$project$Sandbox$ParseVectorDifferenceInput = F4(
+	function (a, b, c, d) {
+		return {$: 'ParseVectorDifferenceInput', a: a, b: b, c: c, d: d};
+	});
 var $author$project$Sandbox$ParseVectorSumInput = F4(
 	function (a, b, c, d) {
 		return {$: 'ParseVectorSumInput', a: a, b: b, c: c, d: d};
 	});
+var $author$project$Sandbox$ResizeElementMenuDown = {$: 'ResizeElementMenuDown'};
+var $author$project$IVVL$ScaleG2 = F2(
+	function (a, b) {
+		return {$: 'ScaleG2', a: a, b: b};
+	});
 var $author$project$Sandbox$UpdateContinuous = {$: 'UpdateContinuous'};
+var $author$project$Sandbox$VectorDifference = F3(
+	function (a, b, c) {
+		return {$: 'VectorDifference', a: a, b: b, c: c};
+	});
 var $author$project$Sandbox$VectorSum = F3(
 	function (a, b, c) {
 		return {$: 'VectorSum', a: a, b: b, c: c};
@@ -6167,6 +6363,7 @@ var $elm$core$Dict$filter = F2(
 			$elm$core$Dict$empty,
 			dict);
 	});
+var $elm$core$Basics$ge = _Utils_ge;
 var $elm$core$List$maximum = function (list) {
 	if (list.b) {
 		var x = list.a;
@@ -6236,7 +6433,6 @@ var $author$project$Sandbox$getWidgetModel = F2(
 		}();
 		return _final.a;
 	});
-var $elm$core$Debug$log = _Debug_log;
 var $elm$core$Dict$map = F2(
 	function (func, dict) {
 		if (dict.$ === 'RBEmpty_elm_builtin') {
@@ -6267,6 +6463,20 @@ var $elm$core$Maybe$map = F2(
 		}
 	});
 var $elm$core$List$map4 = _List_map4;
+var $elm$core$Basics$min = F2(
+	function (x, y) {
+		return (_Utils_cmp(x, y) < 0) ? x : y;
+	});
+var $elm$core$List$minimum = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(
+			A3($elm$core$List$foldl, $elm$core$Basics$min, x, xs));
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
 var $elm$core$Basics$negate = function (n) {
 	return -n;
 };
@@ -6666,8 +6876,13 @@ var $elm$core$List$repeat = F2(
 	function (n, value) {
 		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
 	});
+var $author$project$IVVL$subtractV2 = F2(
+	function (v1, v2) {
+		return _Utils_Tuple2(
+			$author$project$IVVL$firstV2(v1) - $author$project$IVVL$firstV2(v2),
+			$author$project$IVVL$secondV2(v1) - $author$project$IVVL$secondV2(v2));
+	});
 var $elm$core$String$toFloat = _String_toFloat;
-var $elm$core$Debug$toString = _Debug_toString;
 var $elm$core$Dict$update = F3(
 	function (targetKey, alter, dictionary) {
 		var _v0 = alter(
@@ -6698,6 +6913,29 @@ var $MacCASOutreach$graphicsvg$GraphicSVG$Widget$update = F2(
 		}
 	});
 var $author$project$IVVL$Dragging = {$: 'Dragging'};
+var $author$project$IVVL$colorVVectorG2 = F3(
+	function (eColor, visVecID, grid) {
+		var vectorUpdater = function (record) {
+			return _Utils_update(
+				record,
+				{
+					color: $author$project$IVVL$elementToGSVGColor(eColor)
+				});
+		};
+		var vectorObjects = grid.vectorObjects;
+		var updater = F2(
+			function (func, x) {
+				return A2($elm$core$Maybe$map, func, x);
+			});
+		var finalGrid = A3(
+			$elm$core$Dict$update,
+			visVecID,
+			updater(vectorUpdater),
+			vectorObjects);
+		return _Utils_update(
+			grid,
+			{vectorObjects: finalGrid});
+	});
 var $elm$core$Maybe$map2 = F3(
 	function (func, ma, mb) {
 		if (ma.$ === 'Nothing') {
@@ -6768,7 +7006,7 @@ var $author$project$IVVL$scalarV2 = F2(
 	function (f, v) {
 		return _Utils_Tuple2(
 			f * $author$project$IVVL$firstV2(v),
-			f * v.b);
+			f * $author$project$IVVL$secondV2(v));
 	});
 var $author$project$IVVL$scaleVVectorG2 = F3(
 	function (scalar, visVecID, grid) {
@@ -6792,12 +7030,6 @@ var $author$project$IVVL$scaleVVectorG2 = F3(
 		return _Utils_update(
 			grid,
 			{vectorObjects: finalGrid});
-	});
-var $author$project$IVVL$subtractV2 = F2(
-	function (v1, v2) {
-		return _Utils_Tuple2(
-			$author$project$IVVL$firstV2(v1) - $author$project$IVVL$firstV2(v2),
-			$author$project$IVVL$secondV2(v1) - $author$project$IVVL$secondV2(v2));
 	});
 var $author$project$IVVL$updateLibModel = F2(
 	function (msg, model) {
@@ -7002,18 +7234,177 @@ var $author$project$IVVL$updateLibModel = F2(
 						model,
 						{grids: newGrids}),
 					$elm$core$Platform$Cmd$none);
+			case 'ColorVVectorG2':
+				var eColor = msg.a;
+				var vId = msg.b;
+				var gridKey = msg.c;
+				var theGrid = A2($elm$core$Dict$get, gridKey, model.grids);
+				var updatedGrid = A4(
+					$elm$core$Maybe$map3,
+					$author$project$IVVL$colorVVectorG2,
+					$elm$core$Maybe$Just(eColor),
+					$elm$core$Maybe$Just(vId),
+					theGrid);
+				var updatedGridModel = function () {
+					if (updatedGrid.$ === 'Nothing') {
+						return model.grids;
+					} else {
+						var newGrid = updatedGrid.a;
+						return A3($elm$core$Dict$insert, gridKey, newGrid, model.grids);
+					}
+				}();
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{grids: updatedGridModel}),
+					$elm$core$Platform$Cmd$none);
+			case 'ColorVVectorG2All':
+				var eColor = msg.a;
+				var vId = msg.b;
+				var gridDict = model.grids;
+				var newGrids = A2(
+					$elm$core$Dict$map,
+					F2(
+						function (_v12, v) {
+							return A3($author$project$IVVL$colorVVectorG2, eColor, vId, v);
+						}),
+					gridDict);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{grids: newGrids}),
+					$elm$core$Platform$Cmd$none);
+			case 'ColorXAxisG2':
+				var eColor = msg.a;
+				var gridKey = msg.b;
+				var theGrid = A2($elm$core$Dict$get, gridKey, model.grids);
+				var updatedGrid = A3(
+					$elm$core$Maybe$map2,
+					$author$project$IVVL$xAxisColorG2,
+					$elm$core$Maybe$Just(eColor),
+					theGrid);
+				var updatedGridModel = function () {
+					if (updatedGrid.$ === 'Nothing') {
+						return model.grids;
+					} else {
+						var newGrid = updatedGrid.a;
+						return A3($elm$core$Dict$insert, gridKey, newGrid, model.grids);
+					}
+				}();
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{grids: updatedGridModel}),
+					$elm$core$Platform$Cmd$none);
+			case 'ColorXAxisG2All':
+				var eColor = msg.a;
+				var gridDict = model.grids;
+				var newGrids = A2(
+					$elm$core$Dict$map,
+					F2(
+						function (_v14, g) {
+							return A2($author$project$IVVL$xAxisColorG2, eColor, g);
+						}),
+					gridDict);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{grids: newGrids}),
+					$elm$core$Platform$Cmd$none);
+			case 'ColorYAxisG2':
+				var eColor = msg.a;
+				var gridKey = msg.b;
+				var theGrid = A2($elm$core$Dict$get, gridKey, model.grids);
+				var updatedGrid = A3(
+					$elm$core$Maybe$map2,
+					$author$project$IVVL$yAxisColorG2,
+					$elm$core$Maybe$Just(eColor),
+					theGrid);
+				var updatedGridModel = function () {
+					if (updatedGrid.$ === 'Nothing') {
+						return model.grids;
+					} else {
+						var newGrid = updatedGrid.a;
+						return A3($elm$core$Dict$insert, gridKey, newGrid, model.grids);
+					}
+				}();
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{grids: updatedGridModel}),
+					$elm$core$Platform$Cmd$none);
+			case 'ColorYAxisG2All':
+				var eColor = msg.a;
+				var gridDict = model.grids;
+				var newGrids = A2(
+					$elm$core$Dict$map,
+					F2(
+						function (_v16, g) {
+							return A2($author$project$IVVL$yAxisColorG2, eColor, g);
+						}),
+					gridDict);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{grids: newGrids}),
+					$elm$core$Platform$Cmd$none);
+			case 'ColorGridlinesG2':
+				var eColor = msg.a;
+				var gridKey = msg.b;
+				var theGrid = A2($elm$core$Dict$get, gridKey, model.grids);
+				var updatedGrid = A3(
+					$elm$core$Maybe$map2,
+					$author$project$IVVL$gridlinesColorG2,
+					$elm$core$Maybe$Just(eColor),
+					theGrid);
+				var updatedGridModel = function () {
+					if (updatedGrid.$ === 'Nothing') {
+						return model.grids;
+					} else {
+						var newGrid = updatedGrid.a;
+						return A3($elm$core$Dict$insert, gridKey, newGrid, model.grids);
+					}
+				}();
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{grids: updatedGridModel}),
+					$elm$core$Platform$Cmd$none);
+			case 'ColorGridlinesG2All':
+				var eColor = msg.a;
+				var gridDict = model.grids;
+				var newGrids = A2(
+					$elm$core$Dict$map,
+					F2(
+						function (_v18, g) {
+							return A2($author$project$IVVL$gridlinesColorG2, eColor, g);
+						}),
+					gridDict);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{grids: newGrids}),
+					$elm$core$Platform$Cmd$none);
+			case 'ChangeBackgroundColor':
+				var eClr = msg.a;
+				var gClr = $author$project$IVVL$elementToGSVGColor(eClr);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{backgroundColor: gClr}),
+					$elm$core$Platform$Cmd$none);
 			case 'HoldMove':
-				var _v11 = msg.a;
-				var x = _v11.a;
-				var y = _v11.b;
+				var _v19 = msg.a;
+				var x = _v19.a;
+				var y = _v19.b;
 				var updatedModel = function () {
-					var _v12 = model.motionState;
-					if (_v12.$ === 'NotDragging') {
+					var _v20 = model.motionState;
+					if (_v20.$ === 'NotDragging') {
 						var allGrids = model.grids;
 						var offsetGrids = A2(
 							$elm$core$Dict$map,
 							F2(
-								function (_v13, v) {
+								function (_v21, v) {
 									return _Utils_update(
 										v,
 										{startingOffset: v.offset});
@@ -7038,7 +7429,7 @@ var $author$project$IVVL$updateLibModel = F2(
 						var offsetGrids = A2(
 							$elm$core$Dict$map,
 							F2(
-								function (_v14, v) {
+								function (_v22, v) {
 									return _Utils_update(
 										v,
 										{
@@ -7092,10 +7483,17 @@ var $author$project$Sandbox$update = F2(
 							v.b);
 					},
 					$elm$core$Dict$toList(newWidgetDict));
+				var newElementWindowWidth = $elm$core$Basics$round((width / model.width) * model.elementMenuWidth);
+				var newElementWindowState = _Utils_Tuple3(
+					newElementWindowWidth,
+					_Utils_Tuple2(0, 0),
+					false);
+				var newElementWindowMin = $elm$core$Basics$round(width / 16);
+				var newElementWindowMax = $elm$core$Basics$round(width / 2);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{height: height, widgetDict: newWidgetDict, width: width}),
+						{elementMenuState: newElementWindowState, elementMenuWidth: newElementWindowWidth, elementMenuWidthMax: newElementWindowMax, elementMenuWidthMin: newElementWindowMin, height: height, widgetDict: newWidgetDict, width: width}),
 					$elm$core$Platform$Cmd$batch(newWidgetCommands));
 			case 'Tick':
 				return _Utils_Tuple2(
@@ -7106,40 +7504,130 @@ var $author$project$Sandbox$update = F2(
 							return $author$project$Sandbox$UpdateContinuous;
 						},
 						$elm$time$Time$now));
+			case 'MouseMove':
+				var x = msg.a;
+				var y = msg.b;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{mouseX: x, mouseY: y}),
+					$elm$core$Platform$Cmd$none);
+			case 'Scroll':
+				var value = msg.a;
+				var newValue = (value > 0) ? (2 / 3) : (3 / 2);
+				return _Utils_Tuple2(
+					model,
+					A2(
+						$elm$core$Task$perform,
+						function (_v4) {
+							return A2(
+								$author$project$Sandbox$IVVLMsg,
+								model.focusedEmbed,
+								A2($author$project$IVVL$ScaleG2, newValue, model.focusedGrid));
+						},
+						$elm$time$Time$now));
+			case 'ResizeElementMenuDown':
+				var isStart = function () {
+					var _v10 = model.elementMenuState;
+					var a = _v10.c;
+					return a;
+				}();
+				var initialWidth = function () {
+					var _v9 = model.elementMenuState;
+					var a = _v9.a;
+					return a;
+				}();
+				var cursorPosition = _Utils_Tuple2(model.mouseX, model.mouseY);
+				var newState = function () {
+					var _v8 = model.elementMenuState;
+					if (!_v8.c) {
+						var a = _v8.a;
+						return _Utils_Tuple3(a, cursorPosition, true);
+					} else {
+						return model.elementMenuState;
+					}
+				}();
+				var offset = function () {
+					var _v6 = model.elementMenuState;
+					var _v7 = _v6.b;
+					var x = _v7.a;
+					return x - cursorPosition.a;
+				}();
+				var newWidth = function () {
+					var _v5 = $elm$core$List$minimum(
+						_List_fromArray(
+							[initialWidth - offset, model.elementMenuWidthMax]));
+					if (_v5.$ === 'Nothing') {
+						return model.elementMenuWidthMax;
+					} else {
+						var val = _v5.a;
+						return val;
+					}
+				}();
+				var restrictedWidth = (_Utils_cmp(newWidth, model.elementMenuWidthMax) > -1) ? model.elementMenuWidthMax : ((_Utils_cmp(newWidth, model.elementMenuWidthMin) < 1) ? model.elementMenuWidthMin : newWidth);
+				return isStart ? _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{elementMenuState: newState, elementMenuWidth: restrictedWidth}),
+					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{elementMenuState: newState}),
+					$elm$core$Platform$Cmd$none);
+			case 'ResizeElementMenuUp':
+				var newElementMenuState = _Utils_Tuple3(
+					model.elementMenuWidth,
+					_Utils_Tuple2(0, 0),
+					false);
+				var _v11 = model.elementMenuState;
+				if (!_v11.c) {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{elementMenuState: newElementMenuState}),
+						$elm$core$Platform$Cmd$none);
+				}
 			case 'AddElement':
 				var elementType = msg.a;
 				var message = msg.b;
-				var gID = 1;
+				var gID = model.focusedGrid;
 				var eID = model.focusedEmbed;
 				var currentVisual = A2($author$project$Sandbox$getVisualModel, eID, model.ivvlDict);
 				var currentGrid = function () {
-					var _v8 = A2($elm$core$Dict$get, gID, currentVisual.grids);
-					if (_v8.$ === 'Nothing') {
+					var _v16 = A2($elm$core$Dict$get, gID, currentVisual.grids);
+					if (_v16.$ === 'Nothing') {
 						return $author$project$IVVL$defaultGrid2D;
 					} else {
-						var a = _v8.a;
+						var a = _v16.a;
 						return a;
 					}
 				}();
 				var newModel = function () {
 					if ((message.$ === 'IVVLMsg') && (message.b.$ === 'AddVVectorG2')) {
-						var _v6 = message.b;
+						var _v14 = message.b;
 						var nextVID = $author$project$IVVL$getNextVectorObjectKey(currentGrid.vectorObjects);
 						var ve = function () {
-							if (elementType.$ === 'VectorType') {
-								return A3(
-									$author$project$Sandbox$Vector,
-									nextVID,
-									_Utils_Tuple2('0', '0'),
-									true);
-							} else {
-								return A3(
-									$author$project$Sandbox$VectorSum,
-									nextVID,
-									_Utils_Tuple2(
-										$elm$core$Debug$toString(nextVID),
-										''),
-									false);
+							switch (elementType.$) {
+								case 'VectorType':
+									return A3(
+										$author$project$Sandbox$Vector,
+										nextVID,
+										_Utils_Tuple2('0', '0'),
+										true);
+								case 'VectorSumType':
+									return A3(
+										$author$project$Sandbox$VectorSum,
+										nextVID,
+										_Utils_Tuple2('', ''),
+										false);
+								default:
+									return A3(
+										$author$project$Sandbox$VectorDifference,
+										nextVID,
+										_Utils_Tuple2('', ''),
+										false);
 							}
 						}();
 						var newEKey = A3($author$project$Sandbox$getNextVisualElementIndex, model.visualElements, model.focusedEmbed, gID);
@@ -7155,33 +7643,38 @@ var $author$project$Sandbox$update = F2(
 					newModel,
 					A2(
 						$elm$core$Task$perform,
-						function (_v4) {
+						function (_v12) {
 							return message;
 						},
 						$elm$time$Time$now));
 			case 'RemoveElement':
-				var _v9 = msg.a;
-				var eID = _v9.a;
-				var gID = _v9.b;
-				var veID = _v9.c;
+				var _v17 = msg.a;
+				var eID = _v17.a;
+				var gID = _v17.b;
+				var veID = _v17.c;
 				var message = msg.b;
 				var newModel = function () {
 					if ((message.$ === 'IVVLMsg') && (message.b.$ === 'RemoveVVectorG2')) {
-						var _v12 = message.b;
+						var _v20 = message.b;
 						var vID = function () {
-							var _v18 = A2(
+							var _v26 = A2(
 								$elm$core$Dict$get,
 								_Utils_Tuple3(eID, gID, veID),
 								model.visualElements);
-							if (_v18.$ === 'Just') {
-								if (_v18.a.$ === 'Vector') {
-									var _v19 = _v18.a;
-									var vID2 = _v19.a;
-									return vID2;
-								} else {
-									var _v20 = _v18.a;
-									var vID2 = _v20.a;
-									return vID2;
+							if (_v26.$ === 'Just') {
+								switch (_v26.a.$) {
+									case 'Vector':
+										var _v27 = _v26.a;
+										var vID2 = _v27.a;
+										return vID2;
+									case 'VectorSum':
+										var _v28 = _v26.a;
+										var vID2 = _v28.a;
+										return vID2;
+									default:
+										var _v29 = _v26.a;
+										var vID2 = _v29.a;
+										return vID2;
 								}
 							} else {
 								return 0;
@@ -7194,39 +7687,51 @@ var $author$project$Sandbox$update = F2(
 						var filteredVisualElements = A2(
 							$elm$core$Dict$filter,
 							F2(
-								function (_v16, ve) {
-									if (ve.$ === 'Vector') {
-										var vevID = ve.a;
-										return (_Utils_cmp(vevID, vID) > 0) ? true : false;
-									} else {
-										var vevID = ve.a;
-										return (_Utils_cmp(vevID, vID) > 0) ? true : false;
+								function (_v24, ve) {
+									switch (ve.$) {
+										case 'Vector':
+											var vevID = ve.a;
+											return (_Utils_cmp(vevID, vID) > 0) ? true : false;
+										case 'VectorSum':
+											var vevID = ve.a;
+											return (_Utils_cmp(vevID, vID) > 0) ? true : false;
+										default:
+											var vevID = ve.a;
+											return (_Utils_cmp(vevID, vID) > 0) ? true : false;
 									}
 								}),
 							removedVisualElements);
 						var shiftedVisualElements = $elm$core$Dict$fromList(
 							A2(
 								$elm$core$List$map,
-								function (_v13) {
-									var _v14 = _v13.a;
-									var a = _v14.a;
-									var b = _v14.b;
-									var c = _v14.c;
-									var ve = _v13.b;
-									if (ve.$ === 'Vector') {
-										var vevID = ve.a;
-										var d = ve.b;
-										var e = ve.c;
-										return _Utils_Tuple2(
-											_Utils_Tuple3(a, b, c - 1),
-											A3($author$project$Sandbox$Vector, vevID - 1, d, e));
-									} else {
-										var vevID = ve.a;
-										var d = ve.b;
-										var e = ve.c;
-										return _Utils_Tuple2(
-											_Utils_Tuple3(a, b, c - 1),
-											A3($author$project$Sandbox$VectorSum, vevID - 1, d, e));
+								function (_v21) {
+									var _v22 = _v21.a;
+									var a = _v22.a;
+									var b = _v22.b;
+									var c = _v22.c;
+									var ve = _v21.b;
+									switch (ve.$) {
+										case 'Vector':
+											var vevID = ve.a;
+											var d = ve.b;
+											var e = ve.c;
+											return _Utils_Tuple2(
+												_Utils_Tuple3(a, b, c - 1),
+												A3($author$project$Sandbox$Vector, vevID - 1, d, e));
+										case 'VectorSum':
+											var vevID = ve.a;
+											var d = ve.b;
+											var e = ve.c;
+											return _Utils_Tuple2(
+												_Utils_Tuple3(a, b, c - 1),
+												A3($author$project$Sandbox$VectorSum, vevID - 1, d, e));
+										default:
+											var vevID = ve.a;
+											var d = ve.b;
+											var e = ve.c;
+											return _Utils_Tuple2(
+												_Utils_Tuple3(a, b, c - 1),
+												A3($author$project$Sandbox$VectorSum, vevID - 1, d, e));
 									}
 								},
 								$elm$core$Dict$toList(filteredVisualElements)));
@@ -7240,7 +7745,6 @@ var $author$project$Sandbox$update = F2(
 								gID,
 								$elm$core$Dict$size(model.visualElements)),
 							updatedVisualElements);
-						var x = A2($elm$core$Debug$log, '5', finalVisualElements);
 						return _Utils_update(
 							model,
 							{visualElements: finalVisualElements});
@@ -7252,39 +7756,39 @@ var $author$project$Sandbox$update = F2(
 					newModel,
 					A2(
 						$elm$core$Task$perform,
-						function (_v10) {
+						function (_v18) {
 							return message;
 						},
 						$elm$time$Time$now));
 			case 'ParseVectorInput':
-				var _v21 = msg.a;
-				var eID = _v21.a;
-				var gID = _v21.b;
-				var veID = _v21.c;
+				var _v30 = msg.a;
+				var eID = _v30.a;
+				var gID = _v30.b;
+				var veID = _v30.c;
 				var vID = msg.b;
 				var xy = msg.c;
 				var input = msg.d;
 				var veIndex = _Utils_Tuple3(eID, gID, veID);
 				var vElement = function () {
-					var _v40 = A2($elm$core$Dict$get, veIndex, model.visualElements);
-					if (_v40.$ === 'Nothing') {
+					var _v49 = A2($elm$core$Dict$get, veIndex, model.visualElements);
+					if (_v49.$ === 'Nothing') {
 						return A3(
 							$author$project$Sandbox$Vector,
 							vID,
 							_Utils_Tuple2('0', '0'),
 							true);
 					} else {
-						var a = _v40.a;
+						var a = _v49.a;
 						return a;
 					}
 				}();
 				var theModel = A2($author$project$Sandbox$getVisualModel, eID, model.ivvlDict);
 				var theGrid = function () {
-					var _v39 = A2($elm$core$Dict$get, gID, theModel.grids);
-					if (_v39.$ === 'Nothing') {
+					var _v48 = A2($elm$core$Dict$get, gID, theModel.grids);
+					if (_v48.$ === 'Nothing') {
 						return $author$project$IVVL$defaultGrid2D;
 					} else {
-						var x = _v39.a;
+						var x = _v48.a;
 						return x;
 					}
 				}();
@@ -7293,8 +7797,8 @@ var $author$project$Sandbox$update = F2(
 					if (xy.$ === 'X') {
 						return function (ve) {
 							if (ve.$ === 'Vector') {
-								var _v36 = ve.b;
-								var input2 = _v36.b;
+								var _v45 = ve.b;
+								var input2 = _v45.b;
 								return $elm$core$String$toFloat(input2);
 							} else {
 								return $elm$core$Maybe$Nothing;
@@ -7303,8 +7807,8 @@ var $author$project$Sandbox$update = F2(
 					} else {
 						return function (ve) {
 							if (ve.$ === 'Vector') {
-								var _v38 = ve.b;
-								var input1 = _v38.a;
+								var _v47 = ve.b;
+								var input1 = _v47.a;
 								return $elm$core$String$toFloat(input1);
 							} else {
 								return $elm$core$Maybe$Nothing;
@@ -7313,8 +7817,8 @@ var $author$project$Sandbox$update = F2(
 					}
 				}();
 				var invisibilityCheck = function () {
-					var _v33 = A2($elm$core$Dict$get, veIndex, model.visualElements);
-					if (_v33.$ === 'Nothing') {
+					var _v42 = A2($elm$core$Dict$get, veIndex, model.visualElements);
+					if (_v42.$ === 'Nothing') {
 						return A3(
 							$elm$core$Dict$insert,
 							veIndex,
@@ -7337,8 +7841,8 @@ var $author$project$Sandbox$update = F2(
 								function (ve) {
 									if (ve.$ === 'Vector') {
 										var v = ve.a;
-										var _v30 = ve.b;
-										var y = _v30.b;
+										var _v39 = ve.b;
+										var y = _v39.b;
 										var p = ve.c;
 										return A3(
 											$author$project$Sandbox$Vector,
@@ -7358,8 +7862,8 @@ var $author$project$Sandbox$update = F2(
 								function (ve) {
 									if (ve.$ === 'Vector') {
 										var v = ve.a;
-										var _v32 = ve.b;
-										var x = _v32.a;
+										var _v41 = ve.b;
+										var x = _v41.a;
 										var p = ve.c;
 										return A3(
 											$author$project$Sandbox$Vector,
@@ -7384,9 +7888,9 @@ var $author$project$Sandbox$update = F2(
 						function (ve) {
 							if (ve.$ === 'Vector') {
 								var v = ve.a;
-								var _v25 = ve.b;
-								var x = _v25.a;
-								var y = _v25.b;
+								var _v34 = ve.b;
+								var x = _v34.a;
+								var y = _v34.b;
 								return A3(
 									$author$project$Sandbox$Vector,
 									v,
@@ -7403,9 +7907,9 @@ var $author$project$Sandbox$update = F2(
 						function (ve) {
 							if (ve.$ === 'Vector') {
 								var v = ve.a;
-								var _v27 = ve.b;
-								var x = _v27.a;
-								var y = _v27.b;
+								var _v36 = ve.b;
+								var x = _v36.a;
+								var y = _v36.b;
 								return A3(
 									$author$project$Sandbox$Vector,
 									v,
@@ -7421,11 +7925,11 @@ var $author$project$Sandbox$update = F2(
 						}),
 					updatedVectorInputs);
 				var currentVisVectorValue = function () {
-					var _v23 = A2($elm$core$Dict$get, vID, theGrid.vectorObjects);
-					if (_v23.$ === 'Nothing') {
+					var _v32 = A2($elm$core$Dict$get, vID, theGrid.vectorObjects);
+					if (_v32.$ === 'Nothing') {
 						return $author$project$IVVL$defaultVisVector2D;
 					} else {
-						var x = _v23.a;
+						var x = _v32.a;
 						return x;
 					}
 				}();
@@ -7462,34 +7966,34 @@ var $author$project$Sandbox$update = F2(
 						{ivvlDict: newIVVLModelDict, visualElements: finalVectorInputs}),
 					$elm$core$Platform$Cmd$none);
 			case 'ParseVectorSumInput':
-				var _v41 = msg.a;
-				var eID = _v41.a;
-				var gID = _v41.b;
-				var veID = _v41.c;
+				var _v50 = msg.a;
+				var eID = _v50.a;
+				var gID = _v50.b;
+				var veID = _v50.c;
 				var vID = msg.b;
 				var xy = msg.c;
 				var input = msg.d;
 				var veIndex = _Utils_Tuple3(eID, gID, veID);
 				var vElement = function () {
-					var _v69 = A2($elm$core$Dict$get, veIndex, model.visualElements);
-					if (_v69.$ === 'Nothing') {
+					var _v81 = A2($elm$core$Dict$get, veIndex, model.visualElements);
+					if (_v81.$ === 'Nothing') {
 						return A3(
 							$author$project$Sandbox$VectorSum,
 							vID,
 							_Utils_Tuple2('', ''),
 							false);
 					} else {
-						var a = _v69.a;
+						var a = _v81.a;
 						return a;
 					}
 				}();
 				var theModel = A2($author$project$Sandbox$getVisualModel, eID, model.ivvlDict);
 				var theGrid = function () {
-					var _v68 = A2($elm$core$Dict$get, gID, theModel.grids);
-					if (_v68.$ === 'Nothing') {
+					var _v80 = A2($elm$core$Dict$get, gID, theModel.grids);
+					if (_v80.$ === 'Nothing') {
 						return $author$project$IVVL$defaultGrid2D;
 					} else {
-						var x = _v68.a;
+						var x = _v80.a;
 						return x;
 					}
 				}();
@@ -7499,19 +8003,24 @@ var $author$project$Sandbox$update = F2(
 						return $elm$core$Maybe$Nothing;
 					} else {
 						var value = parseInputXY.a;
-						var _v65 = A2(
+						var _v76 = A2(
 							$elm$core$Dict$get,
 							_Utils_Tuple3(eID, gID, value),
 							model.visualElements);
-						if (_v65.$ === 'Just') {
-							if (_v65.a.$ === 'Vector') {
-								var _v66 = _v65.a;
-								var vID2 = _v66.a;
-								return $elm$core$Maybe$Just(vID2);
-							} else {
-								var _v67 = _v65.a;
-								var vID2 = _v67.a;
-								return _Utils_eq(vID2, veID) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(vID2);
+						if (_v76.$ === 'Just') {
+							switch (_v76.a.$) {
+								case 'Vector':
+									var _v77 = _v76.a;
+									var vID2 = _v77.a;
+									return $elm$core$Maybe$Just(vID2);
+								case 'VectorSum':
+									var _v78 = _v76.a;
+									var vID2 = _v78.a;
+									return _Utils_eq(vID2, veID) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(vID2);
+								default:
+									var _v79 = _v76.a;
+									var vID2 = _v79.a;
+									return _Utils_eq(vID2, veID) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(vID2);
 							}
 						} else {
 							return $elm$core$Maybe$Nothing;
@@ -7522,8 +8031,8 @@ var $author$project$Sandbox$update = F2(
 					if (xy.$ === 'X') {
 						return function (ve) {
 							if (ve.$ === 'VectorSum') {
-								var _v61 = ve.b;
-								var input2 = _v61.b;
+								var _v72 = ve.b;
+								var input2 = _v72.b;
 								return $elm$core$String$toInt(input2);
 							} else {
 								return $elm$core$Maybe$Nothing;
@@ -7532,8 +8041,8 @@ var $author$project$Sandbox$update = F2(
 					} else {
 						return function (ve) {
 							if (ve.$ === 'VectorSum') {
-								var _v63 = ve.b;
-								var input1 = _v63.a;
+								var _v74 = ve.b;
+								var input1 = _v74.a;
 								return $elm$core$String$toInt(input1);
 							} else {
 								return $elm$core$Maybe$Nothing;
@@ -7546,22 +8055,33 @@ var $author$project$Sandbox$update = F2(
 						return $elm$core$Maybe$Nothing;
 					} else {
 						var value = parseInputOther.a;
-						var _v57 = A2(
+						var _v66 = A2(
 							$elm$core$Dict$get,
 							_Utils_Tuple3(eID, gID, value),
 							model.visualElements);
-						if ((_v57.$ === 'Just') && (_v57.a.$ === 'Vector')) {
-							var _v58 = _v57.a;
-							var vID2 = _v58.a;
-							return _Utils_eq(vID2, veID) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(vID2);
+						if (_v66.$ === 'Just') {
+							switch (_v66.a.$) {
+								case 'Vector':
+									var _v67 = _v66.a;
+									var vID2 = _v67.a;
+									return _Utils_eq(vID2, veID) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(vID2);
+								case 'VectorSum':
+									var _v68 = _v66.a;
+									var vID2 = _v68.a;
+									return _Utils_eq(vID2, veID) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(vID2);
+								default:
+									var _v69 = _v66.a;
+									var vID2 = _v69.a;
+									return _Utils_eq(vID2, veID) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(vID2);
+							}
 						} else {
 							return $elm$core$Maybe$Nothing;
 						}
 					}
 				}();
 				var invisibilityCheck = function () {
-					var _v55 = A2($elm$core$Dict$get, veIndex, model.visualElements);
-					if (_v55.$ === 'Nothing') {
+					var _v64 = A2($elm$core$Dict$get, veIndex, model.visualElements);
+					if (_v64.$ === 'Nothing') {
 						return A3(
 							$elm$core$Dict$insert,
 							veIndex,
@@ -7584,8 +8104,8 @@ var $author$project$Sandbox$update = F2(
 								function (ve) {
 									if (ve.$ === 'VectorSum') {
 										var v = ve.a;
-										var _v52 = ve.b;
-										var y = _v52.b;
+										var _v61 = ve.b;
+										var y = _v61.b;
 										var p = ve.c;
 										return A3(
 											$author$project$Sandbox$VectorSum,
@@ -7605,8 +8125,8 @@ var $author$project$Sandbox$update = F2(
 								function (ve) {
 									if (ve.$ === 'VectorSum') {
 										var v = ve.a;
-										var _v54 = ve.b;
-										var x = _v54.a;
+										var _v63 = ve.b;
+										var x = _v63.a;
 										var p = ve.c;
 										return A3(
 											$author$project$Sandbox$VectorSum,
@@ -7631,9 +8151,9 @@ var $author$project$Sandbox$update = F2(
 						function (ve) {
 							if (ve.$ === 'VectorSum') {
 								var v = ve.a;
-								var _v47 = ve.b;
-								var x = _v47.a;
-								var y = _v47.b;
+								var _v56 = ve.b;
+								var x = _v56.a;
+								var y = _v56.b;
 								return A3(
 									$author$project$Sandbox$VectorSum,
 									v,
@@ -7650,9 +8170,9 @@ var $author$project$Sandbox$update = F2(
 						function (ve) {
 							if (ve.$ === 'VectorSum') {
 								var v = ve.a;
-								var _v49 = ve.b;
-								var x = _v49.a;
-								var y = _v49.b;
+								var _v58 = ve.b;
+								var x = _v58.a;
+								var y = _v58.b;
 								return A3(
 									$author$project$Sandbox$VectorSum,
 									v,
@@ -7668,38 +8188,38 @@ var $author$project$Sandbox$update = F2(
 						}),
 					updatedVectorInputs);
 				var currentVisVectorValue = function () {
-					var _v45 = A2($elm$core$Dict$get, vID, theGrid.vectorObjects);
-					if (_v45.$ === 'Nothing') {
+					var _v54 = A2($elm$core$Dict$get, vID, theGrid.vectorObjects);
+					if (_v54.$ === 'Nothing') {
 						return $author$project$IVVL$defaultVisVector2D;
 					} else {
-						var x = _v45.a;
+						var x = _v54.a;
 						return x;
 					}
 				}();
 				var accessVector = function (vID2) {
-					var _v44 = A2($elm$core$Dict$get, vID2, theGrid.vectorObjects);
-					if (_v44.$ === 'Just') {
-						var v = _v44.a;
+					var _v53 = A2($elm$core$Dict$get, vID2, theGrid.vectorObjects);
+					if (_v53.$ === 'Just') {
+						var v = _v53.a;
 						return v;
 					} else {
 						return $author$project$IVVL$defaultVisVector2D;
 					}
 				};
 				var vectorOther = function () {
-					var _v43 = A2($elm$core$Maybe$map, accessVector, testInputOther);
-					if (_v43.$ === 'Nothing') {
+					var _v52 = A2($elm$core$Maybe$map, accessVector, testInputOther);
+					if (_v52.$ === 'Nothing') {
 						return $author$project$IVVL$defaultVisVector2D;
 					} else {
-						var y = _v43.a;
+						var y = _v52.a;
 						return y;
 					}
 				}();
 				var vectorXY = function () {
-					var _v42 = A2($elm$core$Maybe$map, accessVector, testInputXY);
-					if (_v42.$ === 'Nothing') {
+					var _v51 = A2($elm$core$Maybe$map, accessVector, testInputXY);
+					if (_v51.$ === 'Nothing') {
 						return $author$project$IVVL$defaultVisVector2D;
 					} else {
-						var y = _v42.a;
+						var y = _v51.a;
 						return y;
 					}
 				}();
@@ -7721,14 +8241,290 @@ var $author$project$Sandbox$update = F2(
 						model,
 						{ivvlDict: newIVVLModelDict, visualElements: finalVectorInputs}),
 					$elm$core$Platform$Cmd$none);
+			case 'ParseVectorDifferenceInput':
+				var _v82 = msg.a;
+				var eID = _v82.a;
+				var gID = _v82.b;
+				var veID = _v82.c;
+				var vID = msg.b;
+				var xy = msg.c;
+				var input = msg.d;
+				var veIndex = _Utils_Tuple3(eID, gID, veID);
+				var vElement = function () {
+					var _v113 = A2($elm$core$Dict$get, veIndex, model.visualElements);
+					if (_v113.$ === 'Nothing') {
+						return A3(
+							$author$project$Sandbox$VectorDifference,
+							vID,
+							_Utils_Tuple2('', ''),
+							false);
+					} else {
+						var a = _v113.a;
+						return a;
+					}
+				}();
+				var theModel = A2($author$project$Sandbox$getVisualModel, eID, model.ivvlDict);
+				var theGrid = function () {
+					var _v112 = A2($elm$core$Dict$get, gID, theModel.grids);
+					if (_v112.$ === 'Nothing') {
+						return $author$project$IVVL$defaultGrid2D;
+					} else {
+						var x = _v112.a;
+						return x;
+					}
+				}();
+				var parseInputXY = $elm$core$String$toInt(input);
+				var testInputXY = function () {
+					if (parseInputXY.$ === 'Nothing') {
+						return $elm$core$Maybe$Nothing;
+					} else {
+						var value = parseInputXY.a;
+						var _v108 = A2(
+							$elm$core$Dict$get,
+							_Utils_Tuple3(eID, gID, value),
+							model.visualElements);
+						if (_v108.$ === 'Just') {
+							switch (_v108.a.$) {
+								case 'Vector':
+									var _v109 = _v108.a;
+									var vID2 = _v109.a;
+									return $elm$core$Maybe$Just(vID2);
+								case 'VectorSum':
+									var _v110 = _v108.a;
+									var vID2 = _v110.a;
+									return _Utils_eq(vID2, veID) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(vID2);
+								default:
+									var _v111 = _v108.a;
+									var vID2 = _v111.a;
+									return _Utils_eq(vID2, veID) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(vID2);
+							}
+						} else {
+							return $elm$core$Maybe$Nothing;
+						}
+					}
+				}();
+				var parseInputOther = function () {
+					if (xy.$ === 'X') {
+						return function (ve) {
+							if (ve.$ === 'VectorDifference') {
+								var _v104 = ve.b;
+								var input2 = _v104.b;
+								return $elm$core$String$toInt(input2);
+							} else {
+								return $elm$core$Maybe$Nothing;
+							}
+						}(vElement);
+					} else {
+						return function (ve) {
+							if (ve.$ === 'VectorDifference') {
+								var _v106 = ve.b;
+								var input1 = _v106.a;
+								return $elm$core$String$toInt(input1);
+							} else {
+								return $elm$core$Maybe$Nothing;
+							}
+						}(vElement);
+					}
+				}();
+				var testInputOther = function () {
+					if (parseInputOther.$ === 'Nothing') {
+						return $elm$core$Maybe$Nothing;
+					} else {
+						var value = parseInputOther.a;
+						var _v98 = A2(
+							$elm$core$Dict$get,
+							_Utils_Tuple3(eID, gID, value),
+							model.visualElements);
+						if (_v98.$ === 'Just') {
+							switch (_v98.a.$) {
+								case 'Vector':
+									var _v99 = _v98.a;
+									var vID2 = _v99.a;
+									return _Utils_eq(vID2, veID) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(vID2);
+								case 'VectorSum':
+									var _v100 = _v98.a;
+									var vID2 = _v100.a;
+									return _Utils_eq(vID2, veID) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(vID2);
+								default:
+									var _v101 = _v98.a;
+									var vID2 = _v101.a;
+									return _Utils_eq(vID2, veID) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(vID2);
+							}
+						} else {
+							return $elm$core$Maybe$Nothing;
+						}
+					}
+				}();
+				var invisibilityCheck = function () {
+					var _v96 = A2($elm$core$Dict$get, veIndex, model.visualElements);
+					if (_v96.$ === 'Nothing') {
+						return A3(
+							$elm$core$Dict$insert,
+							veIndex,
+							A3(
+								$author$project$Sandbox$VectorDifference,
+								vID,
+								_Utils_Tuple2('', ''),
+								false),
+							model.visualElements);
+					} else {
+						return model.visualElements;
+					}
+				}();
+				var updatedVectorInputs = A3(
+					$elm$core$Dict$update,
+					veIndex,
+					function () {
+						if (xy.$ === 'X') {
+							return $elm$core$Maybe$map(
+								function (ve) {
+									if (ve.$ === 'VectorDifference') {
+										var v = ve.a;
+										var _v93 = ve.b;
+										var y = _v93.b;
+										var p = ve.c;
+										return A3(
+											$author$project$Sandbox$VectorDifference,
+											v,
+											_Utils_Tuple2(input, y),
+											p);
+									} else {
+										return A3(
+											$author$project$Sandbox$VectorDifference,
+											-1,
+											_Utils_Tuple2('err', 'err'),
+											false);
+									}
+								});
+						} else {
+							return $elm$core$Maybe$map(
+								function (ve) {
+									if (ve.$ === 'VectorDifference') {
+										var v = ve.a;
+										var _v95 = ve.b;
+										var x = _v95.a;
+										var p = ve.c;
+										return A3(
+											$author$project$Sandbox$VectorDifference,
+											v,
+											_Utils_Tuple2(x, input),
+											p);
+									} else {
+										return A3(
+											$author$project$Sandbox$VectorDifference,
+											-1,
+											_Utils_Tuple2('err', 'err'),
+											false);
+									}
+								});
+						}
+					}(),
+					invisibilityCheck);
+				var finalVectorInputs = A3(
+					$elm$core$Dict$update,
+					veIndex,
+					(_Utils_eq(testInputXY, $elm$core$Maybe$Nothing) || _Utils_eq(testInputOther, $elm$core$Maybe$Nothing)) ? $elm$core$Maybe$map(
+						function (ve) {
+							if (ve.$ === 'VectorDifference') {
+								var v = ve.a;
+								var _v88 = ve.b;
+								var x = _v88.a;
+								var y = _v88.b;
+								return A3(
+									$author$project$Sandbox$VectorDifference,
+									v,
+									_Utils_Tuple2(x, y),
+									false);
+							} else {
+								return A3(
+									$author$project$Sandbox$VectorDifference,
+									-1,
+									_Utils_Tuple2('err', 'err'),
+									false);
+							}
+						}) : $elm$core$Maybe$map(
+						function (ve) {
+							if (ve.$ === 'VectorDifference') {
+								var v = ve.a;
+								var _v90 = ve.b;
+								var x = _v90.a;
+								var y = _v90.b;
+								return A3(
+									$author$project$Sandbox$VectorDifference,
+									v,
+									_Utils_Tuple2(x, y),
+									true);
+							} else {
+								return A3(
+									$author$project$Sandbox$VectorDifference,
+									-1,
+									_Utils_Tuple2('err', 'err'),
+									false);
+							}
+						}),
+					updatedVectorInputs);
+				var currentVisVectorValue = function () {
+					var _v86 = A2($elm$core$Dict$get, vID, theGrid.vectorObjects);
+					if (_v86.$ === 'Nothing') {
+						return $author$project$IVVL$defaultVisVector2D;
+					} else {
+						var x = _v86.a;
+						return x;
+					}
+				}();
+				var accessVector = function (vID2) {
+					var _v85 = A2($elm$core$Dict$get, vID2, theGrid.vectorObjects);
+					if (_v85.$ === 'Just') {
+						var v = _v85.a;
+						return v;
+					} else {
+						return $author$project$IVVL$defaultVisVector2D;
+					}
+				};
+				var vectorOther = function () {
+					var _v84 = A2($elm$core$Maybe$map, accessVector, testInputOther);
+					if (_v84.$ === 'Nothing') {
+						return $author$project$IVVL$defaultVisVector2D;
+					} else {
+						var y = _v84.a;
+						return y;
+					}
+				}();
+				var vectorXY = function () {
+					var _v83 = A2($elm$core$Maybe$map, accessVector, testInputXY);
+					if (_v83.$ === 'Nothing') {
+						return $author$project$IVVL$defaultVisVector2D;
+					} else {
+						var y = _v83.a;
+						return y;
+					}
+				}();
+				var newVectorValue = (_Utils_eq(parseInputXY, $elm$core$Maybe$Nothing) || _Utils_eq(parseInputOther, $elm$core$Maybe$Nothing)) ? currentVisVectorValue.vector : A2($author$project$IVVL$subtractV2, vectorOther.vector, vectorXY.vector);
+				var newVisVectorValue = _Utils_update(
+					currentVisVectorValue,
+					{vector: newVectorValue});
+				var newVectorObjects = A3($elm$core$Dict$insert, vID, newVisVectorValue, theGrid.vectorObjects);
+				var newGrid = _Utils_update(
+					theGrid,
+					{vectorObjects: newVectorObjects});
+				var newGridDict = A3($elm$core$Dict$insert, gID, newGrid, theModel.grids);
+				var newIVVLModel = _Utils_update(
+					theModel,
+					{grids: newGridDict});
+				var newIVVLModelDict = A3($elm$core$Dict$insert, eID, newIVVLModel, model.ivvlDict);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{ivvlDict: newIVVLModelDict, visualElements: finalVectorInputs}),
+					$elm$core$Platform$Cmd$none);
 			case 'UpdateContinuous':
 				var vectorSumsToTest = A2(
 					$elm$core$Dict$filter,
 					F2(
-						function (_v75, value) {
-							var eID = _v75.a;
-							var gID = _v75.b;
-							if (_Utils_eq(eID, model.focusedEmbed) && (gID === 1)) {
+						function (_v126, value) {
+							var eID = _v126.a;
+							var gID = _v126.b;
+							if (_Utils_eq(eID, model.focusedEmbed) && _Utils_eq(gID, model.focusedGrid)) {
 								if (value.$ === 'VectorSum') {
 									return true;
 								} else {
@@ -7740,16 +8536,65 @@ var $author$project$Sandbox$update = F2(
 						}),
 					model.visualElements);
 				var vectorSumsList = $elm$core$Dict$toList(vectorSumsToTest);
+				var vectorDifferencesToTest = A2(
+					$elm$core$Dict$filter,
+					F2(
+						function (_v124, value) {
+							var eID = _v124.a;
+							var gID = _v124.b;
+							if (_Utils_eq(eID, model.focusedEmbed) && _Utils_eq(gID, model.focusedGrid)) {
+								if (value.$ === 'VectorDifference') {
+									return true;
+								} else {
+									return false;
+								}
+							} else {
+								return false;
+							}
+						}),
+					model.visualElements);
+				var vectorDifferenceList = $elm$core$Dict$toList(vectorDifferencesToTest);
+				var resizeMessage = function () {
+					var _v123 = model.elementMenuState;
+					if (_v123.c) {
+						return $author$project$Sandbox$ResizeElementMenuDown;
+					} else {
+						return $author$project$Sandbox$Blank;
+					}
+				}();
+				var firstParamDiff = A2($elm$core$List$map, $elm$core$Tuple$first, vectorDifferenceList);
+				var fourthParamDiff = A2(
+					$elm$core$List$map,
+					function (key) {
+						var _v120 = A2($elm$core$Dict$get, key, model.visualElements);
+						if ((_v120.$ === 'Just') && (_v120.a.$ === 'VectorDifference')) {
+							var _v121 = _v120.a;
+							var _v122 = _v121.b;
+							var a = _v122.a;
+							var b = _v122.b;
+							return a;
+						} else {
+							return 'err';
+						}
+					},
+					firstParamDiff);
+				var secondParamDiff = A2(
+					$elm$core$List$map,
+					function (_v119) {
+						var z = _v119.c;
+						return z;
+					},
+					firstParamDiff);
 				var firstParam = A2($elm$core$List$map, $elm$core$Tuple$first, vectorSumsList);
 				var fourthParam = A2(
 					$elm$core$List$map,
 					function (key) {
-						var _v72 = A2($elm$core$Dict$get, key, model.visualElements);
-						if ((_v72.$ === 'Just') && (_v72.a.$ === 'VectorSum')) {
-							var _v73 = _v72.a;
-							var _v74 = _v73.b;
-							var a = _v74.a;
-							var b = _v74.b;
+						var _v116 = A2($elm$core$Dict$get, key, model.visualElements);
+						if ((_v116.$ === 'Just') && (_v116.a.$ === 'VectorSum')) {
+							var _v117 = _v116.a;
+							var _v118 = _v117.b;
+							var a = _v118.a;
+							var b = _v118.b;
 							return a;
 						} else {
 							return 'err';
@@ -7758,22 +8603,31 @@ var $author$project$Sandbox$update = F2(
 					firstParam);
 				var secondParam = A2(
 					$elm$core$List$map,
-					function (_v71) {
-						var z = _v71.c;
+					function (_v115) {
+						var z = _v115.c;
 						return z;
 					},
 					firstParam);
+				var thirdParamDiff = A2(
+					$elm$core$List$repeat,
+					$elm$core$List$length(secondParam),
+					$author$project$Sandbox$X);
 				var thirdParam = A2(
 					$elm$core$List$repeat,
 					$elm$core$List$length(firstParam),
 					$author$project$Sandbox$X);
-				var listOfMessages = A5($elm$core$List$map4, $author$project$Sandbox$ParseVectorSumInput, firstParam, secondParam, thirdParam, fourthParam);
+				var listOfMessages = _Utils_ap(
+					A5($elm$core$List$map4, $author$project$Sandbox$ParseVectorSumInput, firstParam, secondParam, thirdParam, fourthParam),
+					_Utils_ap(
+						A5($elm$core$List$map4, $author$project$Sandbox$ParseVectorDifferenceInput, firstParamDiff, secondParamDiff, thirdParamDiff, fourthParamDiff),
+						_List_fromArray(
+							[resizeMessage])));
 				var finalBatch = A2(
 					$elm$core$List$map,
 					function (message) {
 						return A2(
 							$elm$core$Task$perform,
-							function (_v70) {
+							function (_v114) {
 								return message;
 							},
 							$elm$time$Time$now);
@@ -7801,9 +8655,9 @@ var $author$project$Sandbox$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'IVVLMoveMsg':
 				var k = msg.a;
-				var _v77 = msg.b;
-				var x = _v77.a;
-				var y = _v77.b;
+				var _v128 = msg.b;
+				var x = _v128.a;
+				var y = _v128.b;
 				var originalDict = model.ivvlDict;
 				var updatedDict = A3(
 					$elm$core$Dict$update,
@@ -7825,17 +8679,17 @@ var $author$project$Sandbox$update = F2(
 			case 'WidgetMsg':
 				var k = msg.a;
 				var wMsg = msg.b;
-				var _v78 = A2(
+				var _v129 = A2(
 					$MacCASOutreach$graphicsvg$GraphicSVG$Widget$update,
 					wMsg,
 					A2($author$project$Sandbox$getWidgetModel, k, model.widgetDict));
-				var newWState = _v78.a;
-				var wCmd = _v78.b;
+				var newWState = _v129.a;
+				var wCmd = _v129.b;
 				var newWidgetModel = A3(
 					$elm$core$Dict$update,
 					k,
 					$elm$core$Maybe$map(
-						function (_v79) {
+						function (_v130) {
 							return _Utils_Tuple2(newWState, wCmd);
 						}),
 					model.widgetDict);
@@ -7851,21 +8705,45 @@ var $author$project$Sandbox$update = F2(
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
+var $author$project$Sandbox$ResizeElementMenuUp = {$: 'ResizeElementMenuUp'};
+var $author$project$Sandbox$Scroll = function (a) {
+	return {$: 'Scroll', a: a};
+};
 var $mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
 	return {$: 'AlignX', a: a};
 };
 var $mdgriffith$elm_ui$Internal$Model$Left = {$: 'Left'};
 var $mdgriffith$elm_ui$Element$alignLeft = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Left);
-var $mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
-var $mdgriffith$elm_ui$Element$centerX = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$CenterX);
-var $mdgriffith$elm_ui$Internal$Model$Colored = F3(
-	function (a, b, c) {
-		return {$: 'Colored', a: a, b: b, c: c};
+var $elm$virtual_dom$VirtualDom$attribute = F2(
+	function (key, value) {
+		return A2(
+			_VirtualDom_attribute,
+			_VirtualDom_noOnOrFormAction(key),
+			_VirtualDom_noJavaScriptOrHtmlUri(value));
 	});
-var $mdgriffith$elm_ui$Internal$Model$StyleClass = F2(
+var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
+var $mdgriffith$elm_ui$Internal$Model$Behind = {$: 'Behind'};
+var $mdgriffith$elm_ui$Internal$Model$Nearby = F2(
 	function (a, b) {
-		return {$: 'StyleClass', a: a, b: b};
+		return {$: 'Nearby', a: a, b: b};
 	});
+var $mdgriffith$elm_ui$Internal$Model$NoAttribute = {$: 'NoAttribute'};
+var $mdgriffith$elm_ui$Element$createNearby = F2(
+	function (loc, element) {
+		if (element.$ === 'Empty') {
+			return $mdgriffith$elm_ui$Internal$Model$NoAttribute;
+		} else {
+			return A2($mdgriffith$elm_ui$Internal$Model$Nearby, loc, element);
+		}
+	});
+var $mdgriffith$elm_ui$Element$behindContent = function (element) {
+	return A2($mdgriffith$elm_ui$Element$createNearby, $mdgriffith$elm_ui$Internal$Model$Behind, element);
+};
+var $mdgriffith$elm_ui$Internal$Model$Class = F2(
+	function (a, b) {
+		return {$: 'Class', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Internal$Style$classes = {above: 'a', active: 'atv', alignBottom: 'ab', alignCenterX: 'cx', alignCenterY: 'cy', alignContainerBottom: 'acb', alignContainerCenterX: 'accx', alignContainerCenterY: 'accy', alignContainerRight: 'acr', alignLeft: 'al', alignRight: 'ar', alignTop: 'at', alignedHorizontally: 'ah', alignedVertically: 'av', any: 's', behind: 'bh', below: 'b', bold: 'w7', borderDashed: 'bd', borderDotted: 'bdt', borderNone: 'bn', borderSolid: 'bs', capturePointerEvents: 'cpe', clip: 'cp', clipX: 'cpx', clipY: 'cpy', column: 'c', container: 'ctr', contentBottom: 'cb', contentCenterX: 'ccx', contentCenterY: 'ccy', contentLeft: 'cl', contentRight: 'cr', contentTop: 'ct', cursorPointer: 'cptr', cursorText: 'ctxt', focus: 'fcs', focusedWithin: 'focus-within', fullSize: 'fs', grid: 'g', hasBehind: 'hbh', heightContent: 'hc', heightExact: 'he', heightFill: 'hf', heightFillPortion: 'hfp', hover: 'hv', imageContainer: 'ic', inFront: 'fr', inputLabel: 'lbl', inputMultiline: 'iml', inputMultilineFiller: 'imlf', inputMultilineParent: 'imlp', inputMultilineWrapper: 'implw', inputText: 'it', italic: 'i', link: 'lnk', nearby: 'nb', noTextSelection: 'notxt', onLeft: 'ol', onRight: 'or', opaque: 'oq', overflowHidden: 'oh', page: 'pg', paragraph: 'p', passPointerEvents: 'ppe', root: 'ui', row: 'r', scrollbars: 'sb', scrollbarsX: 'sbx', scrollbarsY: 'sby', seButton: 'sbt', single: 'e', sizeByCapital: 'cap', spaceEvenly: 'sev', strike: 'sk', text: 't', textCenter: 'tc', textExtraBold: 'w8', textExtraLight: 'w2', textHeavy: 'w9', textJustify: 'tj', textJustifyAll: 'tja', textLeft: 'tl', textLight: 'w3', textMedium: 'w5', textNormalWeight: 'w4', textRight: 'tr', textSemiBold: 'w6', textThin: 'w1', textUnitalicized: 'tun', transition: 'ts', transparent: 'clr', underline: 'u', widthContent: 'wc', widthExact: 'we', widthFill: 'wf', widthFillPortion: 'wfp', wrapped: 'wrp'};
 var $mdgriffith$elm_ui$Internal$Flag$Flag = function (a) {
 	return {$: 'Flag', a: a};
 };
@@ -7876,6 +8754,23 @@ var $elm$core$Bitwise$shiftLeftBy = _Bitwise_shiftLeftBy;
 var $mdgriffith$elm_ui$Internal$Flag$flag = function (i) {
 	return (i > 31) ? $mdgriffith$elm_ui$Internal$Flag$Second(1 << (i - 32)) : $mdgriffith$elm_ui$Internal$Flag$Flag(1 << i);
 };
+var $mdgriffith$elm_ui$Internal$Flag$fontWeight = $mdgriffith$elm_ui$Internal$Flag$flag(13);
+var $mdgriffith$elm_ui$Element$Font$bold = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontWeight, $mdgriffith$elm_ui$Internal$Style$classes.bold);
+var $mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
+var $mdgriffith$elm_ui$Element$centerX = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$CenterX);
+var $mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
+	return {$: 'AlignY', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
+var $mdgriffith$elm_ui$Element$centerY = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$CenterY);
+var $mdgriffith$elm_ui$Internal$Model$Colored = F3(
+	function (a, b, c) {
+		return {$: 'Colored', a: a, b: b, c: c};
+	});
+var $mdgriffith$elm_ui$Internal$Model$StyleClass = F2(
+	function (a, b) {
+		return {$: 'StyleClass', a: a, b: b};
+	});
 var $mdgriffith$elm_ui$Internal$Flag$bgColor = $mdgriffith$elm_ui$Internal$Flag$flag(8);
 var $mdgriffith$elm_ui$Internal$Model$floatClass = function (x) {
 	return $elm$core$String$fromInt(
@@ -7898,12 +8793,112 @@ var $mdgriffith$elm_ui$Element$Background$color = function (clr) {
 			'background-color',
 			clr));
 };
+var $mdgriffith$elm_ui$Internal$Flag$fontColor = $mdgriffith$elm_ui$Internal$Flag$flag(14);
+var $mdgriffith$elm_ui$Element$Font$color = function (fontColor) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$fontColor,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Colored,
+			'fc-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(fontColor),
+			'color',
+			fontColor));
+};
+var $elm$core$String$concat = function (strings) {
+	return A2($elm$core$String$join, '', strings);
+};
+var $elm$core$String$fromList = _String_fromList;
+var $elm$core$Basics$modBy = _Basics_modBy;
+var $rtfeldman$elm_hex$Hex$unsafeToDigit = function (num) {
+	unsafeToDigit:
+	while (true) {
+		switch (num) {
+			case 0:
+				return _Utils_chr('0');
+			case 1:
+				return _Utils_chr('1');
+			case 2:
+				return _Utils_chr('2');
+			case 3:
+				return _Utils_chr('3');
+			case 4:
+				return _Utils_chr('4');
+			case 5:
+				return _Utils_chr('5');
+			case 6:
+				return _Utils_chr('6');
+			case 7:
+				return _Utils_chr('7');
+			case 8:
+				return _Utils_chr('8');
+			case 9:
+				return _Utils_chr('9');
+			case 10:
+				return _Utils_chr('a');
+			case 11:
+				return _Utils_chr('b');
+			case 12:
+				return _Utils_chr('c');
+			case 13:
+				return _Utils_chr('d');
+			case 14:
+				return _Utils_chr('e');
+			case 15:
+				return _Utils_chr('f');
+			default:
+				var $temp$num = num;
+				num = $temp$num;
+				continue unsafeToDigit;
+		}
+	}
+};
+var $rtfeldman$elm_hex$Hex$unsafePositiveToDigits = F2(
+	function (digits, num) {
+		unsafePositiveToDigits:
+		while (true) {
+			if (num < 16) {
+				return A2(
+					$elm$core$List$cons,
+					$rtfeldman$elm_hex$Hex$unsafeToDigit(num),
+					digits);
+			} else {
+				var $temp$digits = A2(
+					$elm$core$List$cons,
+					$rtfeldman$elm_hex$Hex$unsafeToDigit(
+						A2($elm$core$Basics$modBy, 16, num)),
+					digits),
+					$temp$num = (num / 16) | 0;
+				digits = $temp$digits;
+				num = $temp$num;
+				continue unsafePositiveToDigits;
+			}
+		}
+	});
+var $rtfeldman$elm_hex$Hex$toString = function (num) {
+	return $elm$core$String$fromList(
+		(num < 0) ? A2(
+			$elm$core$List$cons,
+			_Utils_chr('-'),
+			A2($rtfeldman$elm_hex$Hex$unsafePositiveToDigits, _List_Nil, -num)) : A2($rtfeldman$elm_hex$Hex$unsafePositiveToDigits, _List_Nil, num));
+};
+var $author$project$Sandbox$colorToHex = function (eCol) {
+	var colors = $mdgriffith$elm_ui$Element$toRgb(eCol);
+	var green = $rtfeldman$elm_hex$Hex$toString(
+		$elm$core$Basics$round(colors.green * 255));
+	var red = $rtfeldman$elm_hex$Hex$toString(
+		$elm$core$Basics$round(colors.red * 255));
+	var blue = $rtfeldman$elm_hex$Hex$toString(
+		$elm$core$Basics$round(colors.blue * 255));
+	var together = $elm$core$String$concat(
+		_List_fromArray(
+			['#', red, green, blue]));
+	return together;
+};
 var $mdgriffith$elm_ui$Internal$Model$Unkeyed = function (a) {
 	return {$: 'Unkeyed', a: a};
 };
 var $mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
 var $mdgriffith$elm_ui$Internal$Model$asColumn = $mdgriffith$elm_ui$Internal$Model$AsColumn;
-var $mdgriffith$elm_ui$Internal$Style$classes = {above: 'a', active: 'atv', alignBottom: 'ab', alignCenterX: 'cx', alignCenterY: 'cy', alignContainerBottom: 'acb', alignContainerCenterX: 'accx', alignContainerCenterY: 'accy', alignContainerRight: 'acr', alignLeft: 'al', alignRight: 'ar', alignTop: 'at', alignedHorizontally: 'ah', alignedVertically: 'av', any: 's', behind: 'bh', below: 'b', bold: 'w7', borderDashed: 'bd', borderDotted: 'bdt', borderNone: 'bn', borderSolid: 'bs', capturePointerEvents: 'cpe', clip: 'cp', clipX: 'cpx', clipY: 'cpy', column: 'c', container: 'ctr', contentBottom: 'cb', contentCenterX: 'ccx', contentCenterY: 'ccy', contentLeft: 'cl', contentRight: 'cr', contentTop: 'ct', cursorPointer: 'cptr', cursorText: 'ctxt', focus: 'fcs', focusedWithin: 'focus-within', fullSize: 'fs', grid: 'g', hasBehind: 'hbh', heightContent: 'hc', heightExact: 'he', heightFill: 'hf', heightFillPortion: 'hfp', hover: 'hv', imageContainer: 'ic', inFront: 'fr', inputLabel: 'lbl', inputMultiline: 'iml', inputMultilineFiller: 'imlf', inputMultilineParent: 'imlp', inputMultilineWrapper: 'implw', inputText: 'it', italic: 'i', link: 'lnk', nearby: 'nb', noTextSelection: 'notxt', onLeft: 'ol', onRight: 'or', opaque: 'oq', overflowHidden: 'oh', page: 'pg', paragraph: 'p', passPointerEvents: 'ppe', root: 'ui', row: 'r', scrollbars: 'sb', scrollbarsX: 'sbx', scrollbarsY: 'sby', seButton: 'sbt', single: 'e', sizeByCapital: 'cap', spaceEvenly: 'sev', strike: 'sk', text: 't', textCenter: 'tc', textExtraBold: 'w8', textExtraLight: 'w2', textHeavy: 'w9', textJustify: 'tj', textJustifyAll: 'tja', textLeft: 'tl', textLight: 'w3', textMedium: 'w5', textNormalWeight: 'w4', textRight: 'tr', textSemiBold: 'w6', textThin: 'w1', textUnitalicized: 'tun', transition: 'ts', transparent: 'clr', underline: 'u', widthContent: 'wc', widthExact: 'we', widthFill: 'wf', widthFillPortion: 'wfp', wrapped: 'wrp'};
 var $mdgriffith$elm_ui$Internal$Model$Generic = {$: 'Generic'};
 var $mdgriffith$elm_ui$Internal$Model$div = $mdgriffith$elm_ui$Internal$Model$Generic;
 var $mdgriffith$elm_ui$Internal$Model$NoNearbyChildren = {$: 'NoNearbyChildren'};
@@ -10220,9 +11215,6 @@ var $mdgriffith$elm_ui$Internal$Style$sliderReset = '\ninput[type=range] {\n  -w
 var $mdgriffith$elm_ui$Internal$Style$thumbReset = '\ninput[type=range]::-webkit-slider-thumb {\n    -webkit-appearance: none;\n    opacity: 0.5;\n    width: 80px;\n    height: 80px;\n    background-color: black;\n    border:none;\n    border-radius: 5px;\n}\ninput[type=range]::-moz-range-thumb {\n    opacity: 0.5;\n    width: 80px;\n    height: 80px;\n    background-color: black;\n    border:none;\n    border-radius: 5px;\n}\ninput[type=range]::-ms-thumb {\n    opacity: 0.5;\n    width: 80px;\n    height: 80px;\n    background-color: black;\n    border:none;\n    border-radius: 5px;\n}\ninput[type=range][orient=vertical]{\n    writing-mode: bt-lr; /* IE */\n    -webkit-appearance: slider-vertical;  /* WebKit */\n}\n';
 var $mdgriffith$elm_ui$Internal$Style$trackReset = '\ninput[type=range]::-moz-range-track {\n    background: transparent;\n    cursor: pointer;\n}\ninput[type=range]::-ms-track {\n    background: transparent;\n    cursor: pointer;\n}\ninput[type=range]::-webkit-slider-runnable-track {\n    background: transparent;\n    cursor: pointer;\n}\n';
 var $mdgriffith$elm_ui$Internal$Style$overrides = '@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {' + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.any) + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.row) + (' > ' + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.any) + (' { flex-basis: auto !important; } ' + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.any) + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.row) + (' > ' + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.any) + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.container) + (' { flex-basis: auto !important; }}' + ($mdgriffith$elm_ui$Internal$Style$inputTextReset + ($mdgriffith$elm_ui$Internal$Style$sliderReset + ($mdgriffith$elm_ui$Internal$Style$trackReset + ($mdgriffith$elm_ui$Internal$Style$thumbReset + $mdgriffith$elm_ui$Internal$Style$explainer)))))))))))))));
-var $elm$core$String$concat = function (strings) {
-	return A2($elm$core$String$join, '', strings);
-};
 var $mdgriffith$elm_ui$Internal$Style$Intermediate = function (a) {
 	return {$: 'Intermediate', a: a};
 };
@@ -10512,10 +11504,6 @@ var $mdgriffith$elm_ui$Internal$Model$hasSmallCaps = function (typeface) {
 		return false;
 	}
 };
-var $elm$core$Basics$min = F2(
-	function (x, y) {
-		return (_Utils_cmp(x, y) < 0) ? x : y;
-	});
 var $mdgriffith$elm_ui$Internal$Model$renderProps = F3(
 	function (force, _v0, existing) {
 		var key = _v0.a;
@@ -11211,16 +12199,6 @@ var $elm$core$List$filter = F2(
 			_List_Nil,
 			list);
 	});
-var $elm$core$List$minimum = function (list) {
-	if (list.b) {
-		var x = list.a;
-		var xs = list.b;
-		return $elm$core$Maybe$Just(
-			A3($elm$core$List$foldl, $elm$core$Basics$min, x, xs));
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
-};
 var $elm$core$Basics$neq = _Utils_notEqual;
 var $mdgriffith$elm_ui$Internal$Model$convertAdjustment = function (adjustment) {
 	var lines = _List_fromArray(
@@ -12062,13 +13040,6 @@ var $mdgriffith$elm_ui$Internal$Model$alignYName = function (align) {
 			return $mdgriffith$elm_ui$Internal$Style$classes.alignedVertically + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.alignCenterY);
 	}
 };
-var $elm$virtual_dom$VirtualDom$attribute = F2(
-	function (key, value) {
-		return A2(
-			_VirtualDom_attribute,
-			_VirtualDom_noOnOrFormAction(key),
-			_VirtualDom_noJavaScriptOrHtmlUri(value));
-	});
 var $mdgriffith$elm_ui$Internal$Model$FullTransform = F4(
 	function (a, b, c, d) {
 		return {$: 'FullTransform', a: a, b: b, c: c, d: d};
@@ -12356,7 +13327,6 @@ var $mdgriffith$elm_ui$Internal$Model$renderWidth = function (w) {
 	}
 };
 var $mdgriffith$elm_ui$Internal$Flag$borderWidth = $mdgriffith$elm_ui$Internal$Flag$flag(27);
-var $elm$core$Basics$ge = _Utils_ge;
 var $mdgriffith$elm_ui$Internal$Model$skippable = F2(
 	function (flag, style) {
 		if (_Utils_eq(flag, $mdgriffith$elm_ui$Internal$Flag$borderWidth)) {
@@ -13333,10 +14303,7 @@ var $author$project$IVVL$AddVVectorG2 = F2(
 	function (a, b) {
 		return {$: 'AddVVectorG2', a: a, b: b};
 	});
-var $author$project$Sandbox$IVVLMsg = F2(
-	function (a, b) {
-		return {$: 'IVVLMsg', a: a, b: b};
-	});
+var $author$project$Sandbox$VectorDifferenceType = {$: 'VectorDifferenceType'};
 var $author$project$Sandbox$VectorSumType = {$: 'VectorSumType'};
 var $author$project$Sandbox$VectorType = {$: 'VectorType'};
 var $mdgriffith$elm_ui$Internal$Model$Button = {$: 'Button'};
@@ -13353,7 +14320,6 @@ var $elm$html$Html$Attributes$boolProperty = F2(
 	});
 var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
 var $mdgriffith$elm_ui$Element$Input$enter = 'Enter';
-var $mdgriffith$elm_ui$Internal$Model$NoAttribute = {$: 'NoAttribute'};
 var $mdgriffith$elm_ui$Element$Input$hasFocusStyle = function (attr) {
 	if (((attr.$ === 'StyleClass') && (attr.b.$ === 'PseudoSelector')) && (attr.b.a.$ === 'Focus')) {
 		var _v1 = attr.b;
@@ -13422,10 +14388,6 @@ var $mdgriffith$elm_ui$Element$Input$onKeyLookup = function (lookup) {
 				},
 				isKey)));
 };
-var $mdgriffith$elm_ui$Internal$Model$Class = F2(
-	function (a, b) {
-		return {$: 'Class', a: a, b: b};
-	});
 var $mdgriffith$elm_ui$Internal$Flag$cursor = $mdgriffith$elm_ui$Internal$Flag$flag(21);
 var $mdgriffith$elm_ui$Element$pointer = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$cursor, $mdgriffith$elm_ui$Internal$Style$classes.cursorPointer);
 var $mdgriffith$elm_ui$Element$Input$space = ' ';
@@ -13511,149 +14473,101 @@ var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
 	return {$: 'Fill', a: a};
 };
 var $mdgriffith$elm_ui$Element$fill = $mdgriffith$elm_ui$Internal$Model$Fill(1);
-var $mdgriffith$elm_ui$Internal$Model$Focus = {$: 'Focus'};
-var $mdgriffith$elm_ui$Internal$Model$PseudoSelector = F2(
+var $mdgriffith$elm_ui$Internal$Model$ImportFont = F2(
 	function (a, b) {
-		return {$: 'PseudoSelector', a: a, b: b};
+		return {$: 'ImportFont', a: a, b: b};
 	});
-var $mdgriffith$elm_ui$Internal$Flag$focus = $mdgriffith$elm_ui$Internal$Flag$flag(31);
-var $mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
-	return {$: 'AlignY', a: a};
+var $mdgriffith$elm_ui$Element$Font$external = function (_v0) {
+	var url = _v0.url;
+	var name = _v0.name;
+	return A2($mdgriffith$elm_ui$Internal$Model$ImportFont, name, url);
 };
-var $mdgriffith$elm_ui$Internal$Model$Nearby = F2(
+var $mdgriffith$elm_ui$Internal$Model$FontFamily = F2(
 	function (a, b) {
-		return {$: 'Nearby', a: a, b: b};
+		return {$: 'FontFamily', a: a, b: b};
 	});
-var $mdgriffith$elm_ui$Internal$Model$TransformComponent = F2(
-	function (a, b) {
-		return {$: 'TransformComponent', a: a, b: b};
+var $mdgriffith$elm_ui$Internal$Flag$fontFamily = $mdgriffith$elm_ui$Internal$Flag$flag(5);
+var $elm$core$String$toLower = _String_toLower;
+var $elm$core$String$words = _String_words;
+var $mdgriffith$elm_ui$Internal$Model$renderFontClassName = F2(
+	function (font, current) {
+		return _Utils_ap(
+			current,
+			function () {
+				switch (font.$) {
+					case 'Serif':
+						return 'serif';
+					case 'SansSerif':
+						return 'sans-serif';
+					case 'Monospace':
+						return 'monospace';
+					case 'Typeface':
+						var name = font.a;
+						return A2(
+							$elm$core$String$join,
+							'-',
+							$elm$core$String$words(
+								$elm$core$String$toLower(name)));
+					case 'ImportFont':
+						var name = font.a;
+						var url = font.b;
+						return A2(
+							$elm$core$String$join,
+							'-',
+							$elm$core$String$words(
+								$elm$core$String$toLower(name)));
+					default:
+						var name = font.a.name;
+						return A2(
+							$elm$core$String$join,
+							'-',
+							$elm$core$String$words(
+								$elm$core$String$toLower(name)));
+				}
+			}());
 	});
-var $mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
-var $mdgriffith$elm_ui$Internal$Model$Text = function (a) {
-	return {$: 'Text', a: a};
-};
-var $elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
-var $mdgriffith$elm_ui$Internal$Model$map = F2(
-	function (fn, el) {
-		switch (el.$) {
-			case 'Styled':
-				var styled = el.a;
-				return $mdgriffith$elm_ui$Internal$Model$Styled(
-					{
-						html: F2(
-							function (add, context) {
-								return A2(
-									$elm$virtual_dom$VirtualDom$map,
-									fn,
-									A2(styled.html, add, context));
-							}),
-						styles: styled.styles
-					});
-			case 'Unstyled':
-				var html = el.a;
-				return $mdgriffith$elm_ui$Internal$Model$Unstyled(
-					A2(
-						$elm$core$Basics$composeL,
-						$elm$virtual_dom$VirtualDom$map(fn),
-						html));
-			case 'Text':
-				var str = el.a;
-				return $mdgriffith$elm_ui$Internal$Model$Text(str);
-			default:
-				return $mdgriffith$elm_ui$Internal$Model$Empty;
-		}
-	});
-var $elm$virtual_dom$VirtualDom$mapAttribute = _VirtualDom_mapAttribute;
-var $mdgriffith$elm_ui$Internal$Model$mapAttrFromStyle = F2(
-	function (fn, attr) {
-		switch (attr.$) {
-			case 'NoAttribute':
-				return $mdgriffith$elm_ui$Internal$Model$NoAttribute;
-			case 'Describe':
-				var description = attr.a;
-				return $mdgriffith$elm_ui$Internal$Model$Describe(description);
-			case 'AlignX':
-				var x = attr.a;
-				return $mdgriffith$elm_ui$Internal$Model$AlignX(x);
-			case 'AlignY':
-				var y = attr.a;
-				return $mdgriffith$elm_ui$Internal$Model$AlignY(y);
-			case 'Width':
-				var x = attr.a;
-				return $mdgriffith$elm_ui$Internal$Model$Width(x);
-			case 'Height':
-				var x = attr.a;
-				return $mdgriffith$elm_ui$Internal$Model$Height(x);
-			case 'Class':
-				var x = attr.a;
-				var y = attr.b;
-				return A2($mdgriffith$elm_ui$Internal$Model$Class, x, y);
-			case 'StyleClass':
-				var flag = attr.a;
-				var style = attr.b;
-				return A2($mdgriffith$elm_ui$Internal$Model$StyleClass, flag, style);
-			case 'Nearby':
-				var location = attr.a;
-				var elem = attr.b;
-				return A2(
-					$mdgriffith$elm_ui$Internal$Model$Nearby,
-					location,
-					A2($mdgriffith$elm_ui$Internal$Model$map, fn, elem));
-			case 'Attr':
-				var htmlAttr = attr.a;
-				return $mdgriffith$elm_ui$Internal$Model$Attr(
-					A2($elm$virtual_dom$VirtualDom$mapAttribute, fn, htmlAttr));
-			default:
-				var fl = attr.a;
-				var trans = attr.b;
-				return A2($mdgriffith$elm_ui$Internal$Model$TransformComponent, fl, trans);
-		}
-	});
-var $mdgriffith$elm_ui$Internal$Model$removeNever = function (style) {
-	return A2($mdgriffith$elm_ui$Internal$Model$mapAttrFromStyle, $elm$core$Basics$never, style);
-};
-var $mdgriffith$elm_ui$Internal$Model$unwrapDecsHelper = F2(
-	function (attr, _v0) {
-		var styles = _v0.a;
-		var trans = _v0.b;
-		var _v1 = $mdgriffith$elm_ui$Internal$Model$removeNever(attr);
-		switch (_v1.$) {
-			case 'StyleClass':
-				var style = _v1.b;
-				return _Utils_Tuple2(
-					A2($elm$core$List$cons, style, styles),
-					trans);
-			case 'TransformComponent':
-				var flag = _v1.a;
-				var component = _v1.b;
-				return _Utils_Tuple2(
-					styles,
-					A2($mdgriffith$elm_ui$Internal$Model$composeTransformation, trans, component));
-			default:
-				return _Utils_Tuple2(styles, trans);
-		}
-	});
-var $mdgriffith$elm_ui$Internal$Model$unwrapDecorations = function (attrs) {
-	var _v0 = A3(
-		$elm$core$List$foldl,
-		$mdgriffith$elm_ui$Internal$Model$unwrapDecsHelper,
-		_Utils_Tuple2(_List_Nil, $mdgriffith$elm_ui$Internal$Model$Untransformed),
-		attrs);
-	var styles = _v0.a;
-	var transform = _v0.b;
-	return A2(
-		$elm$core$List$cons,
-		$mdgriffith$elm_ui$Internal$Model$Transform(transform),
-		styles);
-};
-var $mdgriffith$elm_ui$Element$focused = function (decs) {
+var $mdgriffith$elm_ui$Element$Font$family = function (families) {
 	return A2(
 		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$focus,
+		$mdgriffith$elm_ui$Internal$Flag$fontFamily,
 		A2(
-			$mdgriffith$elm_ui$Internal$Model$PseudoSelector,
-			$mdgriffith$elm_ui$Internal$Model$Focus,
-			$mdgriffith$elm_ui$Internal$Model$unwrapDecorations(decs)));
+			$mdgriffith$elm_ui$Internal$Model$FontFamily,
+			A3($elm$core$List$foldl, $mdgriffith$elm_ui$Internal$Model$renderFontClassName, 'ff-', families),
+			families));
+};
+var $author$project$Sandbox$fontDict = $elm$core$Dict$fromList(
+	_List_fromArray(
+		[
+			_Utils_Tuple2(
+			'Inconsolata',
+			$mdgriffith$elm_ui$Element$Font$family(
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$Font$external(
+						{name: 'Inconsolata', url: 'https://fonts.googleapis.com/css?family=Inconsolata'})
+					]))),
+			_Utils_Tuple2(
+			'Assistant',
+			$mdgriffith$elm_ui$Element$Font$family(
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$Font$external(
+						{name: 'Assistant', url: 'https://fonts.googleapis.com/css?family=Assistant'})
+					])))
+		]));
+var $author$project$Sandbox$getFont = function (key) {
+	var _v0 = A2($elm$core$Dict$get, key, $author$project$Sandbox$fontDict);
+	if (_v0.$ === 'Nothing') {
+		return $mdgriffith$elm_ui$Element$Font$family(
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$Font$external(
+					{name: 'Comic Neue', url: 'https://fonts.googleapis.com/css?family=Comic+Neue'})
+				]));
+	} else {
+		var font = _v0.a;
+		return font;
+	}
 };
 var $mdgriffith$elm_ui$Internal$Model$PaddingStyle = F5(
 	function (a, b, c, d, e) {
@@ -13693,167 +14607,17 @@ var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
 	return {$: 'Px', a: a};
 };
 var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
-var $mdgriffith$elm_ui$Internal$Model$Rgba = F4(
-	function (a, b, c, d) {
-		return {$: 'Rgba', a: a, b: b, c: c, d: d};
-	});
-var $mdgriffith$elm_ui$Element$rgb255 = F3(
-	function (red, green, blue) {
-		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
-	});
-var $mdgriffith$elm_ui$Element$text = function (content) {
-	return $mdgriffith$elm_ui$Internal$Model$Text(content);
-};
-var $mdgriffith$elm_ui$Internal$Model$BorderWidth = F5(
-	function (a, b, c, d, e) {
-		return {$: 'BorderWidth', a: a, b: b, c: c, d: d, e: e};
-	});
-var $mdgriffith$elm_ui$Element$Border$width = function (v) {
+var $mdgriffith$elm_ui$Internal$Flag$borderRound = $mdgriffith$elm_ui$Internal$Flag$flag(17);
+var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
 	return A2(
 		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$borderWidth,
-		A5(
-			$mdgriffith$elm_ui$Internal$Model$BorderWidth,
-			'b-' + $elm$core$String$fromInt(v),
-			v,
-			v,
-			v,
-			v));
-};
-var $author$project$Sandbox$creationMenu = function (model) {
-	return A2(
-		$mdgriffith$elm_ui$Element$column,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-				A2($mdgriffith$elm_ui$Element$paddingXY, 0, 10)
-			]),
-		function () {
-			var optionButton = F2(
-				function (title, message) {
-					return A2(
-						$mdgriffith$elm_ui$Element$el,
-						_List_fromArray(
-							[
-								$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
-							]),
-						A2(
-							$mdgriffith$elm_ui$Element$Input$button,
-							_List_fromArray(
-								[
-									$mdgriffith$elm_ui$Element$width(
-									$mdgriffith$elm_ui$Element$px(250)),
-									$mdgriffith$elm_ui$Element$centerX,
-									$mdgriffith$elm_ui$Element$Border$width(1),
-									$mdgriffith$elm_ui$Element$focused(
-									_List_fromArray(
-										[
-											$mdgriffith$elm_ui$Element$Background$color(
-											A3($mdgriffith$elm_ui$Element$rgb255, 150, 80, 255))
-										]))
-								]),
-							{
-								label: A2(
-									$mdgriffith$elm_ui$Element$el,
-									_List_fromArray(
-										[
-											$mdgriffith$elm_ui$Element$centerX,
-											A2($mdgriffith$elm_ui$Element$paddingXY, 0, 5)
-										]),
-									$mdgriffith$elm_ui$Element$text(title)),
-								onPress: message
-							}));
-				});
-			var myVector = A2($author$project$IVVL$endTypeVV2, $author$project$IVVL$Directional, $author$project$IVVL$newVV2);
-			return A3(
-				$elm$core$List$map2,
-				optionButton,
-				_List_fromArray(
-					['Add Vector Element', 'Add VectorSum Element']),
-				_List_fromArray(
-					[
-						$elm$core$Maybe$Just(
-						A2(
-							$author$project$Sandbox$AddElement,
-							$author$project$Sandbox$VectorType,
-							A2(
-								$author$project$Sandbox$IVVLMsg,
-								model.focusedEmbed,
-								A2($author$project$IVVL$AddVVectorG2, myVector, 1)))),
-						$elm$core$Maybe$Just(
-						A2(
-							$author$project$Sandbox$AddElement,
-							$author$project$Sandbox$VectorSumType,
-							A2(
-								$author$project$Sandbox$IVVLMsg,
-								model.focusedEmbed,
-								A2($author$project$IVVL$AddVVectorG2, myVector, 1))))
-					]));
-		}());
-};
-var $mdgriffith$elm_ui$Internal$Model$Max = F2(
-	function (a, b) {
-		return {$: 'Max', a: a, b: b};
-	});
-var $mdgriffith$elm_ui$Element$maximum = F2(
-	function (i, l) {
-		return A2($mdgriffith$elm_ui$Internal$Model$Max, i, l);
-	});
-var $mdgriffith$elm_ui$Element$rgb = F3(
-	function (r, g, b) {
-		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, r, g, b, 1);
-	});
-var $mdgriffith$elm_ui$Internal$Flag$overflow = $mdgriffith$elm_ui$Internal$Flag$flag(20);
-var $mdgriffith$elm_ui$Element$scrollbars = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$overflow, $mdgriffith$elm_ui$Internal$Style$classes.scrollbars);
-var $mdgriffith$elm_ui$Internal$Model$FontSize = function (a) {
-	return {$: 'FontSize', a: a};
-};
-var $mdgriffith$elm_ui$Internal$Flag$fontSize = $mdgriffith$elm_ui$Internal$Flag$flag(4);
-var $mdgriffith$elm_ui$Element$Font$size = function (i) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$fontSize,
-		$mdgriffith$elm_ui$Internal$Model$FontSize(i));
-};
-var $author$project$Sandbox$ParseVectorInput = F4(
-	function (a, b, c, d) {
-		return {$: 'ParseVectorInput', a: a, b: b, c: c, d: d};
-	});
-var $author$project$Sandbox$RemoveElement = F2(
-	function (a, b) {
-		return {$: 'RemoveElement', a: a, b: b};
-	});
-var $author$project$IVVL$RemoveVVectorG2 = F2(
-	function (a, b) {
-		return {$: 'RemoveVVectorG2', a: a, b: b};
-	});
-var $author$project$Sandbox$Y = {$: 'Y'};
-var $mdgriffith$elm_ui$Internal$Flag$fontAlignment = $mdgriffith$elm_ui$Internal$Flag$flag(12);
-var $mdgriffith$elm_ui$Element$Font$center = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontAlignment, $mdgriffith$elm_ui$Internal$Style$classes.textCenter);
-var $mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
-var $mdgriffith$elm_ui$Element$centerY = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$CenterY);
-var $mdgriffith$elm_ui$Internal$Flag$fontColor = $mdgriffith$elm_ui$Internal$Flag$flag(14);
-var $mdgriffith$elm_ui$Element$Font$color = function (fontColor) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$fontColor,
+		$mdgriffith$elm_ui$Internal$Flag$borderRound,
 		A3(
-			$mdgriffith$elm_ui$Internal$Model$Colored,
-			'fc-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(fontColor),
-			'color',
-			fontColor));
+			$mdgriffith$elm_ui$Internal$Model$Single,
+			'br-' + $elm$core$String$fromInt(radius),
+			'border-radius',
+			$elm$core$String$fromInt(radius) + 'px'));
 };
-var $mdgriffith$elm_ui$Internal$Flag$fontWeight = $mdgriffith$elm_ui$Internal$Flag$flag(13);
-var $mdgriffith$elm_ui$Element$Font$hairline = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontWeight, $mdgriffith$elm_ui$Internal$Style$classes.textThin);
-var $mdgriffith$elm_ui$Element$Input$HiddenLabel = function (a) {
-	return {$: 'HiddenLabel', a: a};
-};
-var $mdgriffith$elm_ui$Element$Input$labelHidden = $mdgriffith$elm_ui$Element$Input$HiddenLabel;
-var $mdgriffith$elm_ui$Element$Input$Placeholder = F2(
-	function (a, b) {
-		return {$: 'Placeholder', a: a, b: b};
-	});
-var $mdgriffith$elm_ui$Element$Input$placeholder = $mdgriffith$elm_ui$Element$Input$Placeholder;
 var $mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
 var $mdgriffith$elm_ui$Internal$Model$asRow = $mdgriffith$elm_ui$Internal$Model$AsRow;
 var $mdgriffith$elm_ui$Element$row = F2(
@@ -13874,6 +14638,16 @@ var $mdgriffith$elm_ui$Element$row = F2(
 						attrs))),
 			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
+var $mdgriffith$elm_ui$Internal$Model$FontSize = function (a) {
+	return {$: 'FontSize', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Flag$fontSize = $mdgriffith$elm_ui$Internal$Flag$flag(4);
+var $mdgriffith$elm_ui$Element$Font$size = function (i) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$fontSize,
+		$mdgriffith$elm_ui$Internal$Model$FontSize(i));
+};
 var $mdgriffith$elm_ui$Internal$Model$SpacingStyle = F3(
 	function (a, b, c) {
 		return {$: 'SpacingStyle', a: a, b: b, c: c};
@@ -13894,6 +14668,430 @@ var $mdgriffith$elm_ui$Element$spacingXY = F2(
 				x,
 				y));
 	});
+var $mdgriffith$elm_ui$Internal$Model$Text = function (a) {
+	return {$: 'Text', a: a};
+};
+var $mdgriffith$elm_ui$Element$text = function (content) {
+	return $mdgriffith$elm_ui$Internal$Model$Text(content);
+};
+var $mdgriffith$elm_ui$Internal$Model$BorderWidth = F5(
+	function (a, b, c, d, e) {
+		return {$: 'BorderWidth', a: a, b: b, c: c, d: d, e: e};
+	});
+var $mdgriffith$elm_ui$Element$Border$width = function (v) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$borderWidth,
+		A5(
+			$mdgriffith$elm_ui$Internal$Model$BorderWidth,
+			'b-' + $elm$core$String$fromInt(v),
+			v,
+			v,
+			v,
+			v));
+};
+var $author$project$Sandbox$creationMenu = function (model) {
+	var optionButton = F2(
+		function (title, message) {
+			return A2(
+				$mdgriffith$elm_ui$Element$row,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+							]),
+						A2(
+							$mdgriffith$elm_ui$Element$Input$button,
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$width(
+									$mdgriffith$elm_ui$Element$px(200)),
+									$mdgriffith$elm_ui$Element$height(
+									$mdgriffith$elm_ui$Element$px(50)),
+									$mdgriffith$elm_ui$Element$centerX,
+									$mdgriffith$elm_ui$Element$Border$width(1),
+									$mdgriffith$elm_ui$Element$Border$rounded(10),
+									$mdgriffith$elm_ui$Element$Background$color(
+									A2($author$project$Sandbox$getColor, 'buttonBackground', model.elementColorDict))
+								]),
+							{
+								label: A2(
+									$mdgriffith$elm_ui$Element$el,
+									_List_fromArray(
+										[
+											$mdgriffith$elm_ui$Element$centerX,
+											A2($mdgriffith$elm_ui$Element$paddingXY, 0, 5),
+											$author$project$Sandbox$getFont('Assistant'),
+											$mdgriffith$elm_ui$Element$Font$bold,
+											$mdgriffith$elm_ui$Element$Font$size(20)
+										]),
+									$mdgriffith$elm_ui$Element$text(title)),
+								onPress: message
+							}))
+					]));
+		});
+	var myVector = A2(
+		$author$project$IVVL$lineTypeVV2,
+		$author$project$IVVL$Solid(4),
+		A2(
+			$author$project$IVVL$colorVV2,
+			A2($author$project$Sandbox$getColor, 'defaultVector', model.elementColorDict),
+			A2($author$project$IVVL$endTypeVV2, $author$project$IVVL$Directional, $author$project$IVVL$newVV2)));
+	return A2(
+		$mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				A2($mdgriffith$elm_ui$Element$paddingXY, 0, 20)
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$mdgriffith$elm_ui$Element$column,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+						A2($mdgriffith$elm_ui$Element$paddingXY, 20, 0),
+						A2($mdgriffith$elm_ui$Element$spacingXY, 0, 10)
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$mdgriffith$elm_ui$Element$row,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$centerX,
+								A2($mdgriffith$elm_ui$Element$spacingXY, 10, 0)
+							]),
+						A3(
+							$elm$core$List$map2,
+							optionButton,
+							_List_fromArray(
+								['⁺↗ Add Vector']),
+							_List_fromArray(
+								[
+									$elm$core$Maybe$Just(
+									A2(
+										$author$project$Sandbox$AddElement,
+										$author$project$Sandbox$VectorType,
+										A2(
+											$author$project$Sandbox$IVVLMsg,
+											model.focusedEmbed,
+											A2($author$project$IVVL$AddVVectorG2, myVector, model.focusedGrid)))),
+									$elm$core$Maybe$Nothing
+								]))),
+						A2(
+						$mdgriffith$elm_ui$Element$row,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$centerX,
+								A2($mdgriffith$elm_ui$Element$spacingXY, 10, 0)
+							]),
+						A3(
+							$elm$core$List$map2,
+							optionButton,
+							_List_fromArray(
+								['↖⁺↗ Vector Sum', '↖⁻↗ Vector Difference']),
+							_List_fromArray(
+								[
+									$elm$core$Maybe$Just(
+									A2(
+										$author$project$Sandbox$AddElement,
+										$author$project$Sandbox$VectorSumType,
+										A2(
+											$author$project$Sandbox$IVVLMsg,
+											model.focusedEmbed,
+											A2($author$project$IVVL$AddVVectorG2, myVector, model.focusedGrid)))),
+									$elm$core$Maybe$Just(
+									A2(
+										$author$project$Sandbox$AddElement,
+										$author$project$Sandbox$VectorDifferenceType,
+										A2(
+											$author$project$Sandbox$IVVLMsg,
+											model.focusedEmbed,
+											A2($author$project$IVVL$AddVVectorG2, myVector, model.focusedGrid))))
+								])))
+					]))
+			]));
+};
+var $elm$virtual_dom$VirtualDom$nodeNS = F2(
+	function (namespace, tag) {
+		return A2(
+			_VirtualDom_nodeNS,
+			namespace,
+			_VirtualDom_noScript(tag));
+	});
+var $elm$svg$Svg$node = $elm$virtual_dom$VirtualDom$nodeNS('http://www.w3.org/2000/svg');
+var $elm$svg$Svg$text = $elm$virtual_dom$VirtualDom$text;
+var $author$project$ElmSVG$Icons$drag = function (attrs) {
+	return A3(
+		$elm$svg$Svg$node,
+		'svg',
+		_Utils_ap(
+			_List_fromArray(
+				[
+					A2($elm$virtual_dom$VirtualDom$attribute, 'fill', '#000000'),
+					A2($elm$virtual_dom$VirtualDom$attribute, 'width', '800px'),
+					A2($elm$virtual_dom$VirtualDom$attribute, 'height', '800px'),
+					A2($elm$virtual_dom$VirtualDom$attribute, 'viewBox', '0 0 32 32'),
+					A2($elm$virtual_dom$VirtualDom$attribute, 'id', 'icon'),
+					A2($elm$virtual_dom$VirtualDom$attribute, 'xmlns', 'http://www.w3.org/2000/svg')
+				]),
+			attrs),
+		_List_fromArray(
+			[
+				A3(
+				$elm$svg$Svg$node,
+				'defs',
+				_List_Nil,
+				_List_fromArray(
+					[
+						A3(
+						$elm$svg$Svg$node,
+						'style',
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$svg$Svg$text('.cls-1{fill:none;}')
+							]))
+					])),
+				A3(
+				$elm$svg$Svg$node,
+				'title',
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$svg$Svg$text('drag--vertical')
+					])),
+				A3(
+				$elm$svg$Svg$node,
+				'polygon',
+				_List_fromArray(
+					[
+						A2($elm$virtual_dom$VirtualDom$attribute, 'points', '4 20 15 20 15 26.17 12.41 23.59 11 25 16 30 21 25 19.59 23.59 17 26.17 17 20 28 20 28 18 4 18 4 20')
+					]),
+				_List_Nil),
+				A3(
+				$elm$svg$Svg$node,
+				'polygon',
+				_List_fromArray(
+					[
+						A2($elm$virtual_dom$VirtualDom$attribute, 'points', '11 7 12.41 8.41 15 5.83 15 12 4 12 4 14 28 14 28 12 17 12 17 5.83 19.59 8.41 21 7 16 2 11 7')
+					]),
+				_List_Nil),
+				A3(
+				$elm$svg$Svg$node,
+				'rect',
+				_List_fromArray(
+					[
+						A2($elm$virtual_dom$VirtualDom$attribute, 'id', '_Transparent_Rectangle_'),
+						A2($elm$virtual_dom$VirtualDom$attribute, 'data-name', '&lt;Transparent Rectangle&gt;'),
+						A2($elm$virtual_dom$VirtualDom$attribute, 'class', 'cls-1'),
+						A2($elm$virtual_dom$VirtualDom$attribute, 'width', '32'),
+						A2($elm$virtual_dom$VirtualDom$attribute, 'height', '32')
+					]),
+				_List_Nil)
+			]));
+};
+var $mdgriffith$elm_ui$Element$htmlAttribute = $mdgriffith$elm_ui$Internal$Model$Attr;
+var $phollyer$elm_cursor$Element$Cursor$cursor = $mdgriffith$elm_ui$Element$htmlAttribute;
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $phollyer$elm_cursor$Html$Cursor$cursor = $elm$html$Html$Attributes$style('cursor');
+var $phollyer$elm_cursor$Html$Cursor$ewResize = $phollyer$elm_cursor$Html$Cursor$cursor('ew-resize');
+var $phollyer$elm_cursor$Element$Cursor$ewResize = $phollyer$elm_cursor$Element$Cursor$cursor($phollyer$elm_cursor$Html$Cursor$ewResize);
+var $mdgriffith$elm_ui$Internal$Model$boxShadowClass = function (shadow) {
+	return $elm$core$String$concat(
+		_List_fromArray(
+			[
+				shadow.inset ? 'box-inset' : 'box-',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.offset.a) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.offset.b) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.blur) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.size) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$formatColorClass(shadow.color)
+			]));
+};
+var $mdgriffith$elm_ui$Internal$Flag$shadows = $mdgriffith$elm_ui$Internal$Flag$flag(19);
+var $mdgriffith$elm_ui$Element$Border$shadow = function (almostShade) {
+	var shade = {blur: almostShade.blur, color: almostShade.color, inset: false, offset: almostShade.offset, size: almostShade.size};
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$shadows,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Single,
+			$mdgriffith$elm_ui$Internal$Model$boxShadowClass(shade),
+			'box-shadow',
+			$mdgriffith$elm_ui$Internal$Model$formatBoxShadow(shade)));
+};
+var $mdgriffith$elm_ui$Element$Border$glow = F2(
+	function (clr, size) {
+		return $mdgriffith$elm_ui$Element$Border$shadow(
+			{
+				blur: size * 2,
+				color: clr,
+				offset: _Utils_Tuple2(0, 0),
+				size: size
+			});
+	});
+var $elm$core$Basics$always = F2(
+	function (a, _v0) {
+		return a;
+	});
+var $mdgriffith$elm_ui$Internal$Model$unstyled = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Unstyled, $elm$core$Basics$always);
+var $mdgriffith$elm_ui$Element$html = $mdgriffith$elm_ui$Internal$Model$unstyled;
+var $mdgriffith$elm_ui$Internal$Model$InFront = {$: 'InFront'};
+var $mdgriffith$elm_ui$Element$inFront = function (element) {
+	return A2($mdgriffith$elm_ui$Element$createNearby, $mdgriffith$elm_ui$Internal$Model$InFront, element);
+};
+var $mdgriffith$elm_ui$Internal$Model$Max = F2(
+	function (a, b) {
+		return {$: 'Max', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Element$maximum = F2(
+	function (i, l) {
+		return A2($mdgriffith$elm_ui$Internal$Model$Max, i, l);
+	});
+var $mdgriffith$elm_ui$Internal$Model$Min = F2(
+	function (a, b) {
+		return {$: 'Min', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Element$minimum = F2(
+	function (i, l) {
+		return A2($mdgriffith$elm_ui$Internal$Model$Min, i, l);
+	});
+var $mdgriffith$elm_ui$Internal$Model$MoveX = function (a) {
+	return {$: 'MoveX', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$TransformComponent = F2(
+	function (a, b) {
+		return {$: 'TransformComponent', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Internal$Flag$moveX = $mdgriffith$elm_ui$Internal$Flag$flag(25);
+var $mdgriffith$elm_ui$Element$moveRight = function (x) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
+		$mdgriffith$elm_ui$Internal$Flag$moveX,
+		$mdgriffith$elm_ui$Internal$Model$MoveX(x));
+};
+var $mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
+var $mdgriffith$elm_ui$Element$none = $mdgriffith$elm_ui$Internal$Model$Empty;
+var $elm$html$Html$Events$onMouseDown = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'mousedown',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $mdgriffith$elm_ui$Element$Events$onMouseDown = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Events$onMouseDown);
+var $mdgriffith$elm_ui$Internal$Model$paddingName = F4(
+	function (top, right, bottom, left) {
+		return 'pad-' + ($elm$core$String$fromInt(top) + ('-' + ($elm$core$String$fromInt(right) + ('-' + ($elm$core$String$fromInt(bottom) + ('-' + $elm$core$String$fromInt(left)))))));
+	});
+var $mdgriffith$elm_ui$Element$paddingEach = function (_v0) {
+	var top = _v0.top;
+	var right = _v0.right;
+	var bottom = _v0.bottom;
+	var left = _v0.left;
+	if (_Utils_eq(top, right) && (_Utils_eq(top, bottom) && _Utils_eq(top, left))) {
+		var topFloat = top;
+		return A2(
+			$mdgriffith$elm_ui$Internal$Model$StyleClass,
+			$mdgriffith$elm_ui$Internal$Flag$padding,
+			A5(
+				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+				'p-' + $elm$core$String$fromInt(top),
+				topFloat,
+				topFloat,
+				topFloat,
+				topFloat));
+	} else {
+		return A2(
+			$mdgriffith$elm_ui$Internal$Model$StyleClass,
+			$mdgriffith$elm_ui$Internal$Flag$padding,
+			A5(
+				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+				A4($mdgriffith$elm_ui$Internal$Model$paddingName, top, right, bottom, left),
+				top,
+				right,
+				bottom,
+				left));
+	}
+};
+var $elm$core$Basics$pi = _Basics_pi;
+var $mdgriffith$elm_ui$Internal$Model$Rotate = F2(
+	function (a, b) {
+		return {$: 'Rotate', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Internal$Flag$rotate = $mdgriffith$elm_ui$Internal$Flag$flag(24);
+var $mdgriffith$elm_ui$Element$rotate = function (angle) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
+		$mdgriffith$elm_ui$Internal$Flag$rotate,
+		A2(
+			$mdgriffith$elm_ui$Internal$Model$Rotate,
+			_Utils_Tuple3(0, 0, 1),
+			angle));
+};
+var $mdgriffith$elm_ui$Internal$Flag$overflow = $mdgriffith$elm_ui$Internal$Flag$flag(20);
+var $mdgriffith$elm_ui$Element$scrollbarX = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$overflow, $mdgriffith$elm_ui$Internal$Style$classes.scrollbarsX);
+var $mdgriffith$elm_ui$Element$scrollbarY = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$overflow, $mdgriffith$elm_ui$Internal$Style$classes.scrollbarsY);
+var $author$project$Sandbox$RemoveElement = F2(
+	function (a, b) {
+		return {$: 'RemoveElement', a: a, b: b};
+	});
+var $author$project$IVVL$RemoveVVectorG2 = F2(
+	function (a, b) {
+		return {$: 'RemoveVVectorG2', a: a, b: b};
+	});
+var $author$project$Sandbox$Y = {$: 'Y'};
+var $mdgriffith$elm_ui$Internal$Flag$fontAlignment = $mdgriffith$elm_ui$Internal$Flag$flag(12);
+var $mdgriffith$elm_ui$Element$Font$center = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontAlignment, $mdgriffith$elm_ui$Internal$Style$classes.textCenter);
+var $mdgriffith$elm_ui$Internal$Flag$borderColor = $mdgriffith$elm_ui$Internal$Flag$flag(28);
+var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$borderColor,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Colored,
+			'bc-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
+			'border-color',
+			clr));
+};
+var $mdgriffith$elm_ui$Element$Font$hairline = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontWeight, $mdgriffith$elm_ui$Internal$Style$classes.textThin);
+var $mdgriffith$elm_ui$Element$Input$HiddenLabel = function (a) {
+	return {$: 'HiddenLabel', a: a};
+};
+var $mdgriffith$elm_ui$Element$Input$labelHidden = $mdgriffith$elm_ui$Element$Input$HiddenLabel;
+var $mdgriffith$elm_ui$Internal$Model$MoveY = function (a) {
+	return {$: 'MoveY', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Flag$moveY = $mdgriffith$elm_ui$Internal$Flag$flag(26);
+var $mdgriffith$elm_ui$Element$moveDown = function (y) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
+		$mdgriffith$elm_ui$Internal$Flag$moveY,
+		$mdgriffith$elm_ui$Internal$Model$MoveY(y));
+};
+var $mdgriffith$elm_ui$Element$moveLeft = function (x) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
+		$mdgriffith$elm_ui$Internal$Flag$moveX,
+		$mdgriffith$elm_ui$Internal$Model$MoveX(-x));
+};
+var $mdgriffith$elm_ui$Element$moveUp = function (y) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
+		$mdgriffith$elm_ui$Internal$Flag$moveY,
+		$mdgriffith$elm_ui$Internal$Model$MoveY(-y));
+};
+var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
 var $mdgriffith$elm_ui$Element$Input$TextInputNode = function (a) {
 	return {$: 'TextInputNode', a: a};
 };
@@ -13976,33 +15174,10 @@ var $mdgriffith$elm_ui$Element$Input$applyLabel = F3(
 			}
 		}
 	});
-var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
 var $mdgriffith$elm_ui$Element$Input$autofill = A2(
 	$elm$core$Basics$composeL,
 	$mdgriffith$elm_ui$Internal$Model$Attr,
 	$elm$html$Html$Attributes$attribute('autocomplete'));
-var $mdgriffith$elm_ui$Internal$Model$Behind = {$: 'Behind'};
-var $mdgriffith$elm_ui$Element$createNearby = F2(
-	function (loc, element) {
-		if (element.$ === 'Empty') {
-			return $mdgriffith$elm_ui$Internal$Model$NoAttribute;
-		} else {
-			return A2($mdgriffith$elm_ui$Internal$Model$Nearby, loc, element);
-		}
-	});
-var $mdgriffith$elm_ui$Element$behindContent = function (element) {
-	return A2($mdgriffith$elm_ui$Element$createNearby, $mdgriffith$elm_ui$Internal$Model$Behind, element);
-};
-var $mdgriffith$elm_ui$Internal$Model$MoveY = function (a) {
-	return {$: 'MoveY', a: a};
-};
-var $mdgriffith$elm_ui$Internal$Flag$moveY = $mdgriffith$elm_ui$Internal$Flag$flag(26);
-var $mdgriffith$elm_ui$Element$moveUp = function (y) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
-		$mdgriffith$elm_ui$Internal$Flag$moveY,
-		$mdgriffith$elm_ui$Internal$Model$MoveY(-y));
-};
 var $mdgriffith$elm_ui$Element$Input$calcMoveToCompensateForPadding = function (attrs) {
 	var gatherSpacing = F2(
 		function (attr, found) {
@@ -14029,30 +15204,12 @@ var $mdgriffith$elm_ui$Element$Input$calcMoveToCompensateForPadding = function (
 	}
 };
 var $mdgriffith$elm_ui$Element$clip = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$overflow, $mdgriffith$elm_ui$Internal$Style$classes.clip);
-var $mdgriffith$elm_ui$Internal$Flag$borderColor = $mdgriffith$elm_ui$Internal$Flag$flag(28);
-var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$borderColor,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$Colored,
-			'bc-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
-			'border-color',
-			clr));
-};
+var $mdgriffith$elm_ui$Element$rgb = F3(
+	function (r, g, b) {
+		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, r, g, b, 1);
+	});
 var $mdgriffith$elm_ui$Element$Input$darkGrey = A3($mdgriffith$elm_ui$Element$rgb, 186 / 255, 189 / 255, 182 / 255);
 var $mdgriffith$elm_ui$Element$Input$defaultTextPadding = A2($mdgriffith$elm_ui$Element$paddingXY, 12, 12);
-var $mdgriffith$elm_ui$Internal$Flag$borderRound = $mdgriffith$elm_ui$Internal$Flag$flag(17);
-var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$borderRound,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$Single,
-			'br-' + $elm$core$String$fromInt(radius),
-			'border-radius',
-			$elm$core$String$fromInt(radius) + 'px'));
-};
 var $mdgriffith$elm_ui$Element$spacing = function (x) {
 	return A2(
 		$mdgriffith$elm_ui$Internal$Model$StyleClass,
@@ -14103,10 +15260,6 @@ var $mdgriffith$elm_ui$Element$Input$hiddenLabelAttribute = function (label) {
 	} else {
 		return $mdgriffith$elm_ui$Internal$Model$NoAttribute;
 	}
-};
-var $mdgriffith$elm_ui$Internal$Model$InFront = {$: 'InFront'};
-var $mdgriffith$elm_ui$Element$inFront = function (element) {
-	return A2($mdgriffith$elm_ui$Element$createNearby, $mdgriffith$elm_ui$Internal$Model$InFront, element);
 };
 var $mdgriffith$elm_ui$Element$Input$isConstrained = function (len) {
 	isConstrained:
@@ -14187,41 +15340,6 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 			$elm$html$Html$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
 };
-var $mdgriffith$elm_ui$Internal$Model$paddingName = F4(
-	function (top, right, bottom, left) {
-		return 'pad-' + ($elm$core$String$fromInt(top) + ('-' + ($elm$core$String$fromInt(right) + ('-' + ($elm$core$String$fromInt(bottom) + ('-' + $elm$core$String$fromInt(left)))))));
-	});
-var $mdgriffith$elm_ui$Element$paddingEach = function (_v0) {
-	var top = _v0.top;
-	var right = _v0.right;
-	var bottom = _v0.bottom;
-	var left = _v0.left;
-	if (_Utils_eq(top, right) && (_Utils_eq(top, bottom) && _Utils_eq(top, left))) {
-		var topFloat = top;
-		return A2(
-			$mdgriffith$elm_ui$Internal$Model$StyleClass,
-			$mdgriffith$elm_ui$Internal$Flag$padding,
-			A5(
-				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-				'p-' + $elm$core$String$fromInt(top),
-				topFloat,
-				topFloat,
-				topFloat,
-				topFloat));
-	} else {
-		return A2(
-			$mdgriffith$elm_ui$Internal$Model$StyleClass,
-			$mdgriffith$elm_ui$Internal$Flag$padding,
-			A5(
-				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-				A4($mdgriffith$elm_ui$Internal$Model$paddingName, top, right, bottom, left),
-				top,
-				right,
-				bottom,
-				left));
-	}
-};
-var $mdgriffith$elm_ui$Element$htmlAttribute = $mdgriffith$elm_ui$Internal$Model$Attr;
 var $mdgriffith$elm_ui$Element$Input$isFill = function (len) {
 	isFill:
 	while (true) {
@@ -14272,8 +15390,6 @@ var $mdgriffith$elm_ui$Internal$Model$paddingNameFloat = F4(
 	function (top, right, bottom, left) {
 		return 'pad-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(top) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(right) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(bottom) + ('-' + $mdgriffith$elm_ui$Internal$Model$floatClass(left)))))));
 	});
-var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
-var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $mdgriffith$elm_ui$Element$Input$redistributeOver = F4(
 	function (isMultiline, stacked, attr, els) {
 		switch (attr.$) {
@@ -14508,7 +15624,6 @@ var $mdgriffith$elm_ui$Element$alpha = function (o) {
 			transparency));
 };
 var $mdgriffith$elm_ui$Element$Input$charcoal = A3($mdgriffith$elm_ui$Element$rgb, 136 / 255, 138 / 255, 133 / 255);
-var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
 var $mdgriffith$elm_ui$Element$Input$renderPlaceholder = F3(
 	function (_v0, forPlaceholder, on) {
 		var placeholderAttrs = _v0.a;
@@ -14535,16 +15650,10 @@ var $mdgriffith$elm_ui$Element$Input$renderPlaceholder = F3(
 					placeholderAttrs)),
 			placeholderEl);
 	});
-var $mdgriffith$elm_ui$Element$scrollbarY = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$overflow, $mdgriffith$elm_ui$Internal$Style$classes.scrollbarsY);
 var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$html$Html$Attributes$spellcheck = $elm$html$Html$Attributes$boolProperty('spellcheck');
 var $mdgriffith$elm_ui$Element$Input$spellcheck = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Attributes$spellcheck);
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
-var $elm$core$Basics$always = F2(
-	function (a, _v0) {
-		return a;
-	});
-var $mdgriffith$elm_ui$Internal$Model$unstyled = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Unstyled, $elm$core$Basics$always);
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $mdgriffith$elm_ui$Element$Input$value = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Attributes$value);
 var $mdgriffith$elm_ui$Element$Input$textHelper = F3(
@@ -14798,6 +15907,303 @@ var $mdgriffith$elm_ui$Element$Input$text = $mdgriffith$elm_ui$Element$Input$tex
 		spellchecked: false,
 		type_: $mdgriffith$elm_ui$Element$Input$TextInputNode('text')
 	});
+var $author$project$ElmSVG$Icons$trash = function (attrs) {
+	return A3(
+		$elm$svg$Svg$node,
+		'svg',
+		_Utils_ap(
+			_List_fromArray(
+				[
+					A2($elm$virtual_dom$VirtualDom$attribute, 'width', '100%'),
+					A2($elm$virtual_dom$VirtualDom$attribute, 'height', '100%'),
+					A2($elm$virtual_dom$VirtualDom$attribute, 'viewBox', '0 0 123 134'),
+					A2($elm$virtual_dom$VirtualDom$attribute, 'version', '1.1'),
+					A2($elm$virtual_dom$VirtualDom$attribute, 'xmlns', 'http://www.w3.org/2000/svg'),
+					A2($elm$virtual_dom$VirtualDom$attribute, 'xmlns:xlink', 'http://www.w3.org/1999/xlink'),
+					A2($elm$virtual_dom$VirtualDom$attribute, 'xml:space', 'preserve'),
+					A2($elm$virtual_dom$VirtualDom$attribute, 'xmlns:serif', 'http://www.serif.com/'),
+					A2($elm$virtual_dom$VirtualDom$attribute, 'style', 'fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;')
+				]),
+			attrs),
+		_List_fromArray(
+			[
+				A3(
+				$elm$svg$Svg$node,
+				'path',
+				_List_fromArray(
+					[
+						A2($elm$virtual_dom$VirtualDom$attribute, 'id', 'Trash-Icon'),
+						A2($elm$virtual_dom$VirtualDom$attribute, 'serif:id', 'Trash Icon'),
+						A2($elm$virtual_dom$VirtualDom$attribute, 'd', 'M113.89,44.443l-8.334,0l-0,80.557c-0,4.603 -3.731,8.333 -8.333,8.333l-72.223,0c-4.602,0 -8.333,-3.73 -8.333,-8.333l-0,-80.557l-8.334,0c-4.602,0 -8.333,-3.73 -8.333,-8.332c0,-4.603 3.731,-8.333 8.333,-8.333l25.001,-0c-0,-15.341 12.436,-27.778 27.778,-27.778c15.341,0 27.777,12.437 27.777,27.778l25.001,-0c4.602,-0 8.333,3.73 8.333,8.333c-0,4.602 -3.731,8.332 -8.333,8.332Zm-58.334,72.223l11.111,0l-0,-66.666l-11.111,0l-0,66.666Zm-22.222,-66.666l-0,66.666l11.11,0l0,-66.666l-11.11,0Zm27.778,-38.888c-9.206,0 -16.668,7.46 -16.668,16.666l33.334,-0c0,-9.206 -7.462,-16.666 -16.666,-16.666Zm27.777,38.888l-11.111,0l0,66.666l11.111,0l0,-66.666Z'),
+						A2($elm$virtual_dom$VirtualDom$attribute, 'style', 'fill:#e9315c;')
+					]),
+				_List_Nil)
+			]));
+};
+var $author$project$Sandbox$vectorDifferenceElement = F4(
+	function (model, _v0, vv2, ve) {
+		var eID = _v0.a;
+		var gID = _v0.b;
+		var veID = _v0.c;
+		if (ve.$ === 'VectorDifference') {
+			var vID = ve.a;
+			var _v2 = ve.b;
+			var iV1 = _v2.a;
+			var iV2 = _v2.b;
+			var pass = ve.c;
+			var visualElement = A3(
+				$author$project$Sandbox$Vector,
+				vID,
+				_Utils_Tuple2(iV1, iV2),
+				pass);
+			var veIndex = _Utils_Tuple3(eID, gID, veID);
+			var theModel = A2($author$project$Sandbox$getVisualModel, model.focusedEmbed, model.ivvlDict);
+			var theGrid = function () {
+				var _v4 = A2($elm$core$Dict$get, model.focusedGrid, theModel.grids);
+				if (_v4.$ === 'Just') {
+					var x = _v4.a;
+					return x;
+				} else {
+					return $author$project$IVVL$defaultGrid2D;
+				}
+			}();
+			var theVector = function () {
+				var _v3 = A2($elm$core$Dict$get, vID, theGrid.vectorObjects);
+				if (_v3.$ === 'Just') {
+					var x = _v3.a;
+					return x;
+				} else {
+					return $author$project$IVVL$defaultVisVector2D;
+				}
+			}();
+			var passClr = pass ? A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict) : A3($mdgriffith$elm_ui$Element$rgb255, 255, 0, 0);
+			return A2(
+				$mdgriffith$elm_ui$Element$row,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$centerX,
+						A2($mdgriffith$elm_ui$Element$spacingXY, 10, 0),
+						A2($mdgriffith$elm_ui$Element$paddingXY, 5, 0),
+						$mdgriffith$elm_ui$Element$Border$rounded(10)
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_Nil,
+						A2(
+							$mdgriffith$elm_ui$Element$Input$button,
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$width(
+									$mdgriffith$elm_ui$Element$px(20)),
+									$mdgriffith$elm_ui$Element$height(
+									$mdgriffith$elm_ui$Element$px(20)),
+									$mdgriffith$elm_ui$Element$Background$color(
+									A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0)),
+									$mdgriffith$elm_ui$Element$inFront(
+									$mdgriffith$elm_ui$Element$html(
+										$author$project$ElmSVG$Icons$trash(
+											_List_fromArray(
+												[
+													A2(
+													$elm$html$Html$Attributes$attribute,
+													'fill',
+													$author$project$Sandbox$colorToHex(
+														A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict))),
+													A2($elm$html$Html$Attributes$attribute, 'width', '20px'),
+													A2($elm$html$Html$Attributes$attribute, 'height', '20px')
+												]))))
+								]),
+							{
+								label: $mdgriffith$elm_ui$Element$none,
+								onPress: $elm$core$Maybe$Just(
+									A2(
+										$author$project$Sandbox$RemoveElement,
+										veIndex,
+										A2(
+											$author$project$Sandbox$IVVLMsg,
+											model.focusedEmbed,
+											A2($author$project$IVVL$RemoveVVectorG2, vID, model.focusedGrid))))
+							})),
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Font$size(18),
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+								$author$project$Sandbox$getFont('Assistant')
+							]),
+						$mdgriffith$elm_ui$Element$text('vectorDiff')),
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Font$size(24),
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+								$author$project$Sandbox$getFont('Assistant')
+							]),
+						$mdgriffith$elm_ui$Element$text(
+							$elm$core$String$fromInt(veID))),
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_Nil,
+						A2(
+							$mdgriffith$elm_ui$Element$Input$text,
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$width(
+									$mdgriffith$elm_ui$Element$px(45)),
+									$mdgriffith$elm_ui$Element$height(
+									$mdgriffith$elm_ui$Element$px(45)),
+									$mdgriffith$elm_ui$Element$Font$center,
+									$mdgriffith$elm_ui$Element$Font$size(15),
+									$mdgriffith$elm_ui$Element$Font$center,
+									$mdgriffith$elm_ui$Element$Font$color(passClr),
+									$author$project$Sandbox$getFont('Assistant'),
+									$mdgriffith$elm_ui$Element$Border$rounded(10),
+									$mdgriffith$elm_ui$Element$Border$width(2),
+									$mdgriffith$elm_ui$Element$Border$color(
+									A2($author$project$Sandbox$getColor, 'offWhite', $author$project$Sandbox$colorDict)),
+									$mdgriffith$elm_ui$Element$Background$color(
+									A2($author$project$Sandbox$getColor, 'offBlack', $author$project$Sandbox$colorDict)),
+									$mdgriffith$elm_ui$Element$moveDown(1)
+								]),
+							{
+								label: $mdgriffith$elm_ui$Element$Input$labelHidden('A vectorID input'),
+								onChange: function (value) {
+									return A4($author$project$Sandbox$ParseVectorDifferenceInput, veIndex, vID, $author$project$Sandbox$X, value);
+								},
+								placeholder: $elm$core$Maybe$Nothing,
+								text: iV1
+							})),
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+								$author$project$Sandbox$getFont('Assistant')
+							]),
+						$mdgriffith$elm_ui$Element$text('-')),
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[
+								A2($mdgriffith$elm_ui$Element$paddingXY, 0, 2)
+							]),
+						A2(
+							$mdgriffith$elm_ui$Element$Input$text,
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$width(
+									$mdgriffith$elm_ui$Element$px(45)),
+									$mdgriffith$elm_ui$Element$height(
+									$mdgriffith$elm_ui$Element$px(45)),
+									$mdgriffith$elm_ui$Element$Font$center,
+									$mdgriffith$elm_ui$Element$Font$size(15),
+									$mdgriffith$elm_ui$Element$Font$center,
+									$mdgriffith$elm_ui$Element$Font$color(passClr),
+									$author$project$Sandbox$getFont('Assistant'),
+									$mdgriffith$elm_ui$Element$Border$rounded(10),
+									$mdgriffith$elm_ui$Element$Border$width(2),
+									$mdgriffith$elm_ui$Element$Border$color(
+									A2($author$project$Sandbox$getColor, 'offWhite', $author$project$Sandbox$colorDict)),
+									$mdgriffith$elm_ui$Element$Background$color(
+									A2($author$project$Sandbox$getColor, 'offBlack', $author$project$Sandbox$colorDict)),
+									$mdgriffith$elm_ui$Element$moveDown(1)
+								]),
+							{
+								label: $mdgriffith$elm_ui$Element$Input$labelHidden('A vectorID input'),
+								onChange: function (value) {
+									return A4($author$project$Sandbox$ParseVectorDifferenceInput, veIndex, vID, $author$project$Sandbox$Y, value);
+								},
+								placeholder: $elm$core$Maybe$Nothing,
+								text: iV2
+							})),
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+								$author$project$Sandbox$getFont('Assistant')
+							]),
+						$mdgriffith$elm_ui$Element$text('=')),
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+								$mdgriffith$elm_ui$Element$centerY,
+								$mdgriffith$elm_ui$Element$Font$size(50),
+								$mdgriffith$elm_ui$Element$Font$hairline,
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+								$author$project$Sandbox$getFont('Assistant'),
+								$mdgriffith$elm_ui$Element$moveRight(5),
+								$mdgriffith$elm_ui$Element$moveUp(3)
+							]),
+						$mdgriffith$elm_ui$Element$text('[')),
+						A2(
+						$mdgriffith$elm_ui$Element$column,
+						_List_fromArray(
+							[
+								A2($mdgriffith$elm_ui$Element$spacingXY, 0, 10)
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$mdgriffith$elm_ui$Element$el,
+								_List_fromArray(
+									[
+										$mdgriffith$elm_ui$Element$Font$size(18),
+										$mdgriffith$elm_ui$Element$Font$color(
+										A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+										$author$project$Sandbox$getFont('Assistant')
+									]),
+								$mdgriffith$elm_ui$Element$text(
+									$elm$core$String$fromFloat(
+										$author$project$IVVL$firstV2(theVector.vector)))),
+								A2(
+								$mdgriffith$elm_ui$Element$el,
+								_List_fromArray(
+									[
+										$mdgriffith$elm_ui$Element$Font$size(18),
+										$mdgriffith$elm_ui$Element$Font$color(
+										A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+										$author$project$Sandbox$getFont('Assistant')
+									]),
+								$mdgriffith$elm_ui$Element$text(
+									$elm$core$String$fromFloat(
+										$author$project$IVVL$secondV2(theVector.vector))))
+							])),
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+								$mdgriffith$elm_ui$Element$centerY,
+								$mdgriffith$elm_ui$Element$Font$size(50),
+								$mdgriffith$elm_ui$Element$Font$hairline,
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+								$author$project$Sandbox$getFont('Assistant'),
+								$mdgriffith$elm_ui$Element$moveLeft(5),
+								$mdgriffith$elm_ui$Element$moveUp(3)
+							]),
+						$mdgriffith$elm_ui$Element$text(']'))
+					]));
+		} else {
+			return $mdgriffith$elm_ui$Element$text('broken');
+		}
+	});
+var $author$project$Sandbox$ParseVectorInput = F4(
+	function (a, b, c, d) {
+		return {$: 'ParseVectorInput', a: a, b: b, c: c, d: d};
+	});
 var $author$project$Sandbox$vectorElement = F4(
 	function (model, _v0, vv2, ve) {
 		var eID = _v0.a;
@@ -14815,16 +16221,15 @@ var $author$project$Sandbox$vectorElement = F4(
 				_Utils_Tuple2(iX, iY),
 				pass);
 			var veIndex = _Utils_Tuple3(eID, gID, veID);
-			var passClr = pass ? A3($mdgriffith$elm_ui$Element$rgb255, 0, 0, 0) : A3($mdgriffith$elm_ui$Element$rgb255, 255, 0, 0);
+			var passClr = pass ? A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict) : A3($mdgriffith$elm_ui$Element$rgb255, 255, 120, 120);
 			return A2(
 				$mdgriffith$elm_ui$Element$row,
 				_List_fromArray(
 					[
 						$mdgriffith$elm_ui$Element$centerX,
-						$mdgriffith$elm_ui$Element$Background$color(
-						A3($mdgriffith$elm_ui$Element$rgb, 1, 0.5, 1)),
 						A2($mdgriffith$elm_ui$Element$spacingXY, 10, 0),
-						A2($mdgriffith$elm_ui$Element$paddingXY, 5, 0)
+						A2($mdgriffith$elm_ui$Element$paddingXY, 5, 0),
+						$mdgriffith$elm_ui$Element$Border$rounded(10)
 					]),
 				_List_fromArray(
 					[
@@ -14840,20 +16245,23 @@ var $author$project$Sandbox$vectorElement = F4(
 									$mdgriffith$elm_ui$Element$height(
 									$mdgriffith$elm_ui$Element$px(20)),
 									$mdgriffith$elm_ui$Element$Background$color(
-									A3($mdgriffith$elm_ui$Element$rgb255, 238, 238, 238)),
-									$mdgriffith$elm_ui$Element$focused(
-									_List_fromArray(
-										[
-											$mdgriffith$elm_ui$Element$Background$color(
-											A3($mdgriffith$elm_ui$Element$rgb255, 238, 23, 238))
-										]))
+									A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0)),
+									$mdgriffith$elm_ui$Element$inFront(
+									$mdgriffith$elm_ui$Element$html(
+										$author$project$ElmSVG$Icons$trash(
+											_List_fromArray(
+												[
+													A2(
+													$elm$html$Html$Attributes$attribute,
+													'fill',
+													$author$project$Sandbox$colorToHex(
+														A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict))),
+													A2($elm$html$Html$Attributes$attribute, 'width', '20px'),
+													A2($elm$html$Html$Attributes$attribute, 'height', '20px')
+												]))))
 								]),
 							{
-								label: A2(
-									$mdgriffith$elm_ui$Element$el,
-									_List_fromArray(
-										[$mdgriffith$elm_ui$Element$centerX, $mdgriffith$elm_ui$Element$centerY]),
-									$mdgriffith$elm_ui$Element$text('X')),
+								label: $mdgriffith$elm_ui$Element$none,
 								onPress: $elm$core$Maybe$Just(
 									A2(
 										$author$project$Sandbox$RemoveElement,
@@ -14861,26 +16269,37 @@ var $author$project$Sandbox$vectorElement = F4(
 										A2(
 											$author$project$Sandbox$IVVLMsg,
 											model.focusedEmbed,
-											A2($author$project$IVVL$RemoveVVectorG2, vID, 1))))
+											A2($author$project$IVVL$RemoveVVectorG2, vID, model.focusedGrid))))
 							})),
 						A2(
 						$mdgriffith$elm_ui$Element$el,
 						_List_fromArray(
 							[
-								$mdgriffith$elm_ui$Element$Font$size(24)
+								$mdgriffith$elm_ui$Element$Font$size(24),
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+								$author$project$Sandbox$getFont('Assistant')
 							]),
 						$mdgriffith$elm_ui$Element$text('vector')),
 						A2(
 						$mdgriffith$elm_ui$Element$el,
 						_List_fromArray(
 							[
-								$mdgriffith$elm_ui$Element$Font$size(32)
+								$mdgriffith$elm_ui$Element$Font$size(32),
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+								$author$project$Sandbox$getFont('Assistant')
 							]),
 						$mdgriffith$elm_ui$Element$text(
 							$elm$core$String$fromInt(veID))),
 						A2(
 						$mdgriffith$elm_ui$Element$el,
-						_List_Nil,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+								$author$project$Sandbox$getFont('Assistant')
+							]),
 						$mdgriffith$elm_ui$Element$text('=')),
 						A2(
 						$mdgriffith$elm_ui$Element$el,
@@ -14888,8 +16307,13 @@ var $author$project$Sandbox$vectorElement = F4(
 							[
 								$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
 								$mdgriffith$elm_ui$Element$centerY,
-								$mdgriffith$elm_ui$Element$Font$size(70),
-								$mdgriffith$elm_ui$Element$Font$hairline
+								$mdgriffith$elm_ui$Element$Font$size(50),
+								$mdgriffith$elm_ui$Element$Font$hairline,
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+								$author$project$Sandbox$getFont('Assistant'),
+								$mdgriffith$elm_ui$Element$moveRight(5),
+								$mdgriffith$elm_ui$Element$moveDown(25)
 							]),
 						$mdgriffith$elm_ui$Element$text('[')),
 						A2(
@@ -14908,33 +16332,28 @@ var $author$project$Sandbox$vectorElement = F4(
 									_List_fromArray(
 										[
 											$mdgriffith$elm_ui$Element$width(
-											$mdgriffith$elm_ui$Element$px(45)),
+											$mdgriffith$elm_ui$Element$px(50)),
 											$mdgriffith$elm_ui$Element$height(
-											$mdgriffith$elm_ui$Element$px(45)),
+											$mdgriffith$elm_ui$Element$px(50)),
 											$mdgriffith$elm_ui$Element$Font$center,
 											$mdgriffith$elm_ui$Element$Font$size(13),
 											$mdgriffith$elm_ui$Element$Font$center,
-											$mdgriffith$elm_ui$Element$Font$color(passClr)
+											$mdgriffith$elm_ui$Element$Font$color(passClr),
+											$author$project$Sandbox$getFont('Assistant'),
+											$mdgriffith$elm_ui$Element$Border$rounded(10),
+											$mdgriffith$elm_ui$Element$Border$width(2),
+											$mdgriffith$elm_ui$Element$Border$color(
+											A2($author$project$Sandbox$getColor, 'offWhite', $author$project$Sandbox$colorDict)),
+											$mdgriffith$elm_ui$Element$Background$color(
+											A2($author$project$Sandbox$getColor, 'offBlack', $author$project$Sandbox$colorDict)),
+											$mdgriffith$elm_ui$Element$moveDown(3)
 										]),
 									{
 										label: $mdgriffith$elm_ui$Element$Input$labelHidden('An X vector input'),
 										onChange: function (value) {
 											return A4($author$project$Sandbox$ParseVectorInput, veIndex, vID, $author$project$Sandbox$X, value);
 										},
-										placeholder: $elm$core$Maybe$Just(
-											A2(
-												$mdgriffith$elm_ui$Element$Input$placeholder,
-												_List_fromArray(
-													[$mdgriffith$elm_ui$Element$centerX]),
-												A2(
-													$mdgriffith$elm_ui$Element$el,
-													_List_fromArray(
-														[
-															$mdgriffith$elm_ui$Element$centerX,
-															$mdgriffith$elm_ui$Element$centerY,
-															$mdgriffith$elm_ui$Element$Font$size(16)
-														]),
-													$mdgriffith$elm_ui$Element$text('X')))),
+										placeholder: $elm$core$Maybe$Nothing,
 										text: iX
 									})),
 								A2(
@@ -14948,33 +16367,30 @@ var $author$project$Sandbox$vectorElement = F4(
 									_List_fromArray(
 										[
 											$mdgriffith$elm_ui$Element$width(
-											$mdgriffith$elm_ui$Element$px(45)),
+											$mdgriffith$elm_ui$Element$px(50)),
 											$mdgriffith$elm_ui$Element$height(
-											$mdgriffith$elm_ui$Element$px(45)),
+											$mdgriffith$elm_ui$Element$px(50)),
 											$mdgriffith$elm_ui$Element$Font$center,
 											$mdgriffith$elm_ui$Element$Font$size(13),
 											$mdgriffith$elm_ui$Element$Font$center,
-											$mdgriffith$elm_ui$Element$Font$color(passClr)
+											$mdgriffith$elm_ui$Element$Font$color(passClr),
+											$mdgriffith$elm_ui$Element$Font$color(
+											A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+											$author$project$Sandbox$getFont('Assistant'),
+											$mdgriffith$elm_ui$Element$Border$rounded(10),
+											$mdgriffith$elm_ui$Element$Border$width(2),
+											$mdgriffith$elm_ui$Element$Border$color(
+											A2($author$project$Sandbox$getColor, 'offWhite', $author$project$Sandbox$colorDict)),
+											$mdgriffith$elm_ui$Element$Background$color(
+											A2($author$project$Sandbox$getColor, 'offBlack', $author$project$Sandbox$colorDict)),
+											$mdgriffith$elm_ui$Element$moveDown(3)
 										]),
 									{
 										label: $mdgriffith$elm_ui$Element$Input$labelHidden('A Y vector input'),
 										onChange: function (value) {
 											return A4($author$project$Sandbox$ParseVectorInput, veIndex, vID, $author$project$Sandbox$Y, value);
 										},
-										placeholder: $elm$core$Maybe$Just(
-											A2(
-												$mdgriffith$elm_ui$Element$Input$placeholder,
-												_List_fromArray(
-													[$mdgriffith$elm_ui$Element$centerX]),
-												A2(
-													$mdgriffith$elm_ui$Element$el,
-													_List_fromArray(
-														[
-															$mdgriffith$elm_ui$Element$centerX,
-															$mdgriffith$elm_ui$Element$centerY,
-															$mdgriffith$elm_ui$Element$Font$size(16)
-														]),
-													$mdgriffith$elm_ui$Element$text('X')))),
+										placeholder: $elm$core$Maybe$Nothing,
 										text: iY
 									}))
 							])),
@@ -14984,8 +16400,13 @@ var $author$project$Sandbox$vectorElement = F4(
 							[
 								$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
 								$mdgriffith$elm_ui$Element$centerY,
-								$mdgriffith$elm_ui$Element$Font$size(70),
-								$mdgriffith$elm_ui$Element$Font$hairline
+								$mdgriffith$elm_ui$Element$Font$size(50),
+								$mdgriffith$elm_ui$Element$Font$hairline,
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+								$author$project$Sandbox$getFont('Assistant'),
+								$mdgriffith$elm_ui$Element$moveLeft(5),
+								$mdgriffith$elm_ui$Element$moveDown(25)
 							]),
 						$mdgriffith$elm_ui$Element$text(']'))
 					]));
@@ -15012,7 +16433,7 @@ var $author$project$Sandbox$vectorSumElement = F4(
 			var veIndex = _Utils_Tuple3(eID, gID, veID);
 			var theModel = A2($author$project$Sandbox$getVisualModel, model.focusedEmbed, model.ivvlDict);
 			var theGrid = function () {
-				var _v4 = A2($elm$core$Dict$get, 1, theModel.grids);
+				var _v4 = A2($elm$core$Dict$get, model.focusedGrid, theModel.grids);
 				if (_v4.$ === 'Just') {
 					var x = _v4.a;
 					return x;
@@ -15029,16 +16450,15 @@ var $author$project$Sandbox$vectorSumElement = F4(
 					return $author$project$IVVL$defaultVisVector2D;
 				}
 			}();
-			var passClr = pass ? A3($mdgriffith$elm_ui$Element$rgb255, 0, 0, 0) : A3($mdgriffith$elm_ui$Element$rgb255, 255, 0, 0);
+			var passClr = pass ? A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict) : A3($mdgriffith$elm_ui$Element$rgb255, 255, 0, 0);
 			return A2(
 				$mdgriffith$elm_ui$Element$row,
 				_List_fromArray(
 					[
 						$mdgriffith$elm_ui$Element$centerX,
-						$mdgriffith$elm_ui$Element$Background$color(
-						A3($mdgriffith$elm_ui$Element$rgb, 1, 0.5, 1)),
 						A2($mdgriffith$elm_ui$Element$spacingXY, 10, 0),
-						A2($mdgriffith$elm_ui$Element$paddingXY, 5, 0)
+						A2($mdgriffith$elm_ui$Element$paddingXY, 5, 0),
+						$mdgriffith$elm_ui$Element$Border$rounded(10)
 					]),
 				_List_fromArray(
 					[
@@ -15054,20 +16474,23 @@ var $author$project$Sandbox$vectorSumElement = F4(
 									$mdgriffith$elm_ui$Element$height(
 									$mdgriffith$elm_ui$Element$px(20)),
 									$mdgriffith$elm_ui$Element$Background$color(
-									A3($mdgriffith$elm_ui$Element$rgb255, 238, 238, 238)),
-									$mdgriffith$elm_ui$Element$focused(
-									_List_fromArray(
-										[
-											$mdgriffith$elm_ui$Element$Background$color(
-											A3($mdgriffith$elm_ui$Element$rgb255, 238, 23, 238))
-										]))
+									A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0)),
+									$mdgriffith$elm_ui$Element$inFront(
+									$mdgriffith$elm_ui$Element$html(
+										$author$project$ElmSVG$Icons$trash(
+											_List_fromArray(
+												[
+													A2(
+													$elm$html$Html$Attributes$attribute,
+													'fill',
+													$author$project$Sandbox$colorToHex(
+														A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict))),
+													A2($elm$html$Html$Attributes$attribute, 'width', '20px'),
+													A2($elm$html$Html$Attributes$attribute, 'height', '20px')
+												]))))
 								]),
 							{
-								label: A2(
-									$mdgriffith$elm_ui$Element$el,
-									_List_fromArray(
-										[$mdgriffith$elm_ui$Element$centerX, $mdgriffith$elm_ui$Element$centerY]),
-									$mdgriffith$elm_ui$Element$text('X')),
+								label: $mdgriffith$elm_ui$Element$none,
 								onPress: $elm$core$Maybe$Just(
 									A2(
 										$author$project$Sandbox$RemoveElement,
@@ -15075,20 +16498,26 @@ var $author$project$Sandbox$vectorSumElement = F4(
 										A2(
 											$author$project$Sandbox$IVVLMsg,
 											model.focusedEmbed,
-											A2($author$project$IVVL$RemoveVVectorG2, vID, 1))))
+											A2($author$project$IVVL$RemoveVVectorG2, vID, model.focusedGrid))))
 							})),
 						A2(
 						$mdgriffith$elm_ui$Element$el,
 						_List_fromArray(
 							[
-								$mdgriffith$elm_ui$Element$Font$size(18)
+								$mdgriffith$elm_ui$Element$Font$size(18),
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+								$author$project$Sandbox$getFont('Assistant')
 							]),
 						$mdgriffith$elm_ui$Element$text('vectorSum')),
 						A2(
 						$mdgriffith$elm_ui$Element$el,
 						_List_fromArray(
 							[
-								$mdgriffith$elm_ui$Element$Font$size(24)
+								$mdgriffith$elm_ui$Element$Font$size(24),
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+								$author$project$Sandbox$getFont('Assistant')
 							]),
 						$mdgriffith$elm_ui$Element$text(
 							$elm$core$String$fromInt(veID))),
@@ -15100,38 +16529,38 @@ var $author$project$Sandbox$vectorSumElement = F4(
 							_List_fromArray(
 								[
 									$mdgriffith$elm_ui$Element$width(
-									$mdgriffith$elm_ui$Element$px(35)),
+									$mdgriffith$elm_ui$Element$px(45)),
 									$mdgriffith$elm_ui$Element$height(
-									$mdgriffith$elm_ui$Element$px(35)),
+									$mdgriffith$elm_ui$Element$px(45)),
 									$mdgriffith$elm_ui$Element$Font$center,
-									$mdgriffith$elm_ui$Element$Font$size(13),
+									$mdgriffith$elm_ui$Element$Font$size(15),
 									$mdgriffith$elm_ui$Element$Font$center,
-									$mdgriffith$elm_ui$Element$Font$color(passClr)
+									$mdgriffith$elm_ui$Element$Font$color(passClr),
+									$author$project$Sandbox$getFont('Assistant'),
+									$mdgriffith$elm_ui$Element$Border$rounded(10),
+									$mdgriffith$elm_ui$Element$Border$width(2),
+									$mdgriffith$elm_ui$Element$Border$color(
+									A2($author$project$Sandbox$getColor, 'offWhite', $author$project$Sandbox$colorDict)),
+									$mdgriffith$elm_ui$Element$Background$color(
+									A2($author$project$Sandbox$getColor, 'offBlack', $author$project$Sandbox$colorDict)),
+									$mdgriffith$elm_ui$Element$moveDown(1)
 								]),
 							{
 								label: $mdgriffith$elm_ui$Element$Input$labelHidden('A vectorID input'),
 								onChange: function (value) {
 									return A4($author$project$Sandbox$ParseVectorSumInput, veIndex, vID, $author$project$Sandbox$X, value);
 								},
-								placeholder: $elm$core$Maybe$Just(
-									A2(
-										$mdgriffith$elm_ui$Element$Input$placeholder,
-										_List_fromArray(
-											[$mdgriffith$elm_ui$Element$centerX]),
-										A2(
-											$mdgriffith$elm_ui$Element$el,
-											_List_fromArray(
-												[
-													$mdgriffith$elm_ui$Element$centerX,
-													$mdgriffith$elm_ui$Element$centerY,
-													$mdgriffith$elm_ui$Element$Font$size(16)
-												]),
-											$mdgriffith$elm_ui$Element$text('V#')))),
+								placeholder: $elm$core$Maybe$Nothing,
 								text: iV1
 							})),
 						A2(
 						$mdgriffith$elm_ui$Element$el,
-						_List_Nil,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+								$author$project$Sandbox$getFont('Assistant')
+							]),
 						$mdgriffith$elm_ui$Element$text('+')),
 						A2(
 						$mdgriffith$elm_ui$Element$el,
@@ -15144,38 +16573,38 @@ var $author$project$Sandbox$vectorSumElement = F4(
 							_List_fromArray(
 								[
 									$mdgriffith$elm_ui$Element$width(
-									$mdgriffith$elm_ui$Element$px(35)),
+									$mdgriffith$elm_ui$Element$px(45)),
 									$mdgriffith$elm_ui$Element$height(
-									$mdgriffith$elm_ui$Element$px(35)),
+									$mdgriffith$elm_ui$Element$px(45)),
 									$mdgriffith$elm_ui$Element$Font$center,
-									$mdgriffith$elm_ui$Element$Font$size(13),
+									$mdgriffith$elm_ui$Element$Font$size(15),
 									$mdgriffith$elm_ui$Element$Font$center,
-									$mdgriffith$elm_ui$Element$Font$color(passClr)
+									$mdgriffith$elm_ui$Element$Font$color(passClr),
+									$author$project$Sandbox$getFont('Assistant'),
+									$mdgriffith$elm_ui$Element$Border$rounded(10),
+									$mdgriffith$elm_ui$Element$Border$width(2),
+									$mdgriffith$elm_ui$Element$Border$color(
+									A2($author$project$Sandbox$getColor, 'offWhite', $author$project$Sandbox$colorDict)),
+									$mdgriffith$elm_ui$Element$Background$color(
+									A2($author$project$Sandbox$getColor, 'offBlack', $author$project$Sandbox$colorDict)),
+									$mdgriffith$elm_ui$Element$moveDown(1)
 								]),
 							{
 								label: $mdgriffith$elm_ui$Element$Input$labelHidden('A vectorID input'),
 								onChange: function (value) {
 									return A4($author$project$Sandbox$ParseVectorSumInput, veIndex, vID, $author$project$Sandbox$Y, value);
 								},
-								placeholder: $elm$core$Maybe$Just(
-									A2(
-										$mdgriffith$elm_ui$Element$Input$placeholder,
-										_List_fromArray(
-											[$mdgriffith$elm_ui$Element$centerX]),
-										A2(
-											$mdgriffith$elm_ui$Element$el,
-											_List_fromArray(
-												[
-													$mdgriffith$elm_ui$Element$centerX,
-													$mdgriffith$elm_ui$Element$centerY,
-													$mdgriffith$elm_ui$Element$Font$size(16)
-												]),
-											$mdgriffith$elm_ui$Element$text('V#')))),
+								placeholder: $elm$core$Maybe$Nothing,
 								text: iV2
 							})),
 						A2(
 						$mdgriffith$elm_ui$Element$el,
-						_List_Nil,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+								$author$project$Sandbox$getFont('Assistant')
+							]),
 						$mdgriffith$elm_ui$Element$text('=')),
 						A2(
 						$mdgriffith$elm_ui$Element$el,
@@ -15183,9 +16612,13 @@ var $author$project$Sandbox$vectorSumElement = F4(
 							[
 								$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
 								$mdgriffith$elm_ui$Element$centerY,
-								$mdgriffith$elm_ui$Element$Font$size(70),
+								$mdgriffith$elm_ui$Element$Font$size(50),
 								$mdgriffith$elm_ui$Element$Font$hairline,
-								$mdgriffith$elm_ui$Element$moveUp(8)
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+								$author$project$Sandbox$getFont('Assistant'),
+								$mdgriffith$elm_ui$Element$moveRight(5),
+								$mdgriffith$elm_ui$Element$moveUp(3)
 							]),
 						$mdgriffith$elm_ui$Element$text('[')),
 						A2(
@@ -15201,7 +16634,9 @@ var $author$project$Sandbox$vectorSumElement = F4(
 								_List_fromArray(
 									[
 										$mdgriffith$elm_ui$Element$Font$size(18),
-										$mdgriffith$elm_ui$Element$moveUp(4)
+										$mdgriffith$elm_ui$Element$Font$color(
+										A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+										$author$project$Sandbox$getFont('Assistant')
 									]),
 								$mdgriffith$elm_ui$Element$text(
 									$elm$core$String$fromFloat(
@@ -15210,7 +16645,10 @@ var $author$project$Sandbox$vectorSumElement = F4(
 								$mdgriffith$elm_ui$Element$el,
 								_List_fromArray(
 									[
-										$mdgriffith$elm_ui$Element$Font$size(18)
+										$mdgriffith$elm_ui$Element$Font$size(18),
+										$mdgriffith$elm_ui$Element$Font$color(
+										A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+										$author$project$Sandbox$getFont('Assistant')
 									]),
 								$mdgriffith$elm_ui$Element$text(
 									$elm$core$String$fromFloat(
@@ -15222,9 +16660,13 @@ var $author$project$Sandbox$vectorSumElement = F4(
 							[
 								$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
 								$mdgriffith$elm_ui$Element$centerY,
-								$mdgriffith$elm_ui$Element$Font$size(70),
+								$mdgriffith$elm_ui$Element$Font$size(50),
 								$mdgriffith$elm_ui$Element$Font$hairline,
-								$mdgriffith$elm_ui$Element$moveUp(8)
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+								$author$project$Sandbox$getFont('Assistant'),
+								$mdgriffith$elm_ui$Element$moveLeft(5),
+								$mdgriffith$elm_ui$Element$moveUp(3)
 							]),
 						$mdgriffith$elm_ui$Element$text(']'))
 					]));
@@ -15236,85 +16678,227 @@ var $author$project$Sandbox$elementsMenu = function (model) {
 	var visuals = $elm$core$Dict$toList(model.visualElements);
 	var targetedVisuals = A2(
 		$elm$core$List$filter,
-		function (_v5) {
-			var _v6 = _v5.a;
-			var e = _v6.a;
+		function (_v6) {
+			var _v7 = _v6.a;
+			var e = _v7.a;
 			return _Utils_eq(e, model.focusedEmbed);
 		},
 		visuals);
 	var currentLibModel = A2($author$project$Sandbox$getVisualModel, model.focusedEmbed, model.ivvlDict);
 	var currentGrid = function () {
-		var _v4 = A2($elm$core$Dict$get, 1, currentLibModel.grids);
-		if (_v4.$ === 'Nothing') {
+		var _v5 = A2($elm$core$Dict$get, model.focusedGrid, currentLibModel.grids);
+		if (_v5.$ === 'Nothing') {
 			return $author$project$IVVL$defaultGrid2D;
 		} else {
-			var g = _v4.a;
+			var g = _v5.a;
 			return g;
 		}
 	}();
-	var convertToElement = function (_v3) {
-		var veIndex = _v3.a;
-		var ve = _v3.b;
-		if (ve.$ === 'Vector') {
-			var vID = ve.a;
-			var vector = function () {
-				var _v1 = A2($elm$core$Dict$get, vID, currentGrid.vectorObjects);
-				if (_v1.$ === 'Nothing') {
-					return $author$project$IVVL$defaultVisVector2D;
-				} else {
-					var vv = _v1.a;
-					return vv;
-				}
-			}();
-			return A4($author$project$Sandbox$vectorElement, model, veIndex, vector, ve);
-		} else {
-			var vID = ve.a;
-			var vector = function () {
-				var _v2 = A2($elm$core$Dict$get, vID, currentGrid.vectorObjects);
-				if (_v2.$ === 'Nothing') {
-					return $author$project$IVVL$defaultVisVector2D;
-				} else {
-					var vv = _v2.a;
-					return vv;
-				}
-			}();
-			return A4($author$project$Sandbox$vectorSumElement, model, veIndex, vector, ve);
+	var convertToElement = function (_v4) {
+		var veIndex = _v4.a;
+		var ve = _v4.b;
+		switch (ve.$) {
+			case 'Vector':
+				var vID = ve.a;
+				var vector = function () {
+					var _v1 = A2($elm$core$Dict$get, vID, currentGrid.vectorObjects);
+					if (_v1.$ === 'Nothing') {
+						return $author$project$IVVL$defaultVisVector2D;
+					} else {
+						var vv = _v1.a;
+						return vv;
+					}
+				}();
+				return A4($author$project$Sandbox$vectorElement, model, veIndex, vector, ve);
+			case 'VectorSum':
+				var vID = ve.a;
+				var vector = function () {
+					var _v2 = A2($elm$core$Dict$get, vID, currentGrid.vectorObjects);
+					if (_v2.$ === 'Nothing') {
+						return $author$project$IVVL$defaultVisVector2D;
+					} else {
+						var vv = _v2.a;
+						return vv;
+					}
+				}();
+				return A4($author$project$Sandbox$vectorSumElement, model, veIndex, vector, ve);
+			default:
+				var vID = ve.a;
+				var vector = function () {
+					var _v3 = A2($elm$core$Dict$get, vID, currentGrid.vectorObjects);
+					if (_v3.$ === 'Nothing') {
+						return $author$project$IVVL$defaultVisVector2D;
+					} else {
+						var vv = _v3.a;
+						return vv;
+					}
+				}();
+				return A4($author$project$Sandbox$vectorDifferenceElement, model, veIndex, vector, ve);
 		}
 	};
 	var listOfElements = A2($elm$core$List$map, convertToElement, targetedVisuals);
 	return A2(
-		$mdgriffith$elm_ui$Element$column,
+		$mdgriffith$elm_ui$Element$row,
 		_List_fromArray(
 			[
 				$mdgriffith$elm_ui$Element$width(
 				A2(
 					$mdgriffith$elm_ui$Element$maximum,
-					$elm$core$Basics$round(model.width / 5),
-					$mdgriffith$elm_ui$Element$fill)),
+					model.elementMenuWidthMax,
+					$mdgriffith$elm_ui$Element$px(model.elementMenuWidth))),
 				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
 				$mdgriffith$elm_ui$Element$alignLeft,
-				$mdgriffith$elm_ui$Element$scrollbars,
 				$mdgriffith$elm_ui$Element$Background$color(
-				A3($mdgriffith$elm_ui$Element$rgb, 0.7, 0.5, 1))
+				A2($author$project$Sandbox$getColor, 'background', model.elementColorDict)),
+				$mdgriffith$elm_ui$Element$inFront(
+				A2(
+					$mdgriffith$elm_ui$Element$el,
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$rotate($elm$core$Basics$pi / 2),
+							$mdgriffith$elm_ui$Element$centerY,
+							$mdgriffith$elm_ui$Element$moveRight(model.elementMenuWidth - 19),
+							$mdgriffith$elm_ui$Element$Events$onMouseDown($author$project$Sandbox$ResizeElementMenuDown),
+							$phollyer$elm_cursor$Element$Cursor$ewResize
+						]),
+					$mdgriffith$elm_ui$Element$html(
+						$author$project$ElmSVG$Icons$drag(
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$Attributes$attribute,
+									'fill',
+									$author$project$Sandbox$colorToHex(
+										A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict))),
+									A2($elm$html$Html$Attributes$attribute, 'width', '40px'),
+									A2($elm$html$Html$Attributes$attribute, 'height', '40px')
+								]))))),
+				$mdgriffith$elm_ui$Element$behindContent(
+				A2(
+					$mdgriffith$elm_ui$Element$el,
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+							$mdgriffith$elm_ui$Element$width(
+							$mdgriffith$elm_ui$Element$px(10)),
+							$mdgriffith$elm_ui$Element$moveRight(model.elementMenuWidth)
+						]),
+					A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+								$mdgriffith$elm_ui$Element$width(
+								$mdgriffith$elm_ui$Element$px(2)),
+								$mdgriffith$elm_ui$Element$Background$color(
+								A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict)),
+								$mdgriffith$elm_ui$Element$behindContent(
+								A2(
+									$mdgriffith$elm_ui$Element$el,
+									_List_fromArray(
+										[
+											$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+											$mdgriffith$elm_ui$Element$width(
+											$mdgriffith$elm_ui$Element$px(2)),
+											A2(
+											$mdgriffith$elm_ui$Element$Border$glow,
+											A2($author$project$Sandbox$getColor, 'background', model.elementColorDict),
+											55)
+										]),
+									$mdgriffith$elm_ui$Element$none)),
+								$mdgriffith$elm_ui$Element$inFront($mdgriffith$elm_ui$Element$none)
+							]),
+						$mdgriffith$elm_ui$Element$none)))
 			]),
-		A2(
-			$elm$core$List$cons,
-			A2(
-				$mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[
+				A2(
+				$mdgriffith$elm_ui$Element$row,
 				_List_fromArray(
 					[
-						$mdgriffith$elm_ui$Element$Font$size(40),
+						$mdgriffith$elm_ui$Element$scrollbarX,
 						$mdgriffith$elm_ui$Element$centerX,
-						A2($mdgriffith$elm_ui$Element$paddingXY, 0, 20)
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+						A2($mdgriffith$elm_ui$Element$spacingXY, 0, 10)
 					]),
-				$mdgriffith$elm_ui$Element$text('Elements')),
-			_Utils_ap(
-				listOfElements,
 				_List_fromArray(
 					[
-						$author$project$Sandbox$creationMenu(model)
-					]))));
+						A2(
+						$mdgriffith$elm_ui$Element$column,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$centerX,
+								$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+								$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+								A2($mdgriffith$elm_ui$Element$spacingXY, 0, 10)
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$mdgriffith$elm_ui$Element$el,
+								_List_fromArray(
+									[
+										$mdgriffith$elm_ui$Element$Font$size(40),
+										$mdgriffith$elm_ui$Element$Font$bold,
+										$mdgriffith$elm_ui$Element$paddingEach(
+										{bottom: 30, left: 30, right: 0, top: 40}),
+										$author$project$Sandbox$getFont('Inconsolata'),
+										$mdgriffith$elm_ui$Element$Font$color(
+										A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict))
+									]),
+								$mdgriffith$elm_ui$Element$text('ELEMENTS')),
+								A2(
+								$mdgriffith$elm_ui$Element$el,
+								_List_fromArray(
+									[
+										$mdgriffith$elm_ui$Element$width(
+										A2(
+											$mdgriffith$elm_ui$Element$minimum,
+											250,
+											$mdgriffith$elm_ui$Element$px(
+												$elm$core$Basics$round((model.elementMenuWidth / 5) * 4)))),
+										$mdgriffith$elm_ui$Element$height(
+										$mdgriffith$elm_ui$Element$px(2)),
+										$mdgriffith$elm_ui$Element$centerX,
+										$mdgriffith$elm_ui$Element$Background$color(
+										A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict))
+									]),
+								$mdgriffith$elm_ui$Element$text('')),
+								A2(
+								$mdgriffith$elm_ui$Element$column,
+								_List_fromArray(
+									[
+										$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+										$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+										$mdgriffith$elm_ui$Element$scrollbarY,
+										$mdgriffith$elm_ui$Element$centerX,
+										A2($mdgriffith$elm_ui$Element$spacingXY, 0, 20)
+									]),
+								listOfElements),
+								A2(
+								$mdgriffith$elm_ui$Element$el,
+								_List_fromArray(
+									[
+										$mdgriffith$elm_ui$Element$width(
+										A2(
+											$mdgriffith$elm_ui$Element$minimum,
+											250,
+											$mdgriffith$elm_ui$Element$px(
+												$elm$core$Basics$round((model.elementMenuWidth / 5) * 4)))),
+										$mdgriffith$elm_ui$Element$height(
+										$mdgriffith$elm_ui$Element$px(2)),
+										$mdgriffith$elm_ui$Element$centerX,
+										$mdgriffith$elm_ui$Element$Background$color(
+										A2($author$project$Sandbox$getColor, 'elementText', model.elementColorDict))
+									]),
+								$mdgriffith$elm_ui$Element$text('')),
+								$author$project$Sandbox$creationMenu(model)
+							]))
+					]))
+			]));
 };
+var $elm$json$Json$Decode$float = _Json_decodeFloat;
 var $mdgriffith$elm_ui$Internal$Model$OnlyDynamic = F2(
 	function (a, b) {
 		return {$: 'OnlyDynamic', a: a, b: b};
@@ -15459,54 +17043,10 @@ var $mdgriffith$elm_ui$Internal$Model$renderRoot = F3(
 					_List_fromArray(
 						[child]))));
 	});
-var $mdgriffith$elm_ui$Internal$Model$FontFamily = F2(
-	function (a, b) {
-		return {$: 'FontFamily', a: a, b: b};
-	});
 var $mdgriffith$elm_ui$Internal$Model$SansSerif = {$: 'SansSerif'};
 var $mdgriffith$elm_ui$Internal$Model$Typeface = function (a) {
 	return {$: 'Typeface', a: a};
 };
-var $mdgriffith$elm_ui$Internal$Flag$fontFamily = $mdgriffith$elm_ui$Internal$Flag$flag(5);
-var $elm$core$String$toLower = _String_toLower;
-var $elm$core$String$words = _String_words;
-var $mdgriffith$elm_ui$Internal$Model$renderFontClassName = F2(
-	function (font, current) {
-		return _Utils_ap(
-			current,
-			function () {
-				switch (font.$) {
-					case 'Serif':
-						return 'serif';
-					case 'SansSerif':
-						return 'sans-serif';
-					case 'Monospace':
-						return 'monospace';
-					case 'Typeface':
-						var name = font.a;
-						return A2(
-							$elm$core$String$join,
-							'-',
-							$elm$core$String$words(
-								$elm$core$String$toLower(name)));
-					case 'ImportFont':
-						var name = font.a;
-						var url = font.b;
-						return A2(
-							$elm$core$String$join,
-							'-',
-							$elm$core$String$words(
-								$elm$core$String$toLower(name)));
-					default:
-						var name = font.a.name;
-						return A2(
-							$elm$core$String$join,
-							'-',
-							$elm$core$String$words(
-								$elm$core$String$toLower(name)));
-				}
-			}());
-	});
 var $mdgriffith$elm_ui$Internal$Model$rootStyle = function () {
 	var families = _List_fromArray(
 		[
@@ -15567,7 +17107,15 @@ var $mdgriffith$elm_ui$Element$layoutWith = F3(
 	});
 var $mdgriffith$elm_ui$Element$layout = $mdgriffith$elm_ui$Element$layoutWith(
 	{options: _List_Nil});
-var $mdgriffith$elm_ui$Element$html = $mdgriffith$elm_ui$Internal$Model$unstyled;
+var $phollyer$elm_cursor$Html$Cursor$move = $phollyer$elm_cursor$Html$Cursor$cursor('move');
+var $phollyer$elm_cursor$Element$Cursor$move = $phollyer$elm_cursor$Element$Cursor$cursor($phollyer$elm_cursor$Html$Cursor$move);
+var $elm$html$Html$Events$onMouseUp = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'mouseup',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $mdgriffith$elm_ui$Element$Events$onMouseUp = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Events$onMouseUp);
 var $author$project$Sandbox$IVVLMoveMsg = F2(
 	function (a, b) {
 		return {$: 'IVVLMoveMsg', a: a, b: b};
@@ -15623,6 +17171,114 @@ var $MacCASOutreach$graphicsvg$GraphicSVG$notifyMouseUp = F2(
 	function (msg, shape) {
 		return A2($MacCASOutreach$graphicsvg$GraphicSVG$MouseUp, msg, shape);
 	});
+var $author$project$IVVL$addToOffsetVV2 = F2(
+	function (os, visVec) {
+		return _Utils_update(
+			visVec,
+			{
+				offset: A2($author$project$IVVL$addV2, os, visVec.offset)
+			});
+	});
+var $author$project$IVVL$offsetVV2 = F2(
+	function (os, visVec) {
+		return _Utils_update(
+			visVec,
+			{offset: os});
+	});
+var $author$project$IVVL$centerVV2 = function (vv) {
+	return A2(
+		$author$project$IVVL$offsetVV2,
+		A2($author$project$IVVL$scalarV2, (-1) / 2, vv.vector),
+		vv);
+};
+var $author$project$IVVL$colorGVV2 = F2(
+	function (gCol, visVec) {
+		return _Utils_update(
+			visVec,
+			{color: gCol});
+	});
+var $author$project$IVVL$backHead = function (l) {
+	return $elm$core$List$head(
+		$elm$core$List$reverse(l));
+};
+var $author$project$IVVL$justToVector2D = function (f) {
+	if (f.$ === 'Nothing') {
+		return $author$project$IVVL$defaultVector2D;
+	} else {
+		var a = f.a;
+		return a;
+	}
+};
+var $author$project$IVVL$crossV2 = F2(
+	function (matrix, v) {
+		var y = $author$project$IVVL$secondV2(v);
+		var x = $author$project$IVVL$firstV2(v);
+		var d = $author$project$IVVL$secondV2(
+			$author$project$IVVL$justToVector2D(
+				$author$project$IVVL$backHead(matrix)));
+		var c = $author$project$IVVL$secondV2(
+			$author$project$IVVL$justToVector2D(
+				$elm$core$List$head(matrix)));
+		var y2 = (c * x) + (d * y);
+		var b = $author$project$IVVL$firstV2(
+			$author$project$IVVL$justToVector2D(
+				$author$project$IVVL$backHead(matrix)));
+		var a = $author$project$IVVL$firstV2(
+			$author$project$IVVL$justToVector2D(
+				$elm$core$List$head(matrix)));
+		var x2 = (a * x) + (b * y);
+		var finalV = ($elm$core$List$length(matrix) === 2) ? $elm$core$Maybe$Just(
+			_Utils_Tuple2(x2, y2)) : $elm$core$Maybe$Nothing;
+		return finalV;
+	});
+var $author$project$IVVL$crossVV2 = F2(
+	function (matrix, visVec) {
+		return _Utils_update(
+			visVec,
+			{
+				vector: $author$project$IVVL$justToVector2D(
+					A2($author$project$IVVL$crossV2, matrix, visVec.vector))
+			});
+	});
+var $MacCASOutreach$graphicsvg$GraphicSVG$Face = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {$: 'Face', a: a, b: b, c: c, d: d, e: e, f: f, g: g, h: h};
+	});
+var $MacCASOutreach$graphicsvg$GraphicSVG$FixedWidth = {$: 'FixedWidth'};
+var $MacCASOutreach$graphicsvg$GraphicSVG$Text = F2(
+	function (a, b) {
+		return {$: 'Text', a: a, b: b};
+	});
+var $MacCASOutreach$graphicsvg$GraphicSVG$fixedwidth = function (stencil) {
+	if (stencil.$ === 'Text') {
+		var _v1 = stencil.a;
+		var si = _v1.a;
+		var bo = _v1.b;
+		var i = _v1.c;
+		var u = _v1.d;
+		var s = _v1.e;
+		var sel = _v1.f;
+		var f = _v1.g;
+		var c = _v1.h;
+		var str = stencil.b;
+		return A2(
+			$MacCASOutreach$graphicsvg$GraphicSVG$Text,
+			A8($MacCASOutreach$graphicsvg$GraphicSVG$Face, si, bo, i, u, s, sel, $MacCASOutreach$graphicsvg$GraphicSVG$FixedWidth, c),
+			str);
+	} else {
+		var a = stencil;
+		return a;
+	}
+};
+var $MacCASOutreach$graphicsvg$GraphicSVG$Move = F2(
+	function (a, b) {
+		return {$: 'Move', a: a, b: b};
+	});
+var $MacCASOutreach$graphicsvg$GraphicSVG$move = F2(
+	function (disp, shape) {
+		return A2($MacCASOutreach$graphicsvg$GraphicSVG$Move, disp, shape);
+	});
+var $elm$core$Basics$atan2 = _Basics_atan2;
 var $MacCASOutreach$graphicsvg$GraphicSVG$Broken = F2(
 	function (a, b) {
 		return {$: 'Broken', a: a, b: b};
@@ -15686,6 +17342,9 @@ var $author$project$IVVL$convertLineType = F2(
 					clr);
 		}
 	});
+var $elm$core$Basics$degrees = function (angleInDegrees) {
+	return (angleInDegrees * $elm$core$Basics$pi) / 180;
+};
 var $MacCASOutreach$graphicsvg$GraphicSVG$Path = function (a) {
 	return {$: 'Path', a: a};
 };
@@ -15695,19 +17354,6 @@ var $MacCASOutreach$graphicsvg$GraphicSVG$line = F2(
 			_List_fromArray(
 				[p1, p2]));
 	});
-var $MacCASOutreach$graphicsvg$GraphicSVG$Move = F2(
-	function (a, b) {
-		return {$: 'Move', a: a, b: b};
-	});
-var $MacCASOutreach$graphicsvg$GraphicSVG$move = F2(
-	function (disp, shape) {
-		return A2($MacCASOutreach$graphicsvg$GraphicSVG$Move, disp, shape);
-	});
-var $elm$core$Basics$atan2 = _Basics_atan2;
-var $elm$core$Basics$pi = _Basics_pi;
-var $elm$core$Basics$degrees = function (angleInDegrees) {
-	return (angleInDegrees * $elm$core$Basics$pi) / 180;
-};
 var $MacCASOutreach$graphicsvg$GraphicSVG$Rotate = F2(
 	function (a, b) {
 		return {$: 'Rotate', a: a, b: b};
@@ -15745,76 +17391,85 @@ var $MacCASOutreach$graphicsvg$GraphicSVG$ngon = F2(
 var $MacCASOutreach$graphicsvg$GraphicSVG$triangle = function (r) {
 	return A2($MacCASOutreach$graphicsvg$GraphicSVG$ngon, 3, r);
 };
-var $author$project$IVVL$renderVV2 = function (vector) {
+var $author$project$IVVL$renderVV2 = function (visVector) {
 	return $MacCASOutreach$graphicsvg$GraphicSVG$group(
 		_List_fromArray(
 			[
-				A3(
-				$author$project$IVVL$convertLineType,
-				vector.lineType,
-				$MacCASOutreach$graphicsvg$GraphicSVG$black,
 				A2(
-					$MacCASOutreach$graphicsvg$GraphicSVG$line,
-					_Utils_Tuple2(0, 0),
-					vector.vector)),
+				$MacCASOutreach$graphicsvg$GraphicSVG$move,
+				visVector.offset,
+				A3(
+					$author$project$IVVL$convertLineType,
+					visVector.lineType,
+					visVector.color,
+					A2(
+						$MacCASOutreach$graphicsvg$GraphicSVG$line,
+						_Utils_Tuple2(0, 0),
+						visVector.vector))),
 				function () {
-				var _v0 = vector.endType;
+				var _v0 = visVector.endType;
 				switch (_v0.$) {
 					case 'None':
 						return $MacCASOutreach$graphicsvg$GraphicSVG$group(_List_Nil);
 					case 'Directional':
 						return A2(
 							$MacCASOutreach$graphicsvg$GraphicSVG$move,
-							vector.vector,
+							visVector.offset,
 							A2(
-								$MacCASOutreach$graphicsvg$GraphicSVG$rotate,
-								-A2(
-									$elm$core$Basics$atan2,
-									$author$project$IVVL$firstV2(vector.vector),
-									$author$project$IVVL$secondV2(vector.vector)),
+								$MacCASOutreach$graphicsvg$GraphicSVG$move,
+								visVector.vector,
 								A2(
 									$MacCASOutreach$graphicsvg$GraphicSVG$rotate,
-									$elm$core$Basics$degrees(-30),
+									-A2(
+										$elm$core$Basics$atan2,
+										$author$project$IVVL$firstV2(visVector.vector),
+										$author$project$IVVL$secondV2(visVector.vector)),
 									A2(
-										$MacCASOutreach$graphicsvg$GraphicSVG$filled,
-										$MacCASOutreach$graphicsvg$GraphicSVG$black,
-										$MacCASOutreach$graphicsvg$GraphicSVG$triangle(5)))));
+										$MacCASOutreach$graphicsvg$GraphicSVG$rotate,
+										$elm$core$Basics$degrees(-30),
+										A2(
+											$MacCASOutreach$graphicsvg$GraphicSVG$filled,
+											visVector.color,
+											$MacCASOutreach$graphicsvg$GraphicSVG$triangle(6))))));
 					default:
 						return $MacCASOutreach$graphicsvg$GraphicSVG$group(
 							_List_fromArray(
 								[
 									A2(
 									$MacCASOutreach$graphicsvg$GraphicSVG$move,
-									vector.vector,
+									visVector.vector,
 									A2(
 										$MacCASOutreach$graphicsvg$GraphicSVG$rotate,
 										-A2(
 											$elm$core$Basics$atan2,
-											$author$project$IVVL$firstV2(vector.vector),
-											$author$project$IVVL$secondV2(vector.vector)),
+											$author$project$IVVL$firstV2(visVector.vector),
+											$author$project$IVVL$secondV2(visVector.vector)),
 										A2(
 											$MacCASOutreach$graphicsvg$GraphicSVG$rotate,
 											$elm$core$Basics$degrees(-30),
 											A2(
 												$MacCASOutreach$graphicsvg$GraphicSVG$filled,
-												$MacCASOutreach$graphicsvg$GraphicSVG$black,
-												$MacCASOutreach$graphicsvg$GraphicSVG$triangle(5))))),
+												visVector.color,
+												$MacCASOutreach$graphicsvg$GraphicSVG$triangle(6))))),
 									A2(
-									$MacCASOutreach$graphicsvg$GraphicSVG$rotate,
-									$elm$core$Basics$degrees(180),
+									$MacCASOutreach$graphicsvg$GraphicSVG$move,
+									visVector.offset,
 									A2(
 										$MacCASOutreach$graphicsvg$GraphicSVG$rotate,
-										-A2(
-											$elm$core$Basics$atan2,
-											$author$project$IVVL$firstV2(vector.vector),
-											$author$project$IVVL$secondV2(vector.vector)),
+										$elm$core$Basics$degrees(180),
 										A2(
 											$MacCASOutreach$graphicsvg$GraphicSVG$rotate,
-											$elm$core$Basics$degrees(-30),
+											-A2(
+												$elm$core$Basics$atan2,
+												$author$project$IVVL$firstV2(visVector.vector),
+												$author$project$IVVL$secondV2(visVector.vector)),
 											A2(
-												$MacCASOutreach$graphicsvg$GraphicSVG$filled,
-												$MacCASOutreach$graphicsvg$GraphicSVG$black,
-												$MacCASOutreach$graphicsvg$GraphicSVG$triangle(5)))))
+												$MacCASOutreach$graphicsvg$GraphicSVG$rotate,
+												$elm$core$Basics$degrees(-30),
+												A2(
+													$MacCASOutreach$graphicsvg$GraphicSVG$filled,
+													visVector.color,
+													$MacCASOutreach$graphicsvg$GraphicSVG$triangle(6))))))
 								]));
 				}
 			}()
@@ -15829,15 +17484,7 @@ var $MacCASOutreach$graphicsvg$GraphicSVG$scale = F2(
 		return A3($MacCASOutreach$graphicsvg$GraphicSVG$Scale, s, s, shape);
 	});
 var $MacCASOutreach$graphicsvg$GraphicSVG$AlignLeft = {$: 'AlignLeft'};
-var $MacCASOutreach$graphicsvg$GraphicSVG$Face = F8(
-	function (a, b, c, d, e, f, g, h) {
-		return {$: 'Face', a: a, b: b, c: c, d: d, e: e, f: f, g: g, h: h};
-	});
 var $MacCASOutreach$graphicsvg$GraphicSVG$Serif = {$: 'Serif'};
-var $MacCASOutreach$graphicsvg$GraphicSVG$Text = F2(
-	function (a, b) {
-		return {$: 'Text', a: a, b: b};
-	});
 var $MacCASOutreach$graphicsvg$GraphicSVG$text = function (str) {
 	return A2(
 		$MacCASOutreach$graphicsvg$GraphicSVG$Text,
@@ -15854,7 +17501,22 @@ var $elm$core$Dict$values = function (dict) {
 		_List_Nil,
 		dict);
 };
+var $author$project$IVVL$vv2FromCoordinates = F2(
+	function (_v0, _v1) {
+		var x1 = _v0.a;
+		var y1 = _v0.b;
+		var x2 = _v1.a;
+		var y2 = _v1.b;
+		return A2(
+			$author$project$IVVL$setVV2,
+			_Utils_Tuple2(x2 - x1, y2 - y1),
+			$author$project$IVVL$newVV2);
+	});
 var $author$project$IVVL$renderG2 = function (grid) {
+	var myVector = _Utils_Tuple2(1, 0);
+	var transformedVector = $author$project$IVVL$justToVector2D(
+		A2($author$project$IVVL$crossV2, grid.transformationMatrix, myVector));
+	var angle = 0;
 	return A2(
 		$MacCASOutreach$graphicsvg$GraphicSVG$move,
 		grid.offset,
@@ -15868,25 +17530,62 @@ var $author$project$IVVL$renderG2 = function (grid) {
 							return (!(!offset)) ? $MacCASOutreach$graphicsvg$GraphicSVG$group(
 								_List_fromArray(
 									[
-										A3(
-										$author$project$IVVL$convertLineType,
-										$author$project$IVVL$Solid(0.1),
-										grid.xColor,
+										$author$project$IVVL$renderVV2(
+										function () {
+											var _v0 = A2(
+												$author$project$IVVL$crossV2,
+												grid.transformationMatrix,
+												_Utils_Tuple2(0, grid.scale * offset));
+											if (_v0.$ === 'Nothing') {
+												return $author$project$IVVL$addToOffsetVV2(
+													_Utils_Tuple2(0, 0));
+											} else {
+												var val = _v0.a;
+												return $author$project$IVVL$addToOffsetVV2(val);
+											}
+										}()(
+											$author$project$IVVL$centerVV2(
+												A2(
+													$author$project$IVVL$lineTypeVV2,
+													$author$project$IVVL$Solid(0.3),
+													A2(
+														$author$project$IVVL$colorGVV2,
+														grid.gridlinesColor,
+														A2(
+															$author$project$IVVL$crossVV2,
+															grid.transformationMatrix,
+															A2(
+																$author$project$IVVL$vv2FromCoordinates,
+																_Utils_Tuple2(-10000, 0),
+																_Utils_Tuple2(10000, 0)))))))),
+										function () {
+										var _v1 = A2(
+											$author$project$IVVL$crossV2,
+											grid.transformationMatrix,
+											_Utils_Tuple2(0, grid.scale * offset));
+										if (_v1.$ === 'Nothing') {
+											return $MacCASOutreach$graphicsvg$GraphicSVG$move(
+												_Utils_Tuple2(0, 0));
+										} else {
+											var val = _v1.a;
+											return $MacCASOutreach$graphicsvg$GraphicSVG$move(val);
+										}
+									}()(
 										A2(
-											$MacCASOutreach$graphicsvg$GraphicSVG$line,
-											_Utils_Tuple2(-10000, grid.scale * offset),
-											_Utils_Tuple2(10000, grid.scale * offset))),
-										A2(
-										$MacCASOutreach$graphicsvg$GraphicSVG$move,
-										_Utils_Tuple2(0, (grid.scale * offset) + 1),
-										A2(
-											$MacCASOutreach$graphicsvg$GraphicSVG$scale,
-											grid.scale * 0.02,
+											$MacCASOutreach$graphicsvg$GraphicSVG$rotate,
+											angle,
 											A2(
-												$MacCASOutreach$graphicsvg$GraphicSVG$filled,
-												$MacCASOutreach$graphicsvg$GraphicSVG$black,
-												$MacCASOutreach$graphicsvg$GraphicSVG$text(
-													$elm$core$Debug$toString(offset)))))
+												$MacCASOutreach$graphicsvg$GraphicSVG$move,
+												_Utils_Tuple2(0, (-0.2) * grid.scale),
+												A2(
+													$MacCASOutreach$graphicsvg$GraphicSVG$scale,
+													grid.scale * 0.02,
+													A2(
+														$MacCASOutreach$graphicsvg$GraphicSVG$filled,
+														grid.xAxisColor,
+														$MacCASOutreach$graphicsvg$GraphicSVG$fixedwidth(
+															$MacCASOutreach$graphicsvg$GraphicSVG$text(
+																$elm$core$String$fromInt(offset))))))))
 									])) : $MacCASOutreach$graphicsvg$GraphicSVG$group(_List_Nil);
 						},
 						A2($elm$core$List$range, -50, 50))),
@@ -15897,54 +17596,95 @@ var $author$project$IVVL$renderG2 = function (grid) {
 							return (!(!offset)) ? $MacCASOutreach$graphicsvg$GraphicSVG$group(
 								_List_fromArray(
 									[
-										A3(
-										$author$project$IVVL$convertLineType,
-										$author$project$IVVL$Solid(0.1),
-										grid.yColor,
+										$author$project$IVVL$renderVV2(
+										function () {
+											var _v2 = A2(
+												$author$project$IVVL$crossV2,
+												grid.transformationMatrix,
+												_Utils_Tuple2(grid.scale * offset, 0));
+											if (_v2.$ === 'Nothing') {
+												return $author$project$IVVL$addToOffsetVV2(
+													_Utils_Tuple2(0, 0));
+											} else {
+												var val = _v2.a;
+												return $author$project$IVVL$addToOffsetVV2(val);
+											}
+										}()(
+											$author$project$IVVL$centerVV2(
+												A2(
+													$author$project$IVVL$lineTypeVV2,
+													$author$project$IVVL$Solid(0.3),
+													A2(
+														$author$project$IVVL$colorGVV2,
+														grid.gridlinesColor,
+														A2(
+															$author$project$IVVL$crossVV2,
+															grid.transformationMatrix,
+															A2(
+																$author$project$IVVL$vv2FromCoordinates,
+																_Utils_Tuple2(0, -10000),
+																_Utils_Tuple2(0, 10000)))))))),
+										function () {
+										var _v3 = A2(
+											$author$project$IVVL$crossV2,
+											grid.transformationMatrix,
+											_Utils_Tuple2(grid.scale * offset, 1));
+										if (_v3.$ === 'Nothing') {
+											return $MacCASOutreach$graphicsvg$GraphicSVG$move(
+												_Utils_Tuple2(0, 0));
+										} else {
+											var val = _v3.a;
+											return $MacCASOutreach$graphicsvg$GraphicSVG$move(val);
+										}
+									}()(
 										A2(
-											$MacCASOutreach$graphicsvg$GraphicSVG$line,
-											_Utils_Tuple2(grid.scale * offset, -10000),
-											_Utils_Tuple2(grid.scale * offset, 10000))),
-										A2(
-										$MacCASOutreach$graphicsvg$GraphicSVG$move,
-										_Utils_Tuple2(grid.scale * offset, 1),
-										A2(
-											$MacCASOutreach$graphicsvg$GraphicSVG$scale,
-											grid.scale * 0.02,
+											$MacCASOutreach$graphicsvg$GraphicSVG$rotate,
+											angle,
 											A2(
-												$MacCASOutreach$graphicsvg$GraphicSVG$filled,
-												$MacCASOutreach$graphicsvg$GraphicSVG$black,
-												$MacCASOutreach$graphicsvg$GraphicSVG$text(
-													$elm$core$Debug$toString(offset)))))
+												$MacCASOutreach$graphicsvg$GraphicSVG$move,
+												_Utils_Tuple2(0, (-0.2) * grid.scale),
+												A2(
+													$MacCASOutreach$graphicsvg$GraphicSVG$scale,
+													grid.scale * 0.02,
+													A2(
+														$MacCASOutreach$graphicsvg$GraphicSVG$filled,
+														grid.yAxisColor,
+														$MacCASOutreach$graphicsvg$GraphicSVG$fixedwidth(
+															$MacCASOutreach$graphicsvg$GraphicSVG$text(
+																$elm$core$String$fromInt(offset))))))))
 									])) : $MacCASOutreach$graphicsvg$GraphicSVG$group(_List_Nil);
 						},
 						A2($elm$core$List$range, -50, 50))),
-					A2(
-					$MacCASOutreach$graphicsvg$GraphicSVG$move,
-					_Utils_Tuple2(1, 1),
-					A2(
-						$MacCASOutreach$graphicsvg$GraphicSVG$scale,
-						grid.scale * 0.02,
+					$author$project$IVVL$renderVV2(
+					$author$project$IVVL$centerVV2(
 						A2(
-							$MacCASOutreach$graphicsvg$GraphicSVG$filled,
-							$MacCASOutreach$graphicsvg$GraphicSVG$black,
-							$MacCASOutreach$graphicsvg$GraphicSVG$text('0')))),
-					A3(
-					$author$project$IVVL$convertLineType,
-					grid.xLineType,
-					grid.xColor,
-					A2(
-						$MacCASOutreach$graphicsvg$GraphicSVG$line,
-						_Utils_Tuple2(-10000, 0),
-						_Utils_Tuple2(10000, 0))),
-					A3(
-					$author$project$IVVL$convertLineType,
-					grid.yLineType,
-					grid.yColor,
-					A2(
-						$MacCASOutreach$graphicsvg$GraphicSVG$line,
-						_Utils_Tuple2(0, -10000),
-						_Utils_Tuple2(0, 10000))),
+							$author$project$IVVL$lineTypeVV2,
+							$author$project$IVVL$defaultLineType,
+							A2(
+								$author$project$IVVL$colorGVV2,
+								grid.xAxisColor,
+								A2(
+									$author$project$IVVL$crossVV2,
+									grid.transformationMatrix,
+									A2(
+										$author$project$IVVL$vv2FromCoordinates,
+										_Utils_Tuple2(-10000, 0),
+										_Utils_Tuple2(10000, 0))))))),
+					$author$project$IVVL$renderVV2(
+					$author$project$IVVL$centerVV2(
+						A2(
+							$author$project$IVVL$lineTypeVV2,
+							$author$project$IVVL$defaultLineType,
+							A2(
+								$author$project$IVVL$colorGVV2,
+								grid.yAxisColor,
+								A2(
+									$author$project$IVVL$crossVV2,
+									grid.transformationMatrix,
+									A2(
+										$author$project$IVVL$vv2FromCoordinates,
+										_Utils_Tuple2(0, -10000),
+										_Utils_Tuple2(0, 10000))))))),
 					function () {
 					var vectorUpdater = F2(
 						function (record, scalar) {
@@ -15958,13 +17698,30 @@ var $author$project$IVVL$renderG2 = function (grid) {
 						A2(
 							$elm$core$Dict$map,
 							F2(
-								function (_v0, v) {
+								function (_v4, v) {
 									return A2(vectorUpdater, v, grid.scale);
 								}),
 							grid.vectorObjects));
+					var listOfSkewedVectors = A2(
+						$elm$core$List$map,
+						function (v) {
+							return A2($author$project$IVVL$crossVV2, grid.transformationMatrix, v);
+						},
+						listOfVectors);
 					return $MacCASOutreach$graphicsvg$GraphicSVG$group(
-						A2($elm$core$List$map, $author$project$IVVL$renderVV2, listOfVectors));
-				}()
+						A2($elm$core$List$map, $author$project$IVVL$renderVV2, listOfSkewedVectors));
+				}(),
+					A2(
+					$MacCASOutreach$graphicsvg$GraphicSVG$move,
+					_Utils_Tuple2(1, 1 - (0.2 * grid.scale)),
+					A2(
+						$MacCASOutreach$graphicsvg$GraphicSVG$scale,
+						grid.scale * 0.02,
+						A2(
+							$MacCASOutreach$graphicsvg$GraphicSVG$filled,
+							grid.xAxisColor,
+							$MacCASOutreach$graphicsvg$GraphicSVG$fixedwidth(
+								$MacCASOutreach$graphicsvg$GraphicSVG$text('0')))))
 				])));
 };
 var $MacCASOutreach$graphicsvg$GraphicSVG$Rect = F2(
@@ -15974,7 +17731,6 @@ var $MacCASOutreach$graphicsvg$GraphicSVG$Rect = F2(
 var $MacCASOutreach$graphicsvg$GraphicSVG$square = function (r) {
 	return A2($MacCASOutreach$graphicsvg$GraphicSVG$Rect, r, r);
 };
-var $MacCASOutreach$graphicsvg$GraphicSVG$white = A4($MacCASOutreach$graphicsvg$GraphicSVG$rgba, 255, 255, 255, 1);
 var $author$project$IVVL$renderLibModel = F3(
 	function (model, holdMsg, releaseMsg) {
 		return A2(
@@ -15996,7 +17752,7 @@ var $author$project$IVVL$renderLibModel = F3(
 							[
 								A2(
 								$MacCASOutreach$graphicsvg$GraphicSVG$filled,
-								$MacCASOutreach$graphicsvg$GraphicSVG$white,
+								model.backgroundColor,
 								$MacCASOutreach$graphicsvg$GraphicSVG$square(10000)),
 								$MacCASOutreach$graphicsvg$GraphicSVG$group(
 								A2(
@@ -16360,6 +18116,7 @@ var $elm$core$List$intersperse = F2(
 			return A2($elm$core$List$cons, hd, spersed);
 		}
 	});
+var $elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
 var $elm$html$Html$map = $elm$virtual_dom$VirtualDom$map;
 var $elm$svg$Svg$mask = $elm$svg$Svg$trustedNode('mask');
 var $MacCASOutreach$graphicsvg$GraphicSVG$matrixMult = F2(
@@ -16401,7 +18158,6 @@ var $MacCASOutreach$graphicsvg$GraphicSVG$moveT = F2(
 			_Utils_Tuple3(a, c, (tx + (a * u)) + (c * v)),
 			_Utils_Tuple3(b, d, (ty + (b * u)) + (d * v)));
 	});
-var $elm$json$Json$Decode$float = _Json_decodeFloat;
 var $MacCASOutreach$graphicsvg$GraphicSVG$mousePosDecoder = A3(
 	$elm$json$Json$Decode$map2,
 	F2(
@@ -16422,12 +18178,6 @@ var $MacCASOutreach$graphicsvg$GraphicSVG$onLeaveAt = function (msg) {
 		'mouseleave',
 		A2($elm$json$Json$Decode$map, msg, $MacCASOutreach$graphicsvg$GraphicSVG$mousePosDecoder));
 };
-var $elm$html$Html$Events$onMouseDown = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'mousedown',
-		$elm$json$Json$Decode$succeed(msg));
-};
 var $MacCASOutreach$graphicsvg$GraphicSVG$onMouseDownAt = function (msg) {
 	return A2(
 		$elm$html$Html$Events$on,
@@ -16444,12 +18194,6 @@ var $elm$html$Html$Events$onMouseLeave = function (msg) {
 	return A2(
 		$elm$html$Html$Events$on,
 		'mouseleave',
-		$elm$json$Json$Decode$succeed(msg));
-};
-var $elm$html$Html$Events$onMouseUp = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'mouseup',
 		$elm$json$Json$Decode$succeed(msg));
 };
 var $MacCASOutreach$graphicsvg$GraphicSVG$onMouseUpAt = function (msg) {
@@ -16894,9 +18638,9 @@ var $elm$svg$Svg$Attributes$strokeDasharray = _VirtualDom_attribute('stroke-dash
 var $elm$svg$Svg$Attributes$strokeOpacity = _VirtualDom_attribute('stroke-opacity');
 var $elm$svg$Svg$Attributes$strokeWidth = _VirtualDom_attribute('stroke-width');
 var $elm$svg$Svg$Attributes$target = _VirtualDom_attribute('target');
-var $elm$svg$Svg$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$svg$Svg$Attributes$textAnchor = _VirtualDom_attribute('text-anchor');
 var $elm$svg$Svg$text_ = $elm$svg$Svg$trustedNode('text');
+var $MacCASOutreach$graphicsvg$GraphicSVG$white = A4($MacCASOutreach$graphicsvg$GraphicSVG$rgba, 255, 255, 255, 1);
 var $elm$svg$Svg$Attributes$xlinkHref = function (value) {
 	return A3(
 		_VirtualDom_attributeNS,
@@ -17912,24 +19656,10 @@ var $author$project$Sandbox$widgetDisplay = F3(
 						A2($author$project$Sandbox$getVisualModel, widgetId, model.ivvlDict),
 						widgetId))));
 	});
-var $author$project$IVVL$ScaleG2 = F2(
-	function (a, b) {
-		return {$: 'ScaleG2', a: a, b: b};
-	});
 var $mdgriffith$elm_ui$Internal$Model$Bottom = {$: 'Bottom'};
 var $mdgriffith$elm_ui$Element$alignBottom = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$Bottom);
 var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
 var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Right);
-var $mdgriffith$elm_ui$Internal$Model$MoveX = function (a) {
-	return {$: 'MoveX', a: a};
-};
-var $mdgriffith$elm_ui$Internal$Flag$moveX = $mdgriffith$elm_ui$Internal$Flag$flag(25);
-var $mdgriffith$elm_ui$Element$moveLeft = function (x) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
-		$mdgriffith$elm_ui$Internal$Flag$moveX,
-		$mdgriffith$elm_ui$Internal$Model$MoveX(-x));
-};
 var $author$project$Sandbox$zoomMenu = function (model) {
 	return A2(
 		$mdgriffith$elm_ui$Element$column,
@@ -17938,7 +19668,8 @@ var $author$project$Sandbox$zoomMenu = function (model) {
 				$mdgriffith$elm_ui$Element$alignRight,
 				$mdgriffith$elm_ui$Element$alignBottom,
 				$mdgriffith$elm_ui$Element$moveUp(20),
-				$mdgriffith$elm_ui$Element$moveLeft(20)
+				$mdgriffith$elm_ui$Element$moveLeft(20),
+				A2($mdgriffith$elm_ui$Element$spacingXY, 0, 10)
 			]),
 		_List_fromArray(
 			[
@@ -17946,53 +19677,76 @@ var $author$project$Sandbox$zoomMenu = function (model) {
 				$mdgriffith$elm_ui$Element$Input$button,
 				_List_fromArray(
 					[
-						$mdgriffith$elm_ui$Element$Border$width(1),
 						$mdgriffith$elm_ui$Element$width(
-						$mdgriffith$elm_ui$Element$px(30)),
+						$mdgriffith$elm_ui$Element$px(45)),
 						$mdgriffith$elm_ui$Element$height(
-						$mdgriffith$elm_ui$Element$px(30)),
+						$mdgriffith$elm_ui$Element$px(45)),
+						$mdgriffith$elm_ui$Element$Border$rounded(5),
+						$mdgriffith$elm_ui$Element$Border$width(5),
+						$mdgriffith$elm_ui$Element$Border$color(
+						A2($author$project$Sandbox$getColor, 'offWhite', $author$project$Sandbox$colorDict)),
 						$mdgriffith$elm_ui$Element$Background$color(
-						A3($mdgriffith$elm_ui$Element$rgb255, 255, 255, 255))
+						A2($author$project$Sandbox$getColor, 'offWhite', $author$project$Sandbox$colorDict))
 					]),
 				{
 					label: A2(
 						$mdgriffith$elm_ui$Element$el,
 						_List_fromArray(
-							[$mdgriffith$elm_ui$Element$centerX]),
+							[
+								$mdgriffith$elm_ui$Element$centerX,
+								$author$project$Sandbox$getFont('Assistant'),
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'offBlack', $author$project$Sandbox$colorDict)),
+								$mdgriffith$elm_ui$Element$Font$size(40),
+								$mdgriffith$elm_ui$Element$Font$bold,
+								$mdgriffith$elm_ui$Element$moveUp(3)
+							]),
 						$mdgriffith$elm_ui$Element$text('+')),
 					onPress: $elm$core$Maybe$Just(
 						A2(
 							$author$project$Sandbox$IVVLMsg,
 							model.focusedEmbed,
-							A2($author$project$IVVL$ScaleG2, 1.5, 1)))
+							A2($author$project$IVVL$ScaleG2, 1.5, model.focusedGrid)))
 				}),
 				A2(
 				$mdgriffith$elm_ui$Element$Input$button,
 				_List_fromArray(
 					[
-						$mdgriffith$elm_ui$Element$Border$width(1),
 						$mdgriffith$elm_ui$Element$width(
-						$mdgriffith$elm_ui$Element$px(30)),
+						$mdgriffith$elm_ui$Element$px(45)),
 						$mdgriffith$elm_ui$Element$height(
-						$mdgriffith$elm_ui$Element$px(30)),
+						$mdgriffith$elm_ui$Element$px(45)),
+						$mdgriffith$elm_ui$Element$Border$rounded(5),
+						$mdgriffith$elm_ui$Element$Border$width(5),
+						$mdgriffith$elm_ui$Element$Border$color(
+						A2($author$project$Sandbox$getColor, 'offWhite', $author$project$Sandbox$colorDict)),
 						$mdgriffith$elm_ui$Element$Background$color(
-						A3($mdgriffith$elm_ui$Element$rgb255, 255, 255, 255))
+						A2($author$project$Sandbox$getColor, 'offBlack', $author$project$Sandbox$colorDict))
 					]),
 				{
 					label: A2(
 						$mdgriffith$elm_ui$Element$el,
 						_List_fromArray(
-							[$mdgriffith$elm_ui$Element$centerX]),
+							[
+								$mdgriffith$elm_ui$Element$centerX,
+								$author$project$Sandbox$getFont('Assistant'),
+								$mdgriffith$elm_ui$Element$Font$color(
+								A2($author$project$Sandbox$getColor, 'offWhite', $author$project$Sandbox$colorDict)),
+								$mdgriffith$elm_ui$Element$Font$size(40),
+								$mdgriffith$elm_ui$Element$Font$bold,
+								$mdgriffith$elm_ui$Element$moveUp(7)
+							]),
 						$mdgriffith$elm_ui$Element$text('-')),
 					onPress: $elm$core$Maybe$Just(
 						A2(
 							$author$project$Sandbox$IVVLMsg,
 							model.focusedEmbed,
-							A2($author$project$IVVL$ScaleG2, 0.666, 1)))
+							A2($author$project$IVVL$ScaleG2, 0.666, model.focusedGrid)))
 				})
 			]));
 };
 var $author$project$Sandbox$htmlOutput = function (model) {
+	var decodeScrollEvent = A2($elm$json$Json$Decode$field, 'deltaY', $elm$json$Json$Decode$float);
 	return _List_fromArray(
 		[
 			A2(
@@ -18004,17 +19758,34 @@ var $author$project$Sandbox$htmlOutput = function (model) {
 					$mdgriffith$elm_ui$Element$inFront(
 					$author$project$Sandbox$elementsMenu(model)),
 					$mdgriffith$elm_ui$Element$inFront(
-					$author$project$Sandbox$zoomMenu(model))
+					$author$project$Sandbox$zoomMenu(model)),
+					$mdgriffith$elm_ui$Element$Events$onMouseUp($author$project$Sandbox$ResizeElementMenuUp)
 				]),
-			A3(
-				$author$project$Sandbox$widgetDisplay,
-				model,
+			A2(
+				$mdgriffith$elm_ui$Element$row,
 				_List_fromArray(
 					[
 						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
 						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill)
 					]),
-				model.focusedEmbed))
+				_List_fromArray(
+					[
+						A3(
+						$author$project$Sandbox$widgetDisplay,
+						model,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+								$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+								$phollyer$elm_cursor$Element$Cursor$move,
+								$mdgriffith$elm_ui$Element$htmlAttribute(
+								A2(
+									$elm$html$Html$Events$on,
+									'wheel',
+									A2($elm$json$Json$Decode$map, $author$project$Sandbox$Scroll, decodeScrollEvent)))
+							]),
+						model.focusedEmbed)
+					])))
 		]);
 };
 var $author$project$Sandbox$view = function (model) {
@@ -18033,7 +19804,13 @@ var $author$project$Sandbox$main = $elm$browser$Browser$document(
 				_List_fromArray(
 					[
 						$elm$browser$Browser$Events$onResize($author$project$Sandbox$WindowResize),
-						$elm$browser$Browser$Events$onAnimationFrame($author$project$Sandbox$Tick)
+						$elm$browser$Browser$Events$onAnimationFrame($author$project$Sandbox$Tick),
+						$elm$browser$Browser$Events$onMouseMove(
+						A3(
+							$elm$json$Json$Decode$map2,
+							$author$project$Sandbox$MouseMove,
+							A2($elm$json$Json$Decode$field, 'pageX', $elm$json$Json$Decode$int),
+							A2($elm$json$Json$Decode$field, 'pageY', $elm$json$Json$Decode$int)))
 					]));
 		},
 		update: $author$project$Sandbox$update,
