@@ -5,7 +5,9 @@ const DefinitionBox = ({ title, content }) => {
 				<i class="fa-solid fa-circle-info text-xl mr-[1rem]"></i>
 				<p className="font-bold pl-[0.5rem] my-0">{title} </p>
 			</div>
-			<p className="text-center md:text-left mx-[1rem] mt-0 md:my-[1rem]">{content}</p>
+			<p className="text-center md:text-left mx-[1rem] mt-0 md:my-[1rem]">
+				{content}
+			</p>
 		</div>
 	);
 };
