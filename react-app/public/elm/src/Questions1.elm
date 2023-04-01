@@ -1,4 +1,4 @@
-module Sandbox exposing (third)
+module Questions1 exposing (..)
 
 {--------------------------------------- IMPORTS ---------------------------------------}
 
@@ -59,6 +59,7 @@ htmlOutput model =
         [ E.width E.fill, E.height E.fill
         , E.inFront (elementsMenu model)
         , E.inFront (zoomMenu model)
+        , E.inFront (answerElement model)
         , EEvents.onMouseUp ResizeElementMenuUp
         ]
         ( E.row
@@ -236,22 +237,38 @@ creationMenu model =
         [ E.row
           [ E.centerX, E.spacingXY 10 0 ]
           ( List.map2 optionButton 
-              ["⁺↗ Add Vector", "ˣ↗ Scale Vector"] -- ["Add Vector Element", "Add VectorSum Element"]
-              [ Just (AddElement VectorType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1))),
-              Nothing
+              ["⁺↗ Add Vector"] -- ["Add Vector Element", "Add VectorSum Element"]
+              [ Just (AddElement VectorType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1)))
               ]
-          )
-        , E.row
-          [ E.centerX, E.spacingXY 10 0 ]
-          ( List.map2 optionButton 
-              ["↖⁺↗ Vector Sum" , "↖⁻↗ Vector Difference"] 
-              [ Just (AddElement VectorSumType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1))),
-                Nothing ]
           )
         ]
       ]
 
 {--------------------------------------- ELEMENTS ---------------------------------------}
+
+answerElement : Model -> Element Msg
+answerElement model = 
+  let
+      allelements = Dict.values model.visualElements
+
+      imp = 
+        List.map 
+          (\e -> 
+              case e of
+                Vector _ (a,b) _ -> (Maybe.withDefault 0 (String.toFloat a) , Maybe.withDefault 0 (String.toFloat b) )
+                _ -> (0.0, 0.0)
+          )
+          allelements
+
+      flag = List.member (5,2) imp
+
+  in
+    if flag then
+      E.el 
+      [Font.size 100 , Font.color (getColor ("AnswerVector") model.elementColorDict) , E.centerX  , getFont "Assistant"]
+      ( E.text "Correct Answer ✔" )
+    else 
+      E.none
 
 vectorElement : Model -> VisualElementIndex -> VisVector2D -> VisualElement -> Element Msg
 vectorElement model (eID, gID, veID) vv2 ve = 
@@ -1074,6 +1091,12 @@ initialModel =
                           |> endTypeVV2 Directional
                           |> colorVV2 (getColor "defaultVector" eColorDict)
                         ) 
+                      |> IVVL.addVVectorG2 
+                        ( newVV2
+                          |> setVV2 (5, 2)
+                          |> endTypeVV2 Directional
+                          |> colorVV2 (getColor "AnswerVector" eColorDict)
+                        ) 
                       |> xAxisColorG2 (getColor "axes" eColorDict)
                       |> yAxisColorG2 (getColor "axes" eColorDict)
                       |> gridlinesColorG2 (getColor "axes" eColorDict)
@@ -1096,6 +1119,7 @@ initialModel =
         , ("buttonBackground", getColor "offWhite" colorDict)
         , ("axes", getColor "offWhite" colorDict)
         , ("inputBackground", E.rgb255 73 65 85)
+        , ("AnswerVector", E.rgb255 0 255 0)
         ]
 
     model =  
@@ -1126,7 +1150,7 @@ initialModel =
 
 view : Model -> { title : String, body : List (Html Msg) } 
 view model =
-  { title = "Sandbox"
+  { title = "Question1"
   , body = htmlOutput model
   }   
 
