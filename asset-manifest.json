@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/MathVisualizer/static/css/main.1e774845.css",
-    "main.js": "/MathVisualizer/static/js/main.d1ab742e.js",
+    "main.css": "/MathVisualizer/static/css/main.3fe929b4.css",
+    "main.js": "/MathVisualizer/static/js/main.63371c9b.js",
     "index.html": "/MathVisualizer/index.html",
-    "main.1e774845.css.map": "/MathVisualizer/static/css/main.1e774845.css.map",
-    "main.d1ab742e.js.map": "/MathVisualizer/static/js/main.d1ab742e.js.map"
+    "main.3fe929b4.css.map": "/MathVisualizer/static/css/main.3fe929b4.css.map",
+    "main.63371c9b.js.map": "/MathVisualizer/static/js/main.63371c9b.js.map"
   },
   "entrypoints": [
-    "static/css/main.1e774845.css",
-    "static/js/main.d1ab742e.js"
+    "static/css/main.3fe929b4.css",
+    "static/js/main.63371c9b.js"
   ]
 }
