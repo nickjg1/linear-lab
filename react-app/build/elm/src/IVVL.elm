@@ -3,19 +3,19 @@ module IVVL exposing
     Coordinate2D, Vector2D, Matrix2D, LineType(..), EndType(..), VisVector2D, Grid2D, LibModel
 
     {- Rendering and Utilities -}
-  , renderLibModel, updateLibModel, Msg(..), getNextVectorObjectKey
+  , renderLibModel, updateLibModel, Msg(..), getNextVectorObjectKey, elementToGSVGColor
 
     {- Vector2D Transformations -}
-  , newV2,          addV2,        subtractV2,      scalarV2,  dotV2,  firstV2, secondV2
+  , newV2,          addV2,        subtractV2,      scalarV2,  crossV2,  firstV2, secondV2
 
     {- Matrix2D Transformations -}
-  , newM2,          addM2,        subtractM2,      scalarM2,  dotM2
+  , newM2,          addM2,        subtractM2,      scalarM2,  crossM2
 
     {- VisVector2D Transformations -}                                        
-  , newVV2, setVV2, addVV2,       subtractVV2,     scalarVV2, dotVV2, lineTypeVV2, endTypeVV2
+  , newVV2, setVV2, addVV2,       subtractVV2,     scalarVV2, crossVV2, lineTypeVV2, endTypeVV2, colorVV2
 
     {- Grid2D Transformations -}
-  , newG2,          addVVectorG2, removeVVectorG2, scaleVVectorG2
+  , newG2,          addVVectorG2, removeVVectorG2, scaleVVectorG2,                             xAxisColorG2, yAxisColorG2, gridlinesColorG2
 
     {- Defaults -}
   , defaultCoordinate2D, defaultVector2D, defaultMatrix2D, identityMatrix2D
@@ -27,11 +27,13 @@ module IVVL exposing
 
 {--------------------------------------- IMPORTS ---------------------------------------}
 
-import GraphicSVG exposing (..)
+import GraphicSVG as G exposing (..)
 import GraphicSVG.Widget exposing (..)
 import GraphicSVG.App exposing (..)
 
 import Dict exposing (Dict)
+
+import Element as E exposing (Color) 
 
 {--------------------------------------- COORDINATES AND VECTORS ---------------------------------------}
 
@@ -54,10 +56,10 @@ subtractV2 v1 v2 =
 -- Scalar multiplication of a Float and a Vector
 scalarV2 : Float -> Vector2D -> Vector2D
 scalarV2 f v =
-  (f * firstV2 v, f * Tuple.second v)
+  (f * firstV2 v, f * secondV2 v)
 
-dotV2 : Matrix2D -> Vector2D -> Maybe Vector2D
-dotV2 matrix v =
+crossV2 : Matrix2D -> Vector2D -> Maybe Vector2D
+crossV2 matrix v =
   let
     {- [a, b    [x
         c, d]    y]
@@ -71,8 +73,8 @@ dotV2 matrix v =
     x = firstV2 v
     y = secondV2 v
 
-    x2 = (a*x) + (b*x)
-    y2 = (c*y) + (d*y)
+    x2 = (a*x) + (b*y)
+    y2 = (c*x) + (d*y)
 
     finalV = 
       if (List.length matrix == 2)
@@ -125,8 +127,8 @@ scalarM2 f m =
   List.map2 scalarV2 (List.repeat (List.length m) f) m
 
 -- Dot multiplication of two Matrix2Ds of length 2
-dotM2 : Matrix2D -> Matrix2D -> Maybe Matrix2D
-dotM2 m1 m2 =
+crossM2 : Matrix2D -> Matrix2D -> Maybe Matrix2D
+crossM2 m1 m2 =
   let
     length1 = List.length m1
     length2 = List.length m2
@@ -167,8 +169,14 @@ type EndType = None
              | Directional
              | Bidirectional
           
+sizeLT : Float -> LineType -> LineType
+sizeLT size lt =
+  case lt of
+    Solid _ -> Solid size
+    Dotted _ -> Dotted size
+    Dashed _ -> Dashed size
 
-convertLineType : LineType -> Color -> Stencil -> Shape userMsg
+convertLineType : LineType -> G.Color -> Stencil -> Shape userMsg
 convertLineType lt clr =
   case lt of
     Solid x -> outlined (solid x) clr
@@ -181,6 +189,8 @@ type alias VisVector2D =
   { vector : Vector2D
   , lineType : LineType
   , endType : EndType
+  , color : G.Color
+  , offset : Coordinate2D
   }
 
 -- Base Vector type for applications, alongside transformations
@@ -199,8 +209,8 @@ subtractVV2 vec visVec = { visVec | vector = subtractV2 vec visVec.vector}
 scalarVV2 : Float -> VisVector2D -> VisVector2D
 scalarVV2 scalar visVec = { visVec | vector = scalarV2 scalar visVec.vector}
 
-dotVV2 : Matrix2D -> VisVector2D -> VisVector2D
-dotVV2 matrix visVec = { visVec | vector = justToVector2D (dotV2 matrix visVec.vector)}
+crossVV2 : Matrix2D -> VisVector2D -> VisVector2D
+crossVV2 matrix visVec = { visVec | vector = justToVector2D (crossV2 matrix visVec.vector)}
 
 lineTypeVV2 : LineType -> VisVector2D -> VisVector2D
 lineTypeVV2 lt visVec = { visVec | lineType = lt}
@@ -208,15 +218,27 @@ lineTypeVV2 lt visVec = { visVec | lineType = lt}
 endTypeVV2 : EndType -> VisVector2D -> VisVector2D
 endTypeVV2 et visVec = { visVec | endType = et }
 
+colorVV2 : E.Color -> VisVector2D -> VisVector2D
+colorVV2 eCol visVec = { visVec | color = elementToGSVGColor eCol }
+
+colorGVV2 : G.Color -> VisVector2D -> VisVector2D
+colorGVV2 gCol visVec = { visVec | color = gCol }
+
+offsetVV2 : Coordinate2D -> VisVector2D -> VisVector2D
+offsetVV2 os visVec = { visVec | offset = os }
+
+addToOffsetVV2 : Coordinate2D -> VisVector2D -> VisVector2D
+addToOffsetVV2 os visVec = { visVec | offset = addV2 os visVec.offset }
+
 {--------------------------------------- GRID ---------------------------------------}
 
 type alias Grid2D = 
   { transformationMatrix : Matrix2D
   , vectorObjects : Dict Int VisVector2D
-  , xColor : Color
-  , yColor : Color
-  , xLineType : LineType
-  , yLineType : LineType
+
+  , xAxisColor : G.Color
+  , yAxisColor : G.Color
+  , gridlinesColor : G.Color
 
   , scale : Float
 
@@ -259,11 +281,35 @@ scaleVVectorG2 scalar visVecID grid =
   in
     { grid | vectorObjects = finalGrid }
 
+colorVVectorG2 : E.Color -> Int -> Grid2D -> Grid2D
+colorVVectorG2 eColor visVecID grid =
+  let
+    vectorObjects = grid.vectorObjects
+
+    vectorUpdater record = { record | color = elementToGSVGColor eColor }
+    updater func x = Maybe.map func x
+    
+    finalGrid = Dict.update visVecID (updater vectorUpdater) vectorObjects
+  in
+    { grid | vectorObjects = finalGrid }
+
+xAxisColorG2 : E.Color -> Grid2D -> Grid2D
+xAxisColorG2 eColor grid =
+  { grid | xAxisColor = elementToGSVGColor eColor }
+
+yAxisColorG2 : E.Color -> Grid2D -> Grid2D
+yAxisColorG2 eColor grid =
+  { grid | yAxisColor = elementToGSVGColor eColor }
+
+gridlinesColorG2 : E.Color -> Grid2D -> Grid2D
+gridlinesColorG2 eColor grid =
+  { grid | gridlinesColor = elementToGSVGColor eColor }
+
 {--------------------------------------- RENDER ---------------------------------------}
 
 renderLibModel : LibModel -> ((Float, Float) -> userMsg) -> userMsg -> Shape userMsg
 renderLibModel model holdMsg releaseMsg =
-  [ square 10000 |> filled white
+  [ square 10000 |> filled model.backgroundColor
   , List.map renderG2 (Dict.values model.grids)
       |> group
   ] |> group
@@ -277,73 +323,135 @@ renderLibModel model holdMsg releaseMsg =
 -- Turns a Grid2D to a Shape
 renderG2 : Grid2D -> (Shape usermsg)
 renderG2 grid =
-  [ List.map (\offset -> if (offset /= 0) then
-                           [ line (-10000, grid.scale * toFloat offset ) (10000, grid.scale * toFloat offset)         -- horizontal grid lines
-                               |> convertLineType (Solid 0.1) grid.xColor 
-                           , text (Debug.toString offset)
-                               |> filled black
-                               |> scale (grid.scale * 0.02)
-                               |> move (0, grid.scale * toFloat offset + 1)
-                           ] |> group
-                         else [] |> group
-             )
-             (List.range -50 50)
-    |> group
+  let
+    myVector = (1,0)
+    transformedVector = 
+      justToVector2D
+        ( myVector
+            |> crossV2 grid.transformationMatrix
+        )
 
-  , List.map (\offset -> if (offset /= 0) then
-                           [ line (grid.scale * toFloat offset, -10000) (grid.scale * toFloat offset, 10000)         -- vertical grid lines
-                               |> convertLineType (Solid 0.1) grid.yColor 
-                           , text (Debug.toString offset)
-                               |> filled black
-                               |> scale (grid.scale * 0.02)
-                               |> move (grid.scale * toFloat offset, 1)
-                           ] |> group
-                         else [] |> group
-             )
-             (List.range -50 50)
-    |> group
-  
-  , text "0"
-      |> filled black
-      |> scale (grid.scale * 0.02)
-      |> move (1, 1)
-  , line (-10000, 0) (10000, 0) -- X axis
-      |> convertLineType grid.xLineType grid.xColor
-  , line (0, -10000) (0, 10000) -- Y axis
-      |> convertLineType grid.yLineType grid.yColor
+    angle = 0--customMod (atan2 (secondV2 transformedVector) (firstV2 transformedVector)) (pi)
+    
 
-  , let
-      vectorUpdater record scalar = { record | vector = scalarV2 scalar record.vector }
-      listOfVectors = Dict.values (Dict.map (\_ v -> vectorUpdater v grid.scale) grid.vectorObjects)
-    in
-      List.map renderVV2 (listOfVectors)
-        |> group
-  ] |> group
-    |> move (grid.offset)
+  in
+    [ List.map 
+        (\offset -> 
+          if (offset /= 0) then
+            [ renderVV2
+                ( vv2FromCoordinates (-10000, 0) (10000, 0)
+                  |> crossVV2 grid.transformationMatrix
+                  |> colorGVV2 grid.gridlinesColor
+                  |> lineTypeVV2 (Solid 0.3)
+                  |> centerVV2
+                  |> case ( crossV2 grid.transformationMatrix (0, grid.scale * toFloat offset) ) of
+                       Nothing -> addToOffsetVV2 (0, 0)
+                       Just val -> addToOffsetVV2 val
+                )
+            , text (String.fromInt offset)
+                |> fixedwidth
+                |> filled grid.xAxisColor
+                |> scale (grid.scale * 0.02)
+                |> move (0,-0.2*grid.scale)
+                |> rotate angle
+                |> case ( (0, grid.scale * toFloat offset) |> crossV2 grid.transformationMatrix ) of
+                    Nothing -> move (0, 0)
+                    Just val -> move val
+            ] |> group
+          else [] |> group
+        )
+        (List.range -50 50)
+      |> group
+
+    , List.map 
+        (\offset -> 
+          if (offset /= 0) then
+            [ renderVV2
+                ( vv2FromCoordinates (0, -10000) (0, 10000)
+                  |> crossVV2 grid.transformationMatrix
+                  |> colorGVV2 grid.gridlinesColor
+                  |> lineTypeVV2 (Solid 0.3)
+                  |> centerVV2
+                  |> case ( crossV2 grid.transformationMatrix (grid.scale * toFloat offset, 0) ) of
+                       Nothing -> addToOffsetVV2 (0, 0)
+                       Just val -> addToOffsetVV2 val
+                )
+            , text (String.fromInt offset)
+                |> fixedwidth
+                |> filled grid.yAxisColor
+                |> scale (grid.scale * 0.02)
+                |> move (0,-0.2*grid.scale)
+                |> rotate angle
+                |> case ( (grid.scale * toFloat offset, 1) |> crossV2 grid.transformationMatrix ) of
+                    Nothing -> move (0, 0)
+                    Just val -> move  val
+            ] |> group
+          else [] |> group
+        )
+        (List.range -50 50)
+      |> group
+    
+    , renderVV2 
+        ( vv2FromCoordinates (-10000, 0) (10000, 0) 
+            |> crossVV2 grid.transformationMatrix 
+            |> colorGVV2 grid.xAxisColor
+            |> lineTypeVV2 defaultLineType
+            |> centerVV2
+        )
+    , renderVV2
+        ( vv2FromCoordinates (0, -10000) (0, 10000)
+            |> crossVV2 grid.transformationMatrix 
+            |> colorGVV2 grid.yAxisColor
+            |> lineTypeVV2 defaultLineType
+            |> centerVV2
+        )
+    , let
+        vectorUpdater record scalar = { record | vector = scalarV2 scalar record.vector }
+        listOfVectors = Dict.values (Dict.map (\_ v -> vectorUpdater v grid.scale) grid.vectorObjects)
+        listOfSkewedVectors = 
+          List.map 
+            (\v -> 
+              v
+                |> crossVV2 grid.transformationMatrix
+            ) listOfVectors
+      in
+        List.map renderVV2 (listOfSkewedVectors)
+          |> group
+    , text "0"
+        |> fixedwidth 
+        |> filled grid.xAxisColor
+        |> scale (grid.scale * 0.02)
+        |> move (1, 1-0.2*grid.scale)
+
+    ] |> group
+      |> move (grid.offset)
 
 -- Turns a Vector2D to a Shape
 renderVV2 : VisVector2D -> (Shape usermsg)
-renderVV2 vector =
-  [ line (0, 0) vector.vector
-      |> convertLineType vector.lineType black
-  , case vector.endType of
+renderVV2 visVector =
+  [ line (0, 0) visVector.vector
+      |> convertLineType visVector.lineType visVector.color
+      |> move visVector.offset
+  , case visVector.endType of
       None -> [] |> group
-      Directional -> triangle 5
-                       |> filled black
-                       |> rotate (degrees -30)
-                       |> rotate -(atan2 (firstV2 vector.vector) (secondV2 vector.vector))
-                       |> move vector.vector
-      Bidirectional -> [ triangle 5
-                           |> filled black
-                           |> rotate (degrees -30)
-                           |> rotate -(atan2 (firstV2 vector.vector) (secondV2 vector.vector))
-                           |> move vector.vector
-                       , triangle 5
-                           |> filled black
-                           |> rotate (degrees -30)
-                           |> rotate -(atan2 (firstV2 vector.vector) (secondV2 vector.vector))
-                           |> rotate (degrees 180)
-                       ] |> group
+      Directional -> triangle 6
+                      |> filled visVector.color
+                      |> rotate (degrees -30)
+                      |> rotate -(atan2 (firstV2 visVector.vector) (secondV2 visVector.vector))
+                      |> move visVector.vector
+                      |> move visVector.offset
+      Bidirectional -> [ triangle 6
+                          |> filled visVector.color
+                          |> rotate (degrees -30)
+                          |> rotate -(atan2 (firstV2 visVector.vector) (secondV2 visVector.vector))
+                          |> move visVector.vector
+                      , triangle 6
+                          |> filled visVector.color
+                          |> rotate (degrees -30)
+                          |> rotate -(atan2 (firstV2 visVector.vector) (secondV2 visVector.vector))
+                          |> rotate (degrees 180)
+                          |> move visVector.offset
+                      ] |> group
   ] |> group
 
 {--------------------------------------- MESSAGES ---------------------------------------}
@@ -369,6 +477,20 @@ type Msg = Tick Float GetKeyState -- Unused
 
          | ScaleVVectorG2 Float Int Int -- Scale by (Scalar) a vector with (ID Int) from (Grid with key Int) 
          | ScaleVVectorG2All Float Int -- Scale by (Scalar) a vector with (ID Int) from ALL grids.
+
+         | ColorVVectorG2 E.Color Int Int -- Color a vector (Color) with (ID Int) from (Grid with key Int)
+         | ColorVVectorG2All E.Color Int -- Color a vector (Color) with (ID Int) from ALL grids.
+
+         | ColorXAxisG2 E.Color Int -- Color the x-axis (Color) for (Grid with key Int)
+         | ColorXAxisG2All E.Color -- Color the x-axis (Color) for ALL grids.
+
+         | ColorYAxisG2 E.Color Int -- Color the y-axis (Color) for (Grid with key Int)
+         | ColorYAxisG2All E.Color -- Color the y-axis (Color) for ALL grids.
+
+         | ColorGridlinesG2 E.Color Int -- Color the gridlines (Color) for (Grid with key Int)
+         | ColorGridlinesG2All E.Color -- Color the gridlines (Color) for ALL grids.
+
+         | ChangeBackgroundColor E.Color
 
          | HoldMove (Float, Float)
          | ReleaseMove
@@ -461,15 +583,15 @@ updateLibModel msg model =
       in
         ( { model | grids = newGrids }, Cmd.none )
 
-
     ScaleVVectorG2 scalar vId gridKey ->
       let
         theGrid = Dict.get gridKey model.grids
         
         updatedGrid = Maybe.map3 scaleVVectorG2 (Just scalar) (Just vId) theGrid 
-        updatedGridModel = case updatedGrid of
-                             Nothing -> model.grids
-                             Just newGrid -> Dict.insert gridKey newGrid model.grids
+        updatedGridModel = 
+          case updatedGrid of
+            Nothing -> model.grids
+            Just newGrid -> Dict.insert gridKey newGrid model.grids
       in
         ( { model | grids = updatedGridModel }, Cmd.none )
 
@@ -480,6 +602,89 @@ updateLibModel msg model =
         newGrids = Dict.map (\_ v -> scaleVVectorG2 scalar vId v) gridDict
       in
         ( { model | grids = newGrids }, Cmd.none )
+
+    ColorVVectorG2 eColor vId gridKey ->
+      let
+        theGrid = Dict.get gridKey model.grids
+
+        updatedGrid = Maybe.map3 colorVVectorG2 (Just eColor) (Just vId) theGrid
+        updatedGridModel = 
+          case updatedGrid of
+            Nothing -> model.grids
+            Just newGrid -> Dict.insert gridKey newGrid model.grids
+      in
+        ( { model | grids = updatedGridModel }, Cmd.none )
+
+    ColorVVectorG2All eColor vId ->
+      let
+        gridDict = model.grids
+
+        newGrids = Dict.map (\_ v -> colorVVectorG2 eColor vId v) gridDict
+      in
+        ( { model | grids = newGrids }, Cmd.none )
+
+    ColorXAxisG2 eColor gridKey ->
+      let
+        theGrid = Dict.get gridKey model.grids
+
+        updatedGrid = Maybe.map2 xAxisColorG2 (Just eColor) theGrid
+        updatedGridModel = case updatedGrid of
+                            Nothing -> model.grids
+                            Just newGrid -> Dict.insert gridKey newGrid model.grids
+      in
+        ( { model | grids = updatedGridModel }, Cmd.none)
+
+    ColorXAxisG2All eColor ->
+      let
+        gridDict = model.grids
+        
+        newGrids = Dict.map (\_ g -> xAxisColorG2 eColor g) gridDict 
+      in
+        ( { model | grids = newGrids }, Cmd.none )
+
+    ColorYAxisG2 eColor gridKey ->
+      let
+        theGrid = Dict.get gridKey model.grids
+
+        updatedGrid = Maybe.map2 yAxisColorG2 (Just eColor) theGrid
+        updatedGridModel = case updatedGrid of
+                            Nothing -> model.grids
+                            Just newGrid -> Dict.insert gridKey newGrid model.grids
+      in
+        ( { model | grids = updatedGridModel }, Cmd.none)
+
+    ColorYAxisG2All eColor ->
+      let
+        gridDict = model.grids
+        
+        newGrids = Dict.map (\_ g -> yAxisColorG2 eColor g) gridDict 
+      in
+        ( { model | grids = newGrids }, Cmd.none )
+
+    ColorGridlinesG2 eColor gridKey ->
+      let
+        theGrid = Dict.get gridKey model.grids
+
+        updatedGrid = Maybe.map2 gridlinesColorG2 (Just eColor) theGrid
+        updatedGridModel = case updatedGrid of
+                            Nothing -> model.grids
+                            Just newGrid -> Dict.insert gridKey newGrid model.grids
+      in
+        ( { model | grids = updatedGridModel }, Cmd.none)
+
+    ColorGridlinesG2All eColor ->
+      let
+        gridDict = model.grids
+        
+        newGrids = Dict.map (\_ g -> gridlinesColorG2 eColor g) gridDict 
+      in
+        ( { model | grids = newGrids }, Cmd.none )
+
+    ChangeBackgroundColor eClr ->
+      let
+        gClr = elementToGSVGColor eClr
+      in
+        ( { model | backgroundColor = gClr } , Cmd.none )
 
     HoldMove (x, y) ->
       let 
@@ -537,20 +742,20 @@ defaultEndType = None
 defaultVisVector2D : VisVector2D
 defaultVisVector2D = 
   { vector = defaultVector2D
-  , lineType = defaultLineType
+  , lineType = defaultLineType |> sizeLT 2
   , endType = defaultEndType
+  , color = G.rgb 0 0 0
+  , offset = (0, 0)
   }
 
 -- Default Grid2D
 defaultGrid2D : Grid2D
 defaultGrid2D =
-  { transformationMatrix = defaultMatrix2D
+  { transformationMatrix = identityMatrix2D
   , vectorObjects = Dict.empty
-  , xColor = black
-  , yColor = black
-  , xLineType = defaultLineType
-  , yLineType = defaultLineType
-
+  , xAxisColor = black
+  , yAxisColor = black
+  , gridlinesColor = black
   , scale = 100
 
   , startingOffset = (0, 0)
@@ -563,6 +768,7 @@ defaultLibModel =
   { grids = Dict.fromList [(1, defaultGrid2D)]
   , motionState = NotDragging
   , startingMousePos = (0, 0)
+  , backgroundColor = (rgb 100 100 100)
   }
   
 {--------------------------------------- MAYBE? ---------------------------------------}
@@ -582,6 +788,16 @@ justToMatrix2D f =
     Just a -> a
 
 {--------------------------------------- HELPER ---------------------------------------}
+
+vv2FromCoordinates : Coordinate2D -> Coordinate2D -> VisVector2D
+vv2FromCoordinates (x1, y1) (x2, y2) =
+  newVV2
+    |> setVV2 (x2 - x1, y2 - y1)
+
+centerVV2 : VisVector2D -> VisVector2D
+centerVV2 vv =
+  vv
+    |> offsetVV2 (scalarV2 (-1/2) vv.vector)
 
 -- Returns the last item of a List as a Maybe type
 backHead : List a -> Maybe a
@@ -604,6 +820,21 @@ getNextKeyHelper dict index =
         then getNextKeyHelper dict (index + 1)
         else index
 
+-- converts an Element Color to a GraphicSVG Color
+elementToGSVGColor : E.Color -> G.Color
+elementToGSVGColor eColor =
+  let
+    channels = E.toRgb eColor
+  in
+    G.rgb (channels.red*255) (channels.green*255) (channels.blue*255)
+
+-- Custom mod for floats
+customMod : Float -> Float -> Float
+customMod value by=  
+  if (value >= by)
+    then customMod (value - by) by
+    else value
+
 {--------------------------------------- MODEL ---------------------------------------}
 
 -- Visualizer Model
@@ -611,4 +842,5 @@ type alias LibModel =
   { grids : Dict Int Grid2D
   , motionState : DraggingState
   , startingMousePos : (Float, Float)
+  , backgroundColor : G.Color
   }

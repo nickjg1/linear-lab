@@ -1,4 +1,4 @@
-module Sandbox exposing (third)
+module Question2 exposing (..)
 
 {--------------------------------------- IMPORTS ---------------------------------------}
 
@@ -37,7 +37,7 @@ import IVVL exposing (..)
 
 import ElmSVG.Icons as Icon exposing (..)
 import Svg as Svg exposing (..)
- 
+
 {------------------------------------------------------------------------------
                              _    _ _______ __  __ _      
                             | |  | |__   __|  \/  | |     
@@ -59,6 +59,7 @@ htmlOutput model =
         [ E.width E.fill, E.height E.fill
         , E.inFront (elementsMenu model)
         , E.inFront (zoomMenu model)
+        , E.inFront (answerElement model)
         , EEvents.onMouseUp ResizeElementMenuUp
         ]
         ( E.row
@@ -84,7 +85,7 @@ zoomMenu model =
         [ E.width (E.px 45), E.height (E.px 45), Border.rounded 5, Border.width 5, Border.color (getColor "offWhite" colorDict)
         , Background.color (getColor "offWhite" colorDict)
         ]
-        { onPress = Just (IVVLMsg model.focusedEmbed (IVVL.ScaleG2 1.5 model.focusedGrid))
+        { onPress = Just (IVVLMsg model.focusedEmbed (IVVL.ScaleG2 1.5 1))
         , label = 
             E.el
               [ E.centerX, getFont "Assistant", Font.color (getColor "offBlack" colorDict), Font.size 40, Font.bold, E.moveUp 3 ]
@@ -94,7 +95,7 @@ zoomMenu model =
         [ E.width (E.px 45), E.height (E.px 45), Border.rounded 5, Border.width 5, Border.color (getColor "offWhite" colorDict)
         , Background.color (getColor "offBlack" colorDict)
         ]
-        { onPress = Just (IVVLMsg model.focusedEmbed (IVVL.ScaleG2 0.666 model.focusedGrid))
+        { onPress = Just (IVVLMsg model.focusedEmbed (IVVL.ScaleG2 0.666 1))
         , label = 
             E.el
               [ E.centerX, getFont "Assistant", Font.color (getColor "offWhite" colorDict), Font.size 40, Font.bold, E.moveUp 7 ]
@@ -111,7 +112,7 @@ elementsMenu model =
 
     currentLibModel = getVisualModel model.focusedEmbed model.ivvlDict
     currentGrid = 
-      case (Dict.get model.focusedGrid currentLibModel.grids) of
+      case (Dict.get 1 currentLibModel.grids) of
         Nothing -> defaultGrid2D
         Just g -> g
 
@@ -133,14 +134,6 @@ elementsMenu model =
                 Just vv -> vv
           in
             vectorSumElement model veIndex vector ve
-        VectorDifference vID _ _ ->
-          let
-            vector =
-              case Dict.get vID currentGrid.vectorObjects of
-                Nothing -> defaultVisVector2D
-                Just vv -> vv
-          in
-            vectorDifferenceElement model veIndex vector ve
 
     listOfElements = List.map convertToElement targetedVisuals
     
@@ -193,7 +186,7 @@ elementsMenu model =
                 ]
                 ( E.text "" )
             , E.column
-                [ E.width E.shrink, E.height E.fill, E.scrollbarY, E.centerX, E.spacingXY 0 20 ]
+                [ E.width E.shrink, E.height E.fill, E.scrollbarY, E.centerX ]
                 ( listOfElements )
             , E.el
                 [ E.width ( E.px (round (toFloat model.elementMenuWidth/5*4)) |> E.minimum (250) ), E.height (E.px 2), E.centerX
@@ -236,7 +229,6 @@ creationMenu model =
       newVV2
         |> endTypeVV2 Directional
         |> colorVV2 (getColor "defaultVector" model.elementColorDict)  
-        |> lineTypeVV2 (Solid 4)
   in
     E.column
       [ E.width E.fill, E.paddingXY 0 20 ]
@@ -245,25 +237,53 @@ creationMenu model =
         [ E.row
           [ E.centerX, E.spacingXY 10 0 ]
           ( List.map2 optionButton 
-              ["⁺↗ Add Vector"]--, "ˣ↗ Scale Vector"]
-              [ Just (AddElement VectorType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector model.focusedGrid)))
-              , Nothing
+              ["⁺↗ Add Vector" , "↖⁺↗ Vector Sum"] 
+              [ Just (AddElement VectorType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1))),
+                Just (AddElement VectorSumType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector 1)))
               ]
-          )
-        , E.row
-          [ E.centerX, E.spacingXY 10 0 ]
-          ( List.map2 optionButton 
-              ["↖⁺↗ Vector Sum" , "↖⁻↗ Vector Difference"] 
-              [ Just (AddElement VectorSumType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector model.focusedGrid)))
-              , Just (AddElement VectorDifferenceType (IVVLMsg model.focusedEmbed (IVVL.AddVVectorG2 myVector model.focusedGrid))) ]
           )
         ]
       ]
 
 {--------------------------------------- ELEMENTS ---------------------------------------}
 
-elementHeader : Model -> Element Msg
-elementHeader model = E.none
+answerElement : Model -> Element Msg
+answerElement model = 
+  let
+
+      allelements = Dict.values model.visualElements
+
+      imp = 
+        List.map 
+          (\e -> 
+              case e of
+                VectorSum x _ _ -> (x)
+                _ -> (0)
+          )
+          allelements
+      theModel = getVisualModel model.focusedEmbed model.ivvlDict
+      theGrid = 
+          case (Dict.get 1 theModel.grids) of
+            Just x -> x
+            _ -> defaultGrid2D
+      theVector vID =
+          case (Dict.get vID theGrid.vectorObjects) of
+            Just x -> x
+            _ -> defaultVisVector2D
+
+      sumanswer = List.map theVector imp
+
+      v1 = List.map (\x -> ((String.fromFloat (firstV2 x.vector)),(String.fromFloat (secondV2 x.vector)))) sumanswer
+
+      flag = List.member (("5","2")) v1
+
+  in
+    if flag then
+      E.el 
+      [Font.size 100 , Font.color (getColor ("AnswerVector") model.elementColorDict) , E.centerX  , getFont "Assistant" , E.moveRight 100 ]
+      ( E.text "Correct Answer ✔" )
+    else 
+      E.none
 
 vectorElement : Model -> VisualElementIndex -> VisVector2D -> VisualElement -> Element Msg
 vectorElement model (eID, gID, veID) vv2 ve = 
@@ -273,8 +293,8 @@ vectorElement model (eID, gID, veID) vv2 ve =
         veIndex = (eID, gID, veID)
         passClr =
           if pass
-            then (getColor "elementText" model.elementColorDict)
-            else rgb255 255 120 120
+            then rgb255 0 0 0
+            else rgb255 255 0 0
 
         visualElement = (Vector vID (iX, iY) pass)
       in
@@ -284,75 +304,51 @@ vectorElement model (eID, gID, veID) vv2 ve =
                 []
                 ( Input.button
                     ( [ E.width (px 20), E.height (px 20)
-                      , Background.color (E.rgba 0 0 0 0)
-                      , E.inFront
-                          ( E.html 
-                            ( Icon.trash
-                                [ Attributes.attribute "fill" (colorToHex (getColor "elementText" model.elementColorDict))
-                                , Attributes.attribute "width" "20px"
-                                , Attributes.attribute "height" "20px"
-                                ]
-                            ) 
-                          )
+                      , Background.color (E.rgb255 238 238 238)
+                      , E.focused [ Background.color (E.rgb255 238 23 238) ]
                       ]
                     ) 
-                    { onPress = Just (RemoveElement veIndex (IVVLMsg model.focusedEmbed (IVVL.RemoveVVectorG2 vID model.focusedGrid)))
-                    , label = E.none
+                    { onPress = Just (RemoveElement veIndex (IVVLMsg model.focusedEmbed (IVVL.RemoveVVectorG2 vID 1)))
+                    , label = E.el [ E.centerX, E.centerY ] (E.text "X")
                     } 
                 )
             , E.el
-                [ Font.size 24, Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" ]
+                [ Font.size 24, Font.color (getColor "elementText" model.elementColorDict) ]
                 ( E.text "vector" )
             , E.el
-                [ Font.size 32, Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" ]
+                [ Font.size 32, Font.color (getColor "elementText" model.elementColorDict) ]
                 ( E.text (String.fromInt veID) )
             , E.el
-                [ Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" ]
+                [ Font.color (getColor "elementText" model.elementColorDict) ]
                 ( E.text "=" )
             , E.el
-                [ E.height E.fill, E.centerY, Font.size 50, Font.hairline
-                , Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" 
-                , E.moveRight 5, E.moveDown 25
-                ]
+                [ E.height E.fill, E.centerY, Font.size 70, Font.hairline, Font.color (getColor "elementText" model.elementColorDict) ]
                 ( E.text "[" )
             , E.column
                 [ ]
                 [ E.el
                     [ E.paddingXY 0 2 ]
                     ( Input.text
-                        [ E.width (E.px 50), E.height (E.px 50)
-                        , Font.center, Font.size 13, Font.center, Font.color passClr, getFont "Assistant"
-                        , Border.rounded 10, Border.width 2, Border.color (getColor "offWhite" colorDict)
-                        , Background.color (getColor "offBlack" colorDict) 
-                        , E.moveDown 3
-                        ]
+                        [ E.width (E.px 45), E.height (E.px 45), Font.center, Font.size 13, Font.center, Font.color passClr ] 
                         { onChange = \value -> ParseVectorInput veIndex vID X value
                         , text = iX
-                        , placeholder = Nothing
+                        , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 16 ] ( E.text "X" ) ) )
                         , label = Input.labelHidden "An X vector input"
                         }
                     )
                 , E.el
                     [ E.paddingXY 0 2 ]
                     ( Input.text
-                        [ E.width (E.px 50), E.height (E.px 50), Font.center, Font.size 13, Font.center, Font.color passClr
-                        , Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant"
-                        , Border.rounded 10, Border.width 2, Border.color (getColor "offWhite" colorDict)
-                        , Background.color (getColor "offBlack" colorDict) 
-                        , E.moveDown 3
-                        ]
+                        [ E.width (E.px 45), E.height (E.px 45), Font.center, Font.size 13, Font.center, Font.color passClr ]
                         { onChange = \value -> ParseVectorInput veIndex vID Y value
                         , text = iY
-                        , placeholder = Nothing
+                        , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 16 ] ( E.text "X" ) ) )
                         , label = Input.labelHidden "A Y vector input"
                         }
                     )
                 ]
             , E.el
-                [ E.height E.fill, E.centerY, Font.size 50, Font.hairline
-                , Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" 
-                , E.moveLeft 5, E.moveDown 25
-                ]
+                [ E.height E.fill, E.centerY, Font.size 70, Font.hairline, Font.color (getColor "elementText" model.elementColorDict) ]
                 ( E.text "]")
             ]
         )
@@ -366,13 +362,13 @@ vectorSumElement model (eID, gID, veID) vv2 ve =
         veIndex = (eID, gID, veID)
         passClr =
           if pass
-            then (getColor "elementText" model.elementColorDict)
+            then rgb255 0 0 0
             else rgb255 255 0 0
 
         visualElement = (Vector vID (iV1, iV2) pass)
         theModel = getVisualModel model.focusedEmbed model.ivvlDict
         theGrid = 
-          case (Dict.get model.focusedGrid theModel.grids) of
+          case (Dict.get 1 theModel.grids) of
             Just x -> x
             _ -> defaultGrid2D
 
@@ -382,197 +378,65 @@ vectorSumElement model (eID, gID, veID) vv2 ve =
             _ -> defaultVisVector2D
       in
         ( E.row
-          [ E.centerX, E.spacingXY 10 0, E.paddingXY 5 0, rounded 10 ]
+          [ E.centerX, Background.color (E.rgb 1 0.5 1), E.spacingXY 10 0, E.paddingXY 5 0, rounded 10 ]
           [ E.el
-              []
+              [ ]
               ( Input.button
                   ( [ E.width (px 20), E.height (px 20)
-                    , Background.color (E.rgba 0 0 0 0)
-                    , E.inFront
-                        ( E.html 
-                          ( Icon.trash
-                              [ Attributes.attribute "fill" (colorToHex (getColor "elementText" model.elementColorDict))
-                              , Attributes.attribute "width" "20px"
-                              , Attributes.attribute "height" "20px"
-                              ]
-                          ) 
-                        )
+                    , Background.color (E.rgb255 238 238 238)
+                    , E.focused [ Background.color (E.rgb255 238 23 238) ]
                     ]
                   ) 
-                  { onPress = Just (RemoveElement veIndex (IVVLMsg model.focusedEmbed (IVVL.RemoveVVectorG2 vID model.focusedGrid)))
-                  , label = E.none
+                  { onPress = Just (RemoveElement veIndex (IVVLMsg model.focusedEmbed (IVVL.RemoveVVectorG2 vID 1)))
+                  , label = E.el [ E.centerX, E.centerY ] (E.text "X")
                   } 
               )
           , E.el
-              [ Font.size 18, Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" ]
+              [ Font.size 18 ]
               ( E.text "vectorSum" )
           , E.el
-              [ Font.size 24, Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" ]
+              [ Font.size 24 ]
               ( E.text (String.fromInt veID) )
           , E.el
                   [ ]
                   ( Input.text
-                      [ E.width (E.px 45), E.height (E.px 45)
-                      , Font.center, Font.size 15, Font.center, Font.color passClr, getFont "Assistant"
-                      , Border.rounded 10, Border.width 2, Border.color (getColor "offWhite" colorDict)
-                      , Background.color (getColor "offBlack" colorDict) 
-                      , E.moveDown 1 ] 
+                      [ E.width (E.px 35), E.height (E.px 35), Font.center, Font.size 13, Font.center, Font.color passClr ] 
                       { onChange = \value -> ParseVectorSumInput veIndex vID X value
                       , text = iV1
-                      , placeholder = Nothing
+                      , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 16 ] ( E.text "V#" ) ) )
                       , label = Input.labelHidden "A vectorID input"
                       }
                   )
           , E.el
-              [ Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" ]
+              [ ]
               ( E.text "+" )
           , E.el
                   [ E.paddingXY 0 2 ]
                   ( Input.text
-                      [ E.width (E.px 45), E.height (E.px 45)
-                      , Font.center, Font.size 15, Font.center, Font.color passClr, getFont "Assistant"
-                      , Border.rounded 10, Border.width 2, Border.color (getColor "offWhite" colorDict)
-                      , Background.color (getColor "offBlack" colorDict) 
-                      , E.moveDown 1 ] 
+                      [ E.width (E.px 35), E.height (E.px 35), Font.center, Font.size 13, Font.center, Font.color passClr ] 
                       { onChange = \value -> ParseVectorSumInput veIndex vID Y value
                       , text = iV2
-                      , placeholder = Nothing
+                      , placeholder = Just (Input.placeholder [ E.centerX ] ( E.el [ E.centerX, E.centerY, Font.size 16 ] ( E.text "V#" ) ) )
                       , label = Input.labelHidden "A vectorID input"
                       }
                   )
           , E.el
-              [ Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" ]
+              [ ]
               ( E.text "=" )
           , E.el
-              [ E.height E.fill, E.centerY, Font.size 50, Font.hairline
-              , Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" 
-              , E.moveRight 5, E.moveUp 3
-              ]
+              [ E.height E.fill, E.centerY, Font.size 70, Font.hairline, E.moveUp 8 ]
               ( E.text "[" )
           , E.column
               [ E.spacingXY 0 10 ]
               [ E.el
-                  [ Font.size 18, Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" ]
+                  [ Font.size 18, E.moveUp 4 ]
                   ( E.text (String.fromFloat (firstV2 theVector.vector)) )
               , E.el
-                  [ Font.size 18, Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" ]
+                  [ Font.size 18 ]
                   ( E.text (String.fromFloat (secondV2 theVector.vector)) )
               ]
           , E.el
-              [ E.height E.fill, E.centerY, Font.size 50, Font.hairline
-              , Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" 
-              , E.moveLeft 5, E.moveUp 3
-              ]
-              ( E.text "]")
-          ]
-        )
-    _ -> ( E.text "broken" )
-
-vectorDifferenceElement : Model -> VisualElementIndex -> VisVector2D -> VisualElement -> Element Msg
-vectorDifferenceElement model (eID, gID, veID) vv2 ve = 
-  case ve of
-    VectorDifference vID (iV1, iV2) pass ->
-      let
-        veIndex = (eID, gID, veID)
-        passClr =
-          if pass
-            then (getColor "elementText" model.elementColorDict)
-            else rgb255 255 0 0
-
-        visualElement = (Vector vID (iV1, iV2) pass)
-        theModel = getVisualModel model.focusedEmbed model.ivvlDict
-        theGrid = 
-          case (Dict.get model.focusedGrid theModel.grids) of
-            Just x -> x
-            _ -> defaultGrid2D
-
-        theVector =
-          case (Dict.get vID theGrid.vectorObjects) of
-            Just x -> x
-            _ -> defaultVisVector2D
-      in
-        ( E.row
-          [ E.centerX, E.spacingXY 10 0, E.paddingXY 5 0, rounded 10 ]
-          [ E.el
-              []
-              ( Input.button
-                  ( [ E.width (px 20), E.height (px 20)
-                    , Background.color (E.rgba 0 0 0 0)
-                    , E.inFront
-                        ( E.html 
-                          ( Icon.trash
-                              [ Attributes.attribute "fill" (colorToHex (getColor "elementText" model.elementColorDict))
-                              , Attributes.attribute "width" "20px"
-                              , Attributes.attribute "height" "20px"
-                              ]
-                          ) 
-                        )
-                    ]
-                  ) 
-                  { onPress = Just (RemoveElement veIndex (IVVLMsg model.focusedEmbed (IVVL.RemoveVVectorG2 vID model.focusedGrid)))
-                  , label = E.none
-                  } 
-              )
-          , E.el
-              [ Font.size 18, Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" ]
-              ( E.text "vectorDiff" )
-          , E.el
-              [ Font.size 24, Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" ]
-              ( E.text (String.fromInt veID) )
-          , E.el
-                  [ ]
-                  ( Input.text
-                      [ E.width (E.px 45), E.height (E.px 45)
-                      , Font.center, Font.size 15, Font.center, Font.color passClr, getFont "Assistant"
-                      , Border.rounded 10, Border.width 2, Border.color (getColor "offWhite" colorDict)
-                      , Background.color (getColor "offBlack" colorDict) 
-                      , E.moveDown 1 ] 
-                      { onChange = \value -> ParseVectorDifferenceInput veIndex vID X value
-                      , text = iV1
-                      , placeholder = Nothing
-                      , label = Input.labelHidden "A vectorID input"
-                      }
-                  )
-          , E.el
-              [ Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" ]
-              ( E.text "-" )
-          , E.el
-                  [ E.paddingXY 0 2 ]
-                  ( Input.text
-                      [ E.width (E.px 45), E.height (E.px 45)
-                      , Font.center, Font.size 15, Font.center, Font.color passClr, getFont "Assistant"
-                      , Border.rounded 10, Border.width 2, Border.color (getColor "offWhite" colorDict)
-                      , Background.color (getColor "offBlack" colorDict) 
-                      , E.moveDown 1 ] 
-                      { onChange = \value -> ParseVectorDifferenceInput veIndex vID Y value
-                      , text = iV2
-                      , placeholder = Nothing
-                      , label = Input.labelHidden "A vectorID input"
-                      }
-                  )
-          , E.el
-              [ Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" ]
-              ( E.text "=" )
-          , E.el
-              [ E.height E.fill, E.centerY, Font.size 50, Font.hairline
-              , Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" 
-              , E.moveRight 5, E.moveUp 3
-              ]
-              ( E.text "[" )
-          , E.column
-              [ E.spacingXY 0 10 ]
-              [ E.el
-                  [ Font.size 18, Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" ]
-                  ( E.text (String.fromFloat (firstV2 theVector.vector)) )
-              , E.el
-                  [ Font.size 18, Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" ]
-                  ( E.text (String.fromFloat (secondV2 theVector.vector)) )
-              ]
-          , E.el
-              [ E.height E.fill, E.centerY, Font.size 50, Font.hairline
-              , Font.color (getColor "elementText" model.elementColorDict), getFont "Assistant" 
-              , E.moveLeft 5, E.moveUp 3
-              ]
+              [ E.height E.fill, E.centerY, Font.size 70, Font.hairline, E.moveUp 8 ]
               ( E.text "]")
           ]
         )
@@ -595,11 +459,12 @@ type XY = X | Y
 type alias VisualElementIndex = (String, Int, Int) -- EmbedId, GridId, VisualElementId
 type VisualElement = Vector Int (String, String) Bool -- VectorId, VectorInputString, Pass
                    | VectorSum Int (String, String) Bool -- VectorId, VectorInputString, Pass
-                   | VectorDifference Int (String, String) Bool -- VectorId, VectorInputString, Pass
 
 type ElementType = VectorType
                  | VectorSumType
-                 | VectorDifferenceType
+
+--type VectorElements = Vector
+--                    | VectorSum
 
 type Msg = Tick Time.Posix
          | WindowResize Int Int
@@ -614,7 +479,6 @@ type Msg = Tick Time.Posix
          | RemoveElement VisualElementIndex Msg
          | ParseVectorInput VisualElementIndex Int XY String
          | ParseVectorSumInput VisualElementIndex Int XY String
-         | ParseVectorDifferenceInput VisualElementIndex Int XY String
 
          | UpdateContinuous
 
@@ -656,7 +520,7 @@ update msg model =
             then (2/3)
             else (3/2)
       in
-        ( model, Task.perform (\_-> (IVVLMsg model.focusedEmbed (IVVL.ScaleG2 newValue model.focusedGrid))) Time.now ) 
+        ( model, Task.perform (\_-> (IVVLMsg model.focusedEmbed (IVVL.ScaleG2 newValue 1))) Time.now ) 
 
     ResizeElementMenuDown -> 
       let
@@ -705,7 +569,7 @@ update msg model =
 
     AddElement elementType message ->
       let
-        gID = model.focusedGrid 
+        gID = 1
         eID = model.focusedEmbed
         currentVisual = getVisualModel eID model.ivvlDict
         currentGrid = 
@@ -724,7 +588,6 @@ update msg model =
                   case elementType of
                     VectorType -> Vector nextVID ("0", "0") True
                     VectorSumType -> VectorSum nextVID ("", "") False
-                    VectorDifferenceType -> VectorDifference nextVID ("", "") False
 
                 newVisualElements = Dict.insert newEKey ve model.visualElements
               in
@@ -743,7 +606,6 @@ update msg model =
                   case (Dict.get (eID, gID, veID) model.visualElements) of
                     Just (Vector vID2 _ _) -> vID2
                     Just (VectorSum vID2 _ _) -> vID2
-                    Just (VectorDifference vID2 _ _) -> vID2
                     Nothing -> 0
                 removedVisualElements = Dict.remove (eID, gID, veID) model.visualElements
 
@@ -759,10 +621,6 @@ update msg model =
                           if (vevID > vID)
                             then True
                             else False
-                        VectorDifference vevID _ _ ->
-                          if (vevID > vID)
-                            then True
-                            else False
                         --_ -> False
                     ) removedVisualElements
 
@@ -774,7 +632,6 @@ update msg model =
                             Vector vevID d e ->
                               ((a,b,(c - 1)), (Vector (vevID - 1) d e))
                             VectorSum vevID d e -> ((a,b, (c - 1)), (VectorSum (vevID - 1) d e) )
-                            VectorDifference vevID d e -> ((a,b, (c - 1)), (VectorSum (vevID - 1) d e) )
                         )
                         (Dict.toList filteredVisualElements)
                     )
@@ -925,10 +782,6 @@ update msg model =
                   if (vID2 == veID)
                     then Nothing
                     else Just vID2
-                Just (VectorDifference vID2 _ _) ->
-                  if (vID2 == veID)
-                    then Nothing
-                    else Just vID2
                 _ -> Nothing
         testInputOther =
           case parseInputOther of
@@ -936,14 +789,6 @@ update msg model =
             Just value ->
               case (Dict.get (eID, gID, value) model.visualElements) of
                 Just (Vector vID2 _ _) -> 
-                  if (vID2 == veID)
-                    then Nothing
-                    else Just vID2
-                Just (VectorSum vID2 _ _) ->
-                  if (vID2 == veID)
-                    then Nothing
-                    else Just vID2
-                Just (VectorDifference vID2 _ _) ->
                   if (vID2 == veID)
                     then Nothing
                     else Just vID2
@@ -1040,161 +885,12 @@ update msg model =
       in
         ( { model | ivvlDict = newIVVLModelDict, visualElements = finalVectorInputs }, Cmd.none )
 
-    ParseVectorDifferenceInput (eID, gID, veID) vID xy input ->
-      let
-        veIndex = (eID, gID, veID)
-        vElement = 
-          case (Dict.get veIndex model.visualElements) of
-            Nothing -> VectorDifference vID ("", "") False
-            Just a -> a
-
-        parseInputXY = String.toInt input
-        parseInputOther = 
-          case xy of
-            X -> 
-              (\ve ->
-                case ve of 
-                  VectorDifference _ (_, input2) _ -> (String.toInt input2) 
-                  _ -> Nothing
-              ) vElement
-            Y -> 
-              (\ve ->
-                case ve of
-                  VectorDifference _ (input1, _) _ -> (String.toInt input1)
-                  _ -> Nothing
-              ) vElement
-
-        testInputXY = 
-          case parseInputXY of
-            Nothing -> Nothing
-            Just value -> 
-              case (Dict.get (eID, gID, value) model.visualElements) of
-                Just (Vector vID2 _ _) -> Just vID2
-                Just (VectorSum vID2 _ _) ->
-                  if (vID2 == veID)
-                    then Nothing
-                    else Just vID2
-                Just (VectorDifference vID2 _ _) ->
-                  if (vID2 == veID)
-                    then Nothing
-                    else Just vID2
-                _ -> Nothing
-        testInputOther =
-          case parseInputOther of
-            Nothing -> Nothing
-            Just value ->
-              case (Dict.get (eID, gID, value) model.visualElements) of
-                Just (Vector vID2 _ _) -> 
-                  if (vID2 == veID)
-                    then Nothing
-                    else Just vID2
-                Just (VectorSum vID2 _ _) ->
-                  if (vID2 == veID)
-                    then Nothing
-                    else Just vID2
-                Just (VectorDifference vID2 _ _) ->
-                  if (vID2 == veID)
-                    then Nothing
-                    else Just vID2
-                _ -> Nothing
-
-        invisibilityCheck =
-          case ( Dict.get veIndex model.visualElements ) of
-            Nothing -> Dict.insert veIndex (VectorDifference vID ("", "") False) model.visualElements
-            Just _ -> model.visualElements
-
-        updatedVectorInputs = 
-          Dict.update 
-          veIndex
-          ( case xy of
-              X -> 
-                Maybe.map
-                  (\ve ->
-                    case ve of 
-                      VectorDifference v (_, y) p -> VectorDifference v (input,y) p
-                      _ -> VectorDifference -1 ("err", "err") False
-                  ) 
-              
-              Y -> 
-                Maybe.map 
-                  (\ve ->
-                    case ve of 
-                      VectorDifference v (x, _) p -> VectorDifference v (x,input) p
-                      _ -> VectorDifference -1 ("err", "err") False
-                  ) 
-          )
-          invisibilityCheck
-
-        finalVectorInputs = 
-          Dict.update 
-          veIndex
-          ( if ( testInputXY == Nothing || testInputOther == Nothing )
-              then 
-                Maybe.map 
-                  (\ve ->
-                    case ve of
-                      VectorDifference v (x,y) _ -> VectorDifference v (x,y) False
-                      _ -> VectorDifference -1 ("err", "err") False
-                  )
-              else 
-                Maybe.map
-                (\ve ->
-                  case ve of
-                    VectorDifference v (x,y) _ -> VectorDifference v (x,y) True
-                    _ -> VectorDifference -1 ("err", "err") False
-                )
-          )
-          updatedVectorInputs
-
-        theModel = getVisualModel eID model.ivvlDict
-        theGrid = 
-          case (Dict.get gID (theModel.grids) ) of
-            Nothing -> defaultGrid2D
-            Just x -> x
-
-        currentVisVectorValue =
-          case (Dict.get vID (theGrid.vectorObjects) ) of
-            Nothing -> defaultVisVector2D
-            Just x -> x
-
-
-        accessVector =
-          (\vID2 ->
-            case (Dict.get vID2 theGrid.vectorObjects) of
-              Just v -> v
-              Nothing -> defaultVisVector2D
-          )
-
-        vectorXY = 
-          case (Maybe.map accessVector testInputXY) of
-            Nothing -> defaultVisVector2D
-            Just y -> y
-        vectorOther = 
-          case (Maybe.map accessVector testInputOther) of
-            Nothing -> defaultVisVector2D
-            Just y -> y
-
-
-        newVectorValue =
-          if ( parseInputXY == Nothing || parseInputOther == Nothing )
-            then currentVisVectorValue.vector
-            else subtractV2 vectorOther.vector vectorXY.vector
-
-        newVisVectorValue = { currentVisVectorValue | vector = newVectorValue }
-        newVectorObjects = Dict.insert vID newVisVectorValue theGrid.vectorObjects
-        newGrid = { theGrid | vectorObjects = newVectorObjects }
-        newGridDict = Dict.insert gID newGrid theModel.grids
-        newIVVLModel = { theModel | grids = newGridDict }
-        newIVVLModelDict = Dict.insert eID newIVVLModel model.ivvlDict
-      in
-        ( { model | ivvlDict = newIVVLModelDict, visualElements = finalVectorInputs }, Cmd.none )
-
     UpdateContinuous ->
       let
         vectorSumsToTest = 
           Dict.filter 
             (\(eID, gID, _) value ->
-              if (eID == model.focusedEmbed && gID == model.focusedGrid)
+              if (eID == model.focusedEmbed && gID == 1)
                 then
                   case value of
                     VectorSum _ _ _ -> True
@@ -1202,32 +898,13 @@ update msg model =
                 else False
             )
             model.visualElements
-        
-        vectorDifferencesToTest = 
-          Dict.filter 
-            (\(eID, gID, _) value ->
-              if (eID == model.focusedEmbed && gID == model.focusedGrid)
-                then
-                  case value of
-                    VectorDifference _ _ _ -> True
-                    _ -> False
-                else False
-            )
-            model.visualElements
 
         vectorSumsList = Dict.toList vectorSumsToTest
-        vectorDifferenceList = Dict.toList vectorDifferencesToTest
-
         firstParam = List.map Tuple.first vectorSumsList
-        firstParamDiff = List.map Tuple.first vectorDifferenceList
-
         secondParam = 
           List.map (\(_,_,z) -> z) firstParam
-        secondParamDiff = 
-          List.map (\(_,_,z) -> z) firstParamDiff
         
         thirdParam = List.repeat (List.length firstParam) X
-        thirdParamDiff = List.repeat (List.length secondParam) X
 
         fourthParam = 
           List.map 
@@ -1237,14 +914,6 @@ update msg model =
                 _ -> "err"
             )
             firstParam
-        fourthParamDiff = 
-          List.map 
-            (\key -> 
-              case (Dict.get key model.visualElements) of
-                Just (VectorDifference _ (a, b) _) -> a
-                _ -> "err"
-            )
-            firstParamDiff
 
         resizeMessage =
           case model.elementMenuState of
@@ -1253,7 +922,6 @@ update msg model =
 
         listOfMessages = 
           List.map4 (ParseVectorSumInput) firstParam secondParam thirdParam fourthParam
-          ++ (List.map4 (ParseVectorDifferenceInput) firstParamDiff secondParamDiff thirdParamDiff fourthParamDiff)
           ++ [resizeMessage]
         finalBatch = List.map ( \message -> Task.perform (\_-> message) Time.now ) listOfMessages
 
@@ -1411,9 +1079,7 @@ type alias Model =
   , widgetDict : Dict String (Widget.Model, Cmd Widget.Msg) 
   , ivvlDict : Dict String (IVVL.LibModel)
   , visualElements : Dict VisualElementIndex VisualElement
-
   , focusedEmbed : String
-  , focusedGrid : Int
 
   , elementMenuWidth : Int
   , elementMenuWidthMax : Int
@@ -1439,7 +1105,6 @@ initialModel =
                           |> setVV2 (1, 1)
                           |> endTypeVV2 Directional
                           |> colorVV2 (getColor "defaultVector" eColorDict)
-                          |> lineTypeVV2 (Solid 4)
                         ) 
                       |> xAxisColorG2 (getColor "axes" eColorDict)
                       |> yAxisColorG2 (getColor "axes" eColorDict)
@@ -1459,10 +1124,11 @@ initialModel =
       Dict.fromList
         [ ("elementText", getColor "offWhite" colorDict)
         , ("background", getColor "offBlack" colorDict)
-        , ("defaultVector", E.rgb255 50 210 255)
+        , ("defaultVector", getColor "primaryLight" colorDict)
         , ("buttonBackground", getColor "offWhite" colorDict)
         , ("axes", getColor "offWhite" colorDict)
         , ("inputBackground", E.rgb255 73 65 85)
+        , ("AnswerVector", E.rgb255 0 255 0)
         ]
 
     model =  
@@ -1471,9 +1137,7 @@ initialModel =
       , widgetDict = visualWidgets
       , ivvlDict = preVModel
       , visualElements = Dict.fromList [(("embed1", 1, 1), Vector 1 ("1", "1") True)]
-
       , focusedEmbed = "embed1"
-      , focusedGrid = 1
 
       , elementMenuWidth = round (1920/4)
       , elementMenuWidthMax = round (1920/2)
@@ -1495,7 +1159,7 @@ initialModel =
 
 view : Model -> { title : String, body : List (Html Msg) } 
 view model =
-  { title = "Sandbox"
+  { title = "Question2"
   , body = htmlOutput model
   }   
 

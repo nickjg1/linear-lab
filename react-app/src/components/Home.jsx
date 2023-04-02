@@ -6,7 +6,7 @@ const Home = () => {
             title: "Lessons",
             text: "Learn about vectors, matrices, and more!",
             image: "/images/lessons/featured/vector-lesson.png",
-            pageLink: "lessons/vectors",
+            pageLink: "lessons",
         },
         {
             title: "Sandbox",
