@@ -2,64 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-
-@layer base{
-    h1,h2,h3{
-        font-family: 'Inconsolata', sans-serif;
+@layer base {
+    h1,
+    h2,
+    h3 {
+        font-family: "Inconsolata", sans-serif;
     }
-    h4,h5,h6{
-        font-family: 'Assistant', sans-serif;
+    h4,
+    h5,
+    h6 {
+        font-family: "Assistant", sans-serif;
     }
-    p{
-        font-family: 'Assistant', sans-serif;
+    p {
+        font-family: "Assistant", sans-serif;
     }
 }
 
-@layer components{
-    body{
-        @apply text-offWhite
+@layer components {
+    body {
+        @apply text-offWhite;
     }
-    h1{
-        @apply text-center my-[18pt] md:my-[24pt] text-[36pt] md:text-[54pt] font-[800]
+    h1 {
+        @apply text-center my-[18pt] md:my-[24pt] text-[36pt] md:text-[54pt] font-[800];
     }
-    h2{
-        @apply my-[12pt] md:my-[18pt] text-[22pt] md:text-[36pt] font-[900]
+    h2 {
+        @apply my-[12pt] md:my-[18pt] text-[22pt] md:text-[36pt] font-[900];
     }
-    h3{
-        @apply my-[8pt] md:my-[12pt] text-[18pt] md:text-[24pt] font-[800] uppercase
+    h3 {
+        @apply my-[8pt] md:my-[12pt] text-[18pt] md:text-[24pt] font-[800] uppercase;
     }
-    
+
     h4 {
         font-size: 18pt;
         font-weight: 700;
-        @apply mb-[12pt] mt-[24pt]
+        @apply mb-[12pt] mt-[24pt];
     }
 
     h5 {
         font-size: 14pt;
         font-weight: 600;
-        @apply mb-[12pt] mt-[24pt] italic
-
+        @apply mb-[12pt] mt-[24pt] italic;
     }
 
     p {
         font-size: 14pt;
         font-weight: 400;
-        @apply my-[12pt]
+        @apply my-[12pt];
     }
 
-#menu-toggle:checked + #menu{
+    #menu-toggle:checked + #menu {
         display: block;
     }
 
-.navLi {
-    @apply lg:p-4 py-3 px-0 block hover:text-gray-400 transition duration-200 cursor-pointer
-}
-.article{
-    @apply w-[80%] lg:w-5/6 mx-auto lg:mr-0
-}
-
-
+    .navLi {
+        @apply lg:p-4 py-3 px-0 block hover:text-gray-400 transition duration-200 cursor-pointer;
+    }
+    .article {
+        @apply w-[80%] lg:w-5/6 mx-auto lg:mr-0;
+    }
 }
 
 body {
@@ -67,30 +67,40 @@ body {
 }
 
 .articleBody {
-    @apply float-left w-[100%] lg:w-2/3
+    @apply float-left w-[100%] lg:w-2/3;
 }
 
 .asideBox {
-    @apply float-right w-[100%] lg:w-1/3 p-[2rem] pt-0  
+    @apply float-right w-[100%] lg:w-1/3 p-[2rem] pt-0;
 }
 
-i.highlight{
-    @apply bg-highlightTransparent rounded-md p-0.5 not-italic
+i.highlight {
+    @apply bg-highlightTransparent rounded-md p-0.5 not-italic;
 }
 
-i.highlight:after{
-    content: ' ';
-    
+i.highlight:after {
+    content: " ";
 }
 
-i.highlight:before{
-    content: ' ';
+i.highlight:before {
+    content: " ";
 }
 
-hr{
-    @apply border-[0.5px] border-offWhite mx-[2rem] my-[5rem]
+hr {
+    @apply border-[0.5px] border-offWhite mx-[2rem] my-[5rem];
 }
 
 .fl:first-letter {
-    text-transform:uppercase;
-    }
+    text-transform: uppercase;
+}
+
+.no-scroll {
+    overflow: hidden;
+}
+
+.embed {
+    width: 85vw;
+    position: relative;
+    left: -10vw;
+    @apply my-[4rem]
+}
