@@ -1178,7 +1178,7 @@ update msg model =
         newVectorValue =
           if ( parseInputXY == Nothing || parseInputOther == Nothing )
             then currentVisVectorValue.vector
-            else subtractV2 vectorOther.vector vectorXY.vector
+            else subtractV2 vectorXY.vector vectorOther.vector
 
         newVisVectorValue = { currentVisVectorValue | vector = newVectorValue }
         newVectorObjects = Dict.insert vID newVisVectorValue theGrid.vectorObjects
