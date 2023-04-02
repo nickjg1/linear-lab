@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/MathVisualizer/static/css/main.3fe929b4.css",
-    "main.js": "/MathVisualizer/static/js/main.c341c20d.js",
-    "index.html": "/MathVisualizer/index.html",
-    "main.3fe929b4.css.map": "/MathVisualizer/static/css/main.3fe929b4.css.map",
-    "main.c341c20d.js.map": "/MathVisualizer/static/js/main.c341c20d.js.map"
+    "main.css": "https://nickjg1.github.io/MathVisualizer/static/css/main.f30e3ece.css",
+    "main.js": "https://nickjg1.github.io/MathVisualizer/static/js/main.a30aa7ea.js",
+    "index.html": "https://nickjg1.github.io/MathVisualizer/index.html",
+    "main.f30e3ece.css.map": "https://nickjg1.github.io/MathVisualizer/static/css/main.f30e3ece.css.map",
+    "main.a30aa7ea.js.map": "https://nickjg1.github.io/MathVisualizer/static/js/main.a30aa7ea.js.map"
   },
   "entrypoints": [
-    "static/css/main.3fe929b4.css",
-    "static/js/main.c341c20d.js"
+    "static/css/main.f30e3ece.css",
+    "static/js/main.a30aa7ea.js"
   ]
 }
