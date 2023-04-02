@@ -2,9 +2,9 @@ import React from "react";
 import AsideBox from "./AsideBox";
 import DefinitionBox from "./DefinitionBox";
 import LessonImage from "./LessonImage";
-var Latex = require("react-latex");
-
 import { useState } from "react";
+
+var Latex = require("react-latex");
 
 const LessonPage = () => {
     const [embedActive, setEmbedActive] = useState(false);
