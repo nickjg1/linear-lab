@@ -8251,25 +8251,25 @@ var $author$project$Sandbox$update = F2(
 				var input = msg.d;
 				var veIndex = _Utils_Tuple3(eID, gID, veID);
 				var vElement = function () {
-					var _v113 = A2($elm$core$Dict$get, veIndex, model.visualElements);
-					if (_v113.$ === 'Nothing') {
+					var _v114 = A2($elm$core$Dict$get, veIndex, model.visualElements);
+					if (_v114.$ === 'Nothing') {
 						return A3(
 							$author$project$Sandbox$VectorDifference,
 							vID,
 							_Utils_Tuple2('', ''),
 							false);
 					} else {
-						var a = _v113.a;
+						var a = _v114.a;
 						return a;
 					}
 				}();
 				var theModel = A2($author$project$Sandbox$getVisualModel, eID, model.ivvlDict);
 				var theGrid = function () {
-					var _v112 = A2($elm$core$Dict$get, gID, theModel.grids);
-					if (_v112.$ === 'Nothing') {
+					var _v113 = A2($elm$core$Dict$get, gID, theModel.grids);
+					if (_v113.$ === 'Nothing') {
 						return $author$project$IVVL$defaultGrid2D;
 					} else {
-						var x = _v112.a;
+						var x = _v113.a;
 						return x;
 					}
 				}();
@@ -8279,23 +8279,23 @@ var $author$project$Sandbox$update = F2(
 						return $elm$core$Maybe$Nothing;
 					} else {
 						var value = parseInputXY.a;
-						var _v108 = A2(
+						var _v109 = A2(
 							$elm$core$Dict$get,
 							_Utils_Tuple3(eID, gID, value),
 							model.visualElements);
-						if (_v108.$ === 'Just') {
-							switch (_v108.a.$) {
+						if (_v109.$ === 'Just') {
+							switch (_v109.a.$) {
 								case 'Vector':
-									var _v109 = _v108.a;
-									var vID2 = _v109.a;
+									var _v110 = _v109.a;
+									var vID2 = _v110.a;
 									return $elm$core$Maybe$Just(vID2);
 								case 'VectorSum':
-									var _v110 = _v108.a;
-									var vID2 = _v110.a;
+									var _v111 = _v109.a;
+									var vID2 = _v111.a;
 									return _Utils_eq(vID2, veID) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(vID2);
 								default:
-									var _v111 = _v108.a;
-									var vID2 = _v111.a;
+									var _v112 = _v109.a;
+									var vID2 = _v112.a;
 									return _Utils_eq(vID2, veID) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(vID2);
 							}
 						} else {
@@ -8307,8 +8307,8 @@ var $author$project$Sandbox$update = F2(
 					if (xy.$ === 'X') {
 						return function (ve) {
 							if (ve.$ === 'VectorDifference') {
-								var _v104 = ve.b;
-								var input2 = _v104.b;
+								var _v105 = ve.b;
+								var input2 = _v105.b;
 								return $elm$core$String$toInt(input2);
 							} else {
 								return $elm$core$Maybe$Nothing;
@@ -8317,8 +8317,8 @@ var $author$project$Sandbox$update = F2(
 					} else {
 						return function (ve) {
 							if (ve.$ === 'VectorDifference') {
-								var _v106 = ve.b;
-								var input1 = _v106.a;
+								var _v107 = ve.b;
+								var input1 = _v107.a;
 								return $elm$core$String$toInt(input1);
 							} else {
 								return $elm$core$Maybe$Nothing;
@@ -8331,23 +8331,23 @@ var $author$project$Sandbox$update = F2(
 						return $elm$core$Maybe$Nothing;
 					} else {
 						var value = parseInputOther.a;
-						var _v98 = A2(
+						var _v99 = A2(
 							$elm$core$Dict$get,
 							_Utils_Tuple3(eID, gID, value),
 							model.visualElements);
-						if (_v98.$ === 'Just') {
-							switch (_v98.a.$) {
+						if (_v99.$ === 'Just') {
+							switch (_v99.a.$) {
 								case 'Vector':
-									var _v99 = _v98.a;
-									var vID2 = _v99.a;
-									return _Utils_eq(vID2, veID) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(vID2);
-								case 'VectorSum':
-									var _v100 = _v98.a;
+									var _v100 = _v99.a;
 									var vID2 = _v100.a;
 									return _Utils_eq(vID2, veID) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(vID2);
-								default:
-									var _v101 = _v98.a;
+								case 'VectorSum':
+									var _v101 = _v99.a;
 									var vID2 = _v101.a;
+									return _Utils_eq(vID2, veID) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(vID2);
+								default:
+									var _v102 = _v99.a;
+									var vID2 = _v102.a;
 									return _Utils_eq(vID2, veID) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(vID2);
 							}
 						} else {
@@ -8356,8 +8356,8 @@ var $author$project$Sandbox$update = F2(
 					}
 				}();
 				var invisibilityCheck = function () {
-					var _v96 = A2($elm$core$Dict$get, veIndex, model.visualElements);
-					if (_v96.$ === 'Nothing') {
+					var _v97 = A2($elm$core$Dict$get, veIndex, model.visualElements);
+					if (_v97.$ === 'Nothing') {
 						return A3(
 							$elm$core$Dict$insert,
 							veIndex,
@@ -8380,8 +8380,8 @@ var $author$project$Sandbox$update = F2(
 								function (ve) {
 									if (ve.$ === 'VectorDifference') {
 										var v = ve.a;
-										var _v93 = ve.b;
-										var y = _v93.b;
+										var _v94 = ve.b;
+										var y = _v94.b;
 										var p = ve.c;
 										return A3(
 											$author$project$Sandbox$VectorDifference,
@@ -8401,8 +8401,8 @@ var $author$project$Sandbox$update = F2(
 								function (ve) {
 									if (ve.$ === 'VectorDifference') {
 										var v = ve.a;
-										var _v95 = ve.b;
-										var x = _v95.a;
+										var _v96 = ve.b;
+										var x = _v96.a;
 										var p = ve.c;
 										return A3(
 											$author$project$Sandbox$VectorDifference,
@@ -8427,9 +8427,9 @@ var $author$project$Sandbox$update = F2(
 						function (ve) {
 							if (ve.$ === 'VectorDifference') {
 								var v = ve.a;
-								var _v88 = ve.b;
-								var x = _v88.a;
-								var y = _v88.b;
+								var _v89 = ve.b;
+								var x = _v89.a;
+								var y = _v89.b;
 								return A3(
 									$author$project$Sandbox$VectorDifference,
 									v,
@@ -8446,9 +8446,9 @@ var $author$project$Sandbox$update = F2(
 						function (ve) {
 							if (ve.$ === 'VectorDifference') {
 								var v = ve.a;
-								var _v90 = ve.b;
-								var x = _v90.a;
-								var y = _v90.b;
+								var _v91 = ve.b;
+								var x = _v91.a;
+								var y = _v91.b;
 								return A3(
 									$author$project$Sandbox$VectorDifference,
 									v,
@@ -8464,25 +8464,34 @@ var $author$project$Sandbox$update = F2(
 						}),
 					updatedVectorInputs);
 				var currentVisVectorValue = function () {
-					var _v86 = A2($elm$core$Dict$get, vID, theGrid.vectorObjects);
-					if (_v86.$ === 'Nothing') {
+					var _v87 = A2($elm$core$Dict$get, vID, theGrid.vectorObjects);
+					if (_v87.$ === 'Nothing') {
 						return $author$project$IVVL$defaultVisVector2D;
 					} else {
-						var x = _v86.a;
+						var x = _v87.a;
 						return x;
 					}
 				}();
 				var accessVector = function (vID2) {
-					var _v85 = A2($elm$core$Dict$get, vID2, theGrid.vectorObjects);
-					if (_v85.$ === 'Just') {
-						var v = _v85.a;
+					var _v86 = A2($elm$core$Dict$get, vID2, theGrid.vectorObjects);
+					if (_v86.$ === 'Just') {
+						var v = _v86.a;
 						return v;
 					} else {
 						return $author$project$IVVL$defaultVisVector2D;
 					}
 				};
 				var vectorOther = function () {
-					var _v84 = A2($elm$core$Maybe$map, accessVector, testInputOther);
+					var _v85 = A2($elm$core$Maybe$map, accessVector, testInputOther);
+					if (_v85.$ === 'Nothing') {
+						return $author$project$IVVL$defaultVisVector2D;
+					} else {
+						var y = _v85.a;
+						return y;
+					}
+				}();
+				var vectorXY = function () {
+					var _v84 = A2($elm$core$Maybe$map, accessVector, testInputXY);
 					if (_v84.$ === 'Nothing') {
 						return $author$project$IVVL$defaultVisVector2D;
 					} else {
@@ -8490,16 +8499,17 @@ var $author$project$Sandbox$update = F2(
 						return y;
 					}
 				}();
-				var vectorXY = function () {
-					var _v83 = A2($elm$core$Maybe$map, accessVector, testInputXY);
-					if (_v83.$ === 'Nothing') {
-						return $author$project$IVVL$defaultVisVector2D;
+				var newVectorValue = function () {
+					if (_Utils_eq(parseInputXY, $elm$core$Maybe$Nothing) || _Utils_eq(parseInputOther, $elm$core$Maybe$Nothing)) {
+						return currentVisVectorValue.vector;
 					} else {
-						var y = _v83.a;
-						return y;
+						if (xy.$ === 'X') {
+							return A2($author$project$IVVL$subtractV2, vectorXY.vector, vectorOther.vector);
+						} else {
+							return A2($author$project$IVVL$subtractV2, vectorOther.vector, vectorXY.vector);
+						}
 					}
 				}();
-				var newVectorValue = (_Utils_eq(parseInputXY, $elm$core$Maybe$Nothing) || _Utils_eq(parseInputOther, $elm$core$Maybe$Nothing)) ? currentVisVectorValue.vector : A2($author$project$IVVL$subtractV2, vectorXY.vector, vectorOther.vector);
 				var newVisVectorValue = _Utils_update(
 					currentVisVectorValue,
 					{vector: newVectorValue});
@@ -8521,9 +8531,9 @@ var $author$project$Sandbox$update = F2(
 				var vectorSumsToTest = A2(
 					$elm$core$Dict$filter,
 					F2(
-						function (_v126, value) {
-							var eID = _v126.a;
-							var gID = _v126.b;
+						function (_v127, value) {
+							var eID = _v127.a;
+							var gID = _v127.b;
 							if (_Utils_eq(eID, model.focusedEmbed) && _Utils_eq(gID, model.focusedGrid)) {
 								if (value.$ === 'VectorSum') {
 									return true;
@@ -8539,9 +8549,9 @@ var $author$project$Sandbox$update = F2(
 				var vectorDifferencesToTest = A2(
 					$elm$core$Dict$filter,
 					F2(
-						function (_v124, value) {
-							var eID = _v124.a;
-							var gID = _v124.b;
+						function (_v125, value) {
+							var eID = _v125.a;
+							var gID = _v125.b;
 							if (_Utils_eq(eID, model.focusedEmbed) && _Utils_eq(gID, model.focusedGrid)) {
 								if (value.$ === 'VectorDifference') {
 									return true;
@@ -8555,8 +8565,8 @@ var $author$project$Sandbox$update = F2(
 					model.visualElements);
 				var vectorDifferenceList = $elm$core$Dict$toList(vectorDifferencesToTest);
 				var resizeMessage = function () {
-					var _v123 = model.elementMenuState;
-					if (_v123.c) {
+					var _v124 = model.elementMenuState;
+					if (_v124.c) {
 						return $author$project$Sandbox$ResizeElementMenuDown;
 					} else {
 						return $author$project$Sandbox$Blank;
@@ -8566,12 +8576,12 @@ var $author$project$Sandbox$update = F2(
 				var fourthParamDiff = A2(
 					$elm$core$List$map,
 					function (key) {
-						var _v120 = A2($elm$core$Dict$get, key, model.visualElements);
-						if ((_v120.$ === 'Just') && (_v120.a.$ === 'VectorDifference')) {
-							var _v121 = _v120.a;
-							var _v122 = _v121.b;
-							var a = _v122.a;
-							var b = _v122.b;
+						var _v121 = A2($elm$core$Dict$get, key, model.visualElements);
+						if ((_v121.$ === 'Just') && (_v121.a.$ === 'VectorDifference')) {
+							var _v122 = _v121.a;
+							var _v123 = _v122.b;
+							var a = _v123.a;
+							var b = _v123.b;
 							return a;
 						} else {
 							return 'err';
@@ -8580,8 +8590,8 @@ var $author$project$Sandbox$update = F2(
 					firstParamDiff);
 				var secondParamDiff = A2(
 					$elm$core$List$map,
-					function (_v119) {
-						var z = _v119.c;
+					function (_v120) {
+						var z = _v120.c;
 						return z;
 					},
 					firstParamDiff);
@@ -8589,12 +8599,12 @@ var $author$project$Sandbox$update = F2(
 				var fourthParam = A2(
 					$elm$core$List$map,
 					function (key) {
-						var _v116 = A2($elm$core$Dict$get, key, model.visualElements);
-						if ((_v116.$ === 'Just') && (_v116.a.$ === 'VectorSum')) {
-							var _v117 = _v116.a;
-							var _v118 = _v117.b;
-							var a = _v118.a;
-							var b = _v118.b;
+						var _v117 = A2($elm$core$Dict$get, key, model.visualElements);
+						if ((_v117.$ === 'Just') && (_v117.a.$ === 'VectorSum')) {
+							var _v118 = _v117.a;
+							var _v119 = _v118.b;
+							var a = _v119.a;
+							var b = _v119.b;
 							return a;
 						} else {
 							return 'err';
@@ -8603,8 +8613,8 @@ var $author$project$Sandbox$update = F2(
 					firstParam);
 				var secondParam = A2(
 					$elm$core$List$map,
-					function (_v115) {
-						var z = _v115.c;
+					function (_v116) {
+						var z = _v116.c;
 						return z;
 					},
 					firstParam);
@@ -8627,7 +8637,7 @@ var $author$project$Sandbox$update = F2(
 					function (message) {
 						return A2(
 							$elm$core$Task$perform,
-							function (_v114) {
+							function (_v115) {
 								return message;
 							},
 							$elm$time$Time$now);
@@ -8655,9 +8665,9 @@ var $author$project$Sandbox$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'IVVLMoveMsg':
 				var k = msg.a;
-				var _v128 = msg.b;
-				var x = _v128.a;
-				var y = _v128.b;
+				var _v129 = msg.b;
+				var x = _v129.a;
+				var y = _v129.b;
 				var originalDict = model.ivvlDict;
 				var updatedDict = A3(
 					$elm$core$Dict$update,
@@ -8679,17 +8689,17 @@ var $author$project$Sandbox$update = F2(
 			case 'WidgetMsg':
 				var k = msg.a;
 				var wMsg = msg.b;
-				var _v129 = A2(
+				var _v130 = A2(
 					$MacCASOutreach$graphicsvg$GraphicSVG$Widget$update,
 					wMsg,
 					A2($author$project$Sandbox$getWidgetModel, k, model.widgetDict));
-				var newWState = _v129.a;
-				var wCmd = _v129.b;
+				var newWState = _v130.a;
+				var wCmd = _v130.b;
 				var newWidgetModel = A3(
 					$elm$core$Dict$update,
 					k,
 					$elm$core$Maybe$map(
-						function (_v130) {
+						function (_v131) {
 							return _Utils_Tuple2(newWState, wCmd);
 						}),
 					model.widgetDict);
