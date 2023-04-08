@@ -5,84 +5,53 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href=https://github.com/Multipixels/Nyctomorph">
-    <img src="External/Campfire.gif" alt="Logo" width="120" height="120">
+  <a href="https://nickjg1.github.io/Linear-Lab/">
+    <img src="repo_assets/logo512.png" alt="Logo" width="64" height="64">
   </a>
 
-<h3 align="center">Nyctomorph</h3>
+<h2 align="center">Linear Lab</h2>
 
   <p align="center">
-    A game made for the <a href="https://itch.io/jam/nokiajam5">5th NOKIA 3310 Game Jam</a>.
+    An interactive Linear Algebra textbook</a>.
   </p>
+
 </div>
-
-
-
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <!--<li><a href="#license">License</a></li>-->
-    <li><a href="#contact">Contact</a></li>
-  </ol>
-</details>
-
-
-
-<!-- ABOUT THE PROJECT -->
-## About The Project
-
-**GAME**
-
-A game made for the [5th NOKIA 3310 Game Jam](https://itch.io/jam/nokiajam5/rate/1945238) game jam.
-
-Nyctomorph is a short survival adventure game in which the player has to survive the night, alone in a dark forest, with only a campfire and a handful of twigs scattered about.
-
-Don't stray far from the light... who knows what could be lurking about?
 
 ---
 
-**CONTROLS**
+<p align="center">
+Linear Lab is an interactive tool to help students learn about and visualize complex Linear Algebra concepts. <br>
+We offer textbook-formatted lessons, sprinkled with interactive exercises that ensure student's understanding of material. <br>
+A sandbox mode is also included to let students explore a visualization of two dimensional linear algebra.<br><br>
+Try it out <a href="https://nickjg1.github.io/Linear-Lab/">here</a>!
+</p>
 
-Only keyboard is supported.  
-Some visual errors have been reported for Mac users.
+### Built With
 
-Movement: WASD  
-Interact: E  
-Consume: Q  
-Pause: ESC  
-Change Theme: T  
+* [React](https://react.dev/)
+* [Tailwind](https://tailwindcss.com/)
+* [Elm](https://elm-lang.org/)
 
 ---
 
-**SCREENSHOTS**
+## Interactive Textbook
 
 <div align="center">
-<img src="External/Gif1.gif" alt="Gif1" width="240" height="420">  
-</div>
-  
-    
-  
-<div align="center">
-<img src="External/Screenshot1.png" alt="Screenshot1" width="240" height="420">
-<img src="External/Screenshot2.png"" alt="Screenshot2" width="240" height="420">
-<img src="External/Screenshot3.png" alt="Screenshot3" width="240" height="420">
-<img src="External/Screenshot4.png" alt="Screenshot4" width="240" height="420">
+<img src="repo_assets/textbook1.png" alt="imageOfTextbook1" width="700" height="350">  
+<img src="repo_assets/textbook2.png" alt="imageOfTextbook2" width="700" height="350">
+<img src="repo_assets/textbook3.png" alt="imageOfTextbook3" width="700" height="350">
 </div>
 
+---
+
+## Sandbox
+
+<div align="center">
+<img src="repo_assets/sandbox1.png" alt="imageOfSandbox1" width="700" height="350">  
+<img src="repo_assets/sandbox2.png" alt="imageOfSandbox2" width="700" height="350">
+</div>
+
+---
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
