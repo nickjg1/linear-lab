@@ -23,7 +23,7 @@
 Linear Lab is an interactive tool to help students learn about and visualize complex Linear Algebra concepts. <br>
 We offer textbook-formatted lessons, sprinkled with interactive exercises that ensure student's understanding of material. <br>
 A sandbox mode is also included to let students explore a visualization of two dimensional linear algebra.<br><br>
-Try it out <a href="https://nickjg1.github.io/Linear-Lab/">here</a>!
+Try it out <a href="https://nickjg1.github.io/linear-lab/">here</a>!
 </p>
 
 ### Built With
