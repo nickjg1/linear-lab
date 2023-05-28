@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/Linear-Lab/static/css/main.3fe929b4.css",
-    "main.js": "/Linear-Lab/static/js/main.dc54f730.js",
-    "index.html": "/Linear-Lab/index.html",
-    "main.3fe929b4.css.map": "/Linear-Lab/static/css/main.3fe929b4.css.map",
-    "main.dc54f730.js.map": "/Linear-Lab/static/js/main.dc54f730.js.map"
+    "main.css": "/linear-lab/static/css/main.3fe929b4.css",
+    "main.js": "/linear-lab/static/js/main.b87cea85.js",
+    "index.html": "/linear-lab/index.html",
+    "main.3fe929b4.css.map": "/linear-lab/static/css/main.3fe929b4.css.map",
+    "main.b87cea85.js.map": "/linear-lab/static/js/main.b87cea85.js.map"
   },
   "entrypoints": [
     "static/css/main.3fe929b4.css",
-    "static/js/main.dc54f730.js"
+    "static/js/main.b87cea85.js"
   ]
 }
